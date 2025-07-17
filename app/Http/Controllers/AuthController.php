@@ -25,6 +25,7 @@ class AuthController extends Controller
                 'password' => Hash::make($request->password),
                 'date_of_registration' => now(),
             ]);
+
             return redirect('/')->with('success', 'User registered successfully!');
         } catch (\Exception $e) {
             return redirect('/')->with('error', '❌ Registration failed: ' . $e->getMessage());
