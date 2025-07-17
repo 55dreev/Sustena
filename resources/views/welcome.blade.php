@@ -58,14 +58,16 @@
 
 
 
-    </div>
+    </div>  
+
 
     <!-- Forgot Password Form -->
     <div class="login-container" id="forgot" style="display: none;">
         <h1>Sustena</h1>
         <h2>Forgot Password</h2>
-        <form>
-            <input type="email" placeholder="Enter your email" required><br>
+        <form method="POST" action="/forgot-password">
+            @csrf
+            <input type="email" name="email" placeholder="Enter your email" required><br>
             <button type="submit">Send Reset Link</button>
             <button type="button" id="showLoginFromForgot">Back to Login</button>
         </form>

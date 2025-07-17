@@ -10,7 +10,7 @@ class NavigationTracker
     // Define the allowed navigation flow
     private $allowedFlow = [
         'welcome' => ['landing-page'],
-        'landing-page' => ['challenge', 'footprint-calculator', 'forum', 'learning-modules', 'profile'],
+        'landing-page' => ['landing-page','challenge', 'footprint-calculator', 'forum', 'learning-modules', 'profile'],
         'challenge' => ['landing-page', 'footprint-calculator', 'forum', 'learning-modules', 'profile'],
         'footprint-calculator' => ['landing-page', 'challenge', 'forum', 'learning-modules', 'profile'],
         'forum' => ['landing-page', 'challenge', 'footprint-calculator', 'learning-modules', 'profile'],
