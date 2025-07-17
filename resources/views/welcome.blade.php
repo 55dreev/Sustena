@@ -24,13 +24,15 @@
     <div class="login-container" id="login">
         <h1>Sustena</h1>
         <h2>Login</h2>
-        <form>
-            <input type="text" placeholder="Username" required><br>
-            <input type="password" placeholder="Password" required><br>
-            <button type="submit">Login</button>
-            <button type="button" id="showSignup">Sign Up</button>
-            <button type="button">Sign in with Gmail</button>
-        </form>
+        <form action="{{ route('login') }}" method="POST">
+    @csrf
+    <input type="text" name="username" placeholder="Username" required><br>
+    <input type="password" name="password" placeholder="Password" required><br>
+    <button type="submit">Login</button>
+    <button type="button" id="showSignup">Sign Up</button>
+    <button type="button">Sign in with Gmail</button>
+</form>
+
         <p style="margin-top: 15px;">
         <a href="#" class="forgot-password">Forgot password?</a>
 

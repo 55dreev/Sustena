@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SUSTENA - Profile</title>
+    @php
+    use Illuminate\Support\Facades\Auth;
+@endphp
     <style>
         * {
             margin: 0;
@@ -587,37 +590,36 @@
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-    <div class="logo">
-      <div class="logo-icon">🌱</div>
-      <div class="logo-text">SUSTENA</div>
-    </div>
-    <a href="{{ url('/landing-page') }}" class="nav-item">
-      <div class="nav-icon">🏠</div>
-      <span>Home</span>
-    </a>
-    <a href="{{ url('/footprint-calculator') }}" class="nav-item">
-      <div class="nav-icon">👣</div>
-      <span>Footprint Tracker</span>
-    </a>
-    <a href="{{ url('/learn') }}" class="nav-item">
-      <div class="nav-icon">📚</div>
-      <span>Learn</span>
-    </a>
-    <a href="{{ url('/challenges') }}" class="nav-item">
-      <div class="nav-icon">🏆</div>
-      <span>Challenges</span>
-    </a>
-    <a href="{{ url('/microforum') }}" class="nav-item">
-      <div class="nav-icon">💬</div>
-      <span>MicroForum</span>
-    </a>
-    <a href="{{ url('/profile') }}" class="nav-item active">
-      <div class="nav-icon">👤</div>
-      <span>Profile</span>
-    </a>
+<div class="sidebar">
+  <div class="logo">
+    <div class="logo-icon">🌱</div>
+    <div class="logo-text">SUSTENA</div>
   </div>
+  <a href="{{ url('/landing') }}" class="nav-item">
+    <div class="nav-icon">🏠</div>
+    <span>Home</span>
+  </a>
+  <a href="{{ url('/footprint-calculator') }}" class="nav-item">
+    <div class="nav-icon">👣</div>
+    <span>Footprint Tracker</span>
+  </a>
+  <a href="{{ url('/learning-modules') }}" class="nav-item">
+  <div class="nav-icon">📚</div>
+  <span>Learn</span>
+</a>
+<a href="{{ url('/challenge') }}" class="nav-item">
+  <div class="nav-icon">🏆</div>
+  <span>Challenges</span>
+</a>
+<a href="{{ url('/forum') }}" class="nav-item">
+  <div class="nav-icon">💬</div>
+  <span>MicroForum</span>
+</a>
+  <a href="{{ url('/profile') }}" class="nav-item active">
+    <div class="nav-icon">👤</div>
+    <span>Profile</span>
+  </a>
+</div>
 
     <!-- Top Navigation -->
     <div class="floating-icons">
@@ -632,15 +634,27 @@
     <div class="main-content">
         <!-- Profile Header -->
         <div class="profile-header">
-            <div class="profile-content">
-                <div class="profile-avatar">👤</div>
-                <div class="profile-info">
-                    <h1 class="profile-name">Halbert & Colarina [Ecosaver]</h1>
-                    <div class="profile-title">ECO CHAMPION</div>
-                    <button class="edit-profile-btn">Edit Profile</button>
-                </div>
+    <div class="profile-content">
+        <div class="profile-avatar">👤</div>
+        <div class="profile-info">
+            @if(session()->has('username'))
+                <h1 class="profile-name">{{ session('username') }} [Ecosaver]</h1>
+            @else
+                <h1 class="profile-name">Guest [Ecosaver]</h1>
+            @endif
+            <div class="profile-title">ECO CHAMPION</div>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <button class="edit-profile-btn">Edit Profile</button>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="edit-profile-btn" style="background-color: #e74c3c;">Logout</button>
+                </form>
             </div>
         </div>
+    </div>
+</div>
+
+
 
         <!-- Content Layout -->
         <div class="content-layout">

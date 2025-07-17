@@ -418,37 +418,36 @@
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-    <div class="logo">
-      <div class="logo-icon">🌱</div>
-      <div class="logo-text">SUSTENA</div>
-    </div>
-    <a href="{{ url('/landing-page') }}" class="nav-item">
-      <div class="nav-icon">🏠</div>
-      <span>Home</span>
-    </a>
-    <a href="{{ url('/footprint-calculator') }}" class="nav-item">
-      <div class="nav-icon">👣</div>
-      <span>Footprint Tracker</span>
-    </a>
-    <a href="{{ url('/learn') }}" class="nav-item">
-      <div class="nav-icon">📚</div>
-      <span>Learn</span>
-    </a>
-    <a href="{{ url('/challenges') }}" class="nav-item active">
-      <div class="nav-icon">🏆</div>
-      <span>Challenges</span>
-    </a>
-    <a href="{{ url('/microforum') }}" class="nav-item">
-      <div class="nav-icon">💬</div>
-      <span>MicroForum</span>
-    </a>
-    <a href="{{ url('/profile') }}" class="nav-item">
-      <div class="nav-icon">👤</div>
-      <span>Profile</span>
-    </a>
+<div class="sidebar">
+  <div class="logo">
+    <div class="logo-icon">🌱</div>
+    <div class="logo-text">SUSTENA</div>
   </div>
+  <a href="{{ url('/landing') }}" class="nav-item">
+    <div class="nav-icon">🏠</div>
+    <span>Home</span>
+  </a>
+  <a href="{{ url('/footprint-calculator') }}" class="nav-item">
+    <div class="nav-icon">👣</div>
+    <span>Footprint Tracker</span>
+  </a>
+  <a href="{{ url('/learning-modules') }}" class="nav-item">
+  <div class="nav-icon">📚</div>
+  <span>Learn</span>
+</a>
+<a href="{{ url('/challenge') }}" class="nav-item active">
+  <div class="nav-icon">🏆</div>
+  <span>Challenges</span>
+</a>
+<a href="{{ url('/forum') }}" class="nav-item">
+  <div class="nav-icon">💬</div>
+  <span>MicroForum</span>
+</a>
+  <a href="{{ url('/profile') }}" class="nav-item">
+    <div class="nav-icon">👤</div>
+    <span>Profile</span>
+  </a>
+</div>
 
     <!-- Top Navigation -->
     <div class="floating-icons">
