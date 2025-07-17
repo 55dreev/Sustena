@@ -20,7 +20,7 @@ class AuthController extends Controller
                 'email' => 'required|email|unique:users,email',
                 'password' => 'required|string|min:6|confirmed',
             ]);
-    
+
             DB::table('users')->insert([
                 'username' => $request->username,
                 'email' => $request->email,
