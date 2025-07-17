@@ -1,0 +1,206 @@
+/* public/css/style.css */
+h1 {
+    color: hsl(131, 100%, 50%);
+}
+body {
+    background-color: #ffffff;
+    font-family: 'Press Start 2P', monospace;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    transition: background-image 2s ease-in-out, background-color 2s ease-in-out;
+}
+
+@keyframes bgShift {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+}
+
+body.fade-in-bg {
+    background-image: url("../assets/sustena2.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+
+.card {
+    background-color: #111;
+    padding: 2rem 3rem;
+    border-radius: 1.25rem;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+/* Loader Alignment Fix */
+.loader {
+    color: rgb(44, 43, 43);
+    font-family: 'Press Start 2P', monospace;
+    font-weight: 500;
+    font-size: 25px;
+    height: 40px;
+    padding: 10px;
+    display: flex;
+    align-items: baseline; /* Align "loading" and animated words */
+    gap: 10px; /* space between loading and words */
+    border-radius: 8px;
+}
+
+.loader p {
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+}
+.fade-out {
+    opacity: 0;
+    transition: opacity 1s ease;
+    pointer-events: none;
+  }
+
+.words {
+    height: 40px; /* Only show one word's height */
+    overflow: hidden;
+    position: relative;
+    line-height: 1;
+    display: block;
+  }
+
+.words::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        var(--bg-color) 10%,
+        transparent 30%,
+        transparent 70%,
+        var(--bg-color) 90%
+    );
+    z-index: 20;
+}
+
+.word {
+    display: block;
+    color: hsl(131, 100%, 50%);
+    animation: spin_4991 4s infinite;
+    white-space: nowrap;
+    line-height: 40px; /* Match the container height */
+    animation-delay: 0.6s; /* Optional fix */
+  }
+
+@keyframes spin_4991 {
+    10% {
+        transform: translateY(-102%);
+    }
+    25% {
+        transform: translateY(-100%);
+    }
+    35% {
+        transform: translateY(-202%);
+    }
+    50% {
+        transform: translateY(-200%);
+    }
+    60% {
+        transform: translateY(-302%);
+    }
+    75% {
+        transform: translateY(-300%);
+    }
+    85% {
+        transform: translateY(-402%);
+    }
+    100% {
+        transform: translateY(-400%);
+    }
+}
+.fade-out {
+    opacity: 0;
+    transition: opacity 1s ease;
+    pointer-events: none;
+  }
+  
+  .login-container {
+    display: none;
+    text-align: center;
+    color: #ffffff;
+    animation: fadeIn 1s ease forwards;
+    background: rgba(255, 255, 255, 0.1); /* light see-through */
+    backdrop-filter: blur(12px); /* frosted glass blur */
+    -webkit-backdrop-filter: blur(12px); /* for Safari */
+    padding: 2rem;
+    border: 2px solid rgba(255, 255, 255, 0.2); /* subtle border */
+    border-radius: 16px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    font-family: 'Press Start 2P', monospace;
+    max-width: 400px;
+    width: 100%;
+  }
+  .login-container h1 {
+    margin-bottom: 1.5rem;
+    color: hsl(0, 0%, 100%);
+    font-size: 34;
+  }
+  .login-container h2 {
+    margin-bottom: 1.5rem;
+    color: hsl(0, 0%, 100%);
+    font-size: 14px;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  input {
+    width: 80%;
+    padding: 12px;
+    margin: 10px 0;
+    font-size: 12px;
+    font-family: 'Press Start 2P', monospace;
+    background-color: #f0f0f0;
+    border: 2px solid hsl(131, 41%, 54%);
+    border-radius: 8px;
+    outline: none;
+    color: #111;
+  }
+  
+
+  button {
+    padding: 12px 20px;
+    margin: 10px 5px;
+    background-color: hsl(131, 41%, 54%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background-color: hwb(131 43% 13%);
+  }  
+  a.forgot-password {
+    color: hwb(131 43% 13%) !important;
+    text-decoration: none;
+    font-size: 12px;
+    font-family: 'Press Start 2P', monospace;
+}
+
+a.forgot-password:visited,
+a.forgot-password:focus,
+a.forgot-password:active {
+    color: hwb(131 43% 13%) !important;
+    text-decoration: none;
+}
+
+a.forgot-password:hover {
+    color: hwb(131 43% 13%) !important;
+    text-decoration: underline;
+}
+
