@@ -26,6 +26,10 @@ class AuthController extends Controller
                 'date_of_registration' => now(),
             ]);
 
+            // Set session
+            session(['username' => $request->username]);
+            session()->forget('previous_route');
+
             return redirect('/')->with('success', 'User registered successfully!');
         } catch (\Exception $e) {
             return redirect('/')->with('error', '❌ Registration failed: ' . $e->getMessage());
@@ -46,8 +50,9 @@ class AuthController extends Controller
 
             // ✅ #1 FIX: Store username in session
             session(['username' => $user->username]);
+            session()->forget('previous_route');
 
-            return redirect('/landing-page');
+            return redirect()->route('landing-page')->with('success', 'Login successful!');
         }
 
         return back()->withErrors([

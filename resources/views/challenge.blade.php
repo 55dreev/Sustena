@@ -423,7 +423,7 @@
     <div class="logo-icon">🌱</div>
     <div class="logo-text">SUSTENA</div>
   </div>
-  <a href="{{ url('/landing') }}" class="nav-item">
+  <a href="{{ url('/landing-page') }}" class="nav-item">
     <div class="nav-icon">🏠</div>
     <span>Home</span>
   </a>
