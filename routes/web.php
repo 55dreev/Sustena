@@ -24,27 +24,30 @@ Route::get('/debug-middleware', function () {
 });
 
 // Public routes - accessible without authentication
-Route::get('/', function () {
-    return view('welcome');
-})->name('welcome');
+Route::middleware(\App\Http\Middleware\RedirectIfAuthenticatedCustom::class)->group(function () {
+    Route::get('/', function () {
+        return view('welcome');
+    })->name('welcome');
 
-Route::get('/welcome', function () {
-    return view('welcome');
-})->name('welcome');
+    Route::get('/welcome', function () {
+        return view('welcome');
+    })->name('welcome');
 
+    Route::post('/register', [AuthController::class, 'register'])->name('register');
+    Route::post('/login', [AuthController::class, 'login'])->name('login');
+});
 
-
-// Authentication routes - public
-Route::post('/register', [AuthController::class, 'register'])->name('register');
-Route::post('/login', [AuthController::class, 'login'])->name('login');
 
  // Logout route (only accessible when logged in)
  Route::post('/logout', function () {
     session()->forget('username');
     session()->forget('previous_route');
     auth()->logout();
+    session()->invalidate();
+    session()->regenerateToken();
     return redirect()->route('welcome');
 })->name('logout');
+
 
 // Protected routes - require authentication and proper navigation
 Route::middleware([\App\Http\Middleware\CheckAuth::class, \App\Http\Middleware\NavigationTracker::class])->group(function () {

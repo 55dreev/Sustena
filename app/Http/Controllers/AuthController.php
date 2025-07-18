@@ -37,26 +37,27 @@ class AuthController extends Controller
     }
 
     public function login(Request $request)
-    {
-        $request->validate([
-            'username' => 'required|string',
-            'password' => 'required|string',
-        ]);
+{
+    $request->validate([
+        'username' => 'required|string',
+        'password' => 'required|string',
+    ]);
 
-        $user = User::where('username', $request->username)->first();
+    $user = User::where('username', $request->username)->first();
 
-        if ($user && Hash::check($request->password, $user->password)) {
-            Auth::login($user);
+    if ($user && Hash::check($request->password, $user->password)) {
+        Auth::login($user);
 
-            // ✅ #1 FIX: Store username in session
-            session(['username' => $user->username]);
-            session()->forget('previous_route');
+        // ✅ Store username and initialize navigation flow
+        session(['username' => $user->username]);
+        session(['previous_route' => 'landing-page']); // 👈 Set this to allow first page access
 
-            return redirect()->route('landing-page')->with('success', 'Login successful!');
-        }
-
-        return back()->withErrors([
-            'loginError' => 'Invalid credentials.',
-        ])->withInput();
+        return redirect()->route('landing-page')->with('success', 'Login successful!');
     }
+
+    return back()->withErrors([
+        'loginError' => 'Invalid credentials.',
+    ])->withInput();
+}
+
 }

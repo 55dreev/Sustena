@@ -7,40 +7,32 @@ use Illuminate\Http\Request;
 
 class NavigationTracker
 {
-    // Define the allowed navigation flow
-    private $allowedFlow = [
-        'welcome' => ['landing-page'],
-        'landing-page' => ['landing-page','challenge', 'footprint-calculator', 'forum', 'learning-modules', 'profile'],
-        'challenge' => ['landing-page', 'footprint-calculator', 'forum', 'learning-modules', 'profile'],
-        'footprint-calculator' => ['landing-page', 'challenge', 'forum', 'learning-modules', 'profile'],
-        'forum' => ['landing-page', 'challenge', 'footprint-calculator', 'learning-modules', 'profile'],
-        'learning-modules' => ['landing-page', 'challenge', 'footprint-calculator', 'forum', 'profile'],
-        'profile' => ['landing-page', 'challenge', 'footprint-calculator', 'forum', 'learning-modules'],
-    ];
-
     public function handle(Request $request, Closure $next)
     {
-        // Check if user is authenticated
-        if (!session()->has('username')) {
-            return redirect()->route('welcome')->with('error', 'Please log in to access this page.');
+        if (!auth()->check()) {
+            return redirect()->route('welcome')->with('error', 'Please log in.');
         }
 
         $currentRoute = $request->route()->getName();
-        $previousRoute = session('previous_route');
+        $referer = $request->headers->get('referer');
+        $previousRoute = session('previous_route', 'landing-page'); // default to landing-page
 
-        // Allow direct access to landing page after login
-        if ($currentRoute === 'landing-page' && !$previousRoute) {
+        \Log::info("⛳ NAVIGATION TRACKER:");
+        \Log::info("▶ Current: {$currentRoute}");
+        \Log::info("↩ Referer: {$referer}");
+
+        // Allow internal navigation (e.g., clicking buttons)
+        if ($referer && str_contains($referer, $request->getHost())) {
             session(['previous_route' => $currentRoute]);
             return $next($request);
         }
 
-        // Check if the navigation is allowed
-        if ($previousRoute && isset($this->allowedFlow[$previousRoute]) && in_array($currentRoute, $this->allowedFlow[$previousRoute])) {
-            session(['previous_route' => $currentRoute]);
-            return $next($request);
+        // If no referer (user typed URL), redirect to previous_route or landing-page
+        if ($currentRoute !== $previousRoute) {
+            return redirect()->route($previousRoute)->with('error', 'Manual URL access is disabled.');
         }
 
-        // If navigation is not allowed, redirect to landing page
-        return redirect()->route('landing-page')->with('error', 'Invalid navigation. Please use the menu.');
+        // Already on this page, let it pass
+        return $next($request);
     }
 }
