@@ -9,10 +9,12 @@ class RedirectIfAuthenticatedCustom
 {
     public function handle(Request $request, Closure $next)
     {
-        if (auth()->check() || session()->has('username')) {
+        // Use only Laravel's auth check
+        if (auth()->check()) {
             return redirect()->route('landing-page')->with('error', 'You are already logged in.');
         }
 
         return $next($request);
     }
 }
+
