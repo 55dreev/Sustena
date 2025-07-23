@@ -26,6 +26,10 @@ class AuthController extends Controller
                 'date_of_registration' => now(),
             ]);
 
+            // Set session
+            session(['username' => $request->username]);
+            session()->forget('previous_route');
+
             return redirect('/')->with('success', 'User registered successfully!');
         } catch (\Exception $e) {
             return redirect('/')->with('error', '❌ Registration failed: ' . $e->getMessage());
@@ -33,25 +37,27 @@ class AuthController extends Controller
     }
 
     public function login(Request $request)
-    {
-        $request->validate([
-            'username' => 'required|string',
-            'password' => 'required|string',
-        ]);
+{
+    $request->validate([
+        'username' => 'required|string',
+        'password' => 'required|string',
+    ]);
 
-        $user = User::where('username', $request->username)->first();
+    $user = User::where('username', $request->username)->first();
 
-        if ($user && Hash::check($request->password, $user->password)) {
-            Auth::login($user);
+    if ($user && Hash::check($request->password, $user->password)) {
+        Auth::login($user);
 
-            // ✅ #1 FIX: Store username in session
-            session(['username' => $user->username]);
+        // ✅ Store username and initialize navigation flow
+        session(['username' => $user->username]);
+        session(['previous_route' => 'landing-page']); // 👈 Set this to allow first page access
 
-            return redirect('/landing-page');
-        }
-
-        return back()->withErrors([
-            'loginError' => 'Invalid credentials.',
-        ])->withInput();
+        return redirect()->route('landing-page')->with('success', 'Login successful!');
     }
+
+    return back()->withErrors([
+        'loginError' => 'Invalid credentials.',
+    ])->withInput();
+}
+
 }
