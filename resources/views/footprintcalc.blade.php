@@ -190,21 +190,22 @@
         }
 
         .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: rgba(255,255,255,0.3);
-            border-radius: 4px;
-            margin: 20px 0;
-            overflow: hidden;
-        }
+    width: 100%;
+    height: 8px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 4px;
+    margin: 20px 0;
+    overflow: hidden;
+}
 
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #4ecdc4, #44a08d);
-            border-radius: 4px;
-            width: 60%;
-            animation: pulse 2s ease-in-out infinite;
-        }
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4ecdc4, #44a08d);
+    border-radius: 4px;
+    width: 0%; /* start empty */
+    transition: width 0.5s ease-in-out;
+}
+
 
         @keyframes pulse {
             0%, 100% { opacity: 1; }
@@ -413,137 +414,268 @@
     <span>Footprint Tracker</span>
   </a>
   <a href="{{ url('/learning-modules') }}" class="nav-item">
-  <div class="nav-icon">📚</div>
-  <span>Learn</span>
-</a>
-<a href="{{ url('/challenge') }}" class="nav-item">
-  <div class="nav-icon">🏆</div>
-  <span>Challenges</span>
-</a>
-<a href="{{ url('/forum') }}" class="nav-item">
-  <div class="nav-icon">💬</div>
-  <span>MicroForum</span>
-</a>
+    <div class="nav-icon">📚</div>
+    <span>Learn</span>
+  </a>
+  <a href="{{ url('/challenge') }}" class="nav-item">
+    <div class="nav-icon">🏆</div>
+    <span>Challenges</span>
+  </a>
+  <a href="{{ url('/forum') }}" class="nav-item">
+    <div class="nav-icon">💬</div>
+    <span>MicroForum</span>
+  </a>
   <a href="{{ url('/profile') }}" class="nav-item">
     <div class="nav-icon">👤</div>
     <span>Profile</span>
   </a>
 </div>
 
-    <div class="main-content">
-        <div class="header-icons">
-            <div class="header-icon">🔥</div>
-            <div class="header-icon">🌱</div>
-            <div class="header-icon">🏆</div>
-            <div class="header-icon">💰</div>
-            <div class="header-icon">⚙️</div>
-        </div>
+<div class="main-content">
+  <div class="header-icons">
+    <div class="header-icon">🔥</div>
+    <div class="header-icon">🌱</div>
+    <div class="header-icon">🏆</div>
+    <div class="header-icon">💰</div>
+    <div class="header-icon">⚙️</div>
+  </div>
 
-        <div class="calculator-container">
-            <div class="calculator-header">
-                <h1 class="calculator-title">CARBON FOOTPRINT CALCULATOR</h1>
-                <p class="calculator-subtitle">" MEASURE YOUR IMPACT ON THE PLANET! "</p>
-                <div class="progress-bar">
-                    <div class="progress-fill"></div>
-                </div>
-            </div>
-
-            <div class="form-section">
-                <div class="section-header">
-                    <div class="section-title">FOOD</div>
-                </div>
-                
-                <div class="question-text">HOW OFTEN DO YOU EAT ANIMAL-BASED PRODUCTS?</div>
-                <div class="subtitle-text">(beef, pork, chicken, fish, eggs, dairy products)</div>
-                
-                <div class="input-container">
-                    <select class="input-field" id="animalProducts">
-                        <option value="">Select frequency...</option>
-                        <option value="daily">Daily</option>
-                        <option value="few-times-week">Few times a week</option>
-                        <option value="weekly">Weekly</option>
-                        <option value="monthly">Monthly</option>
-                        <option value="rarely">Rarely</option>
-                        <option value="never">Never</option>
-                    </select>
-                </div>
-                
-                <button class="submit-btn" onclick="calculateFootprint()">SUBMIT</button>
-            </div>
-
-            <div class="result-display" id="resultDisplay">
-                <div class="result-text">Your estimated weekly carbon footprint from food:</div>
-                <div class="carbon-value" id="carbonValue">0.0</div>
-                <div class="carbon-unit">kg CO₂</div>
-            </div>
-
-            <div class="farm-scene">
-                <div class="farm-element barn">🏠</div>
-                <div class="farm-element cow">🐄</div>
-                <div class="farm-element chicken">🐔</div>
-                <div class="farm-element crops">🌾</div>
-            </div>
-        </div>
+  <div class="calculator-container">
+    <div class="calculator-header">
+      <h1 class="calculator-title">CARBON FOOTPRINT CALCULATOR</h1>
+      <p class="calculator-subtitle">" MEASURE YOUR IMPACT ON THE PLANET! "</p>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
     </div>
 
-    <script>
-    function calculateFootprint() {
-        const selection = document.getElementById('animalProducts').value;
-        const resultDisplay = document.getElementById('resultDisplay');
-        const carbonValue = document.getElementById('carbonValue');
+<!-- Question 1 (Food - Dairy) -->
+<div class="form-section" id="question1">
+  <div class="section-header">
+    <div class="section-title">FOOD - Dairy</div>
+  </div>
+  <div class="question-text">HOW OFTEN DO YOU DRINK MILK?</div>
+  <div class="input-container">
+    <select class="input-field" id="dairy">
+      <option value="">Select frequency...</option>
+      <option value="daily">Daily</option>
+      <option value="few-times-week">Few times a week</option>
+      <option value="weekly">Weekly</option>
+      <option value="monthly">Monthly</option>
+      <option value="rarely">Rarely</option>
+      <option value="never">Never</option>
+    </select>
+  </div>
+  <button class="submit-btn" onclick="nextQuestion(1)">Next</button>
+</div>
 
-        const footprintValues = {
-            'daily': 45.2,
-            'few-times-week': 28.7,
-            'weekly': 15.3,
-            'monthly': 8.1,
-            'rarely': 4.2,
-            'never': 2.1
-        };
+<!-- Question 2 (Food - Meat) -->
+<div class="form-section" id="question2" style="display:none;">
+  <div class="section-header">
+    <div class="section-title">FOOD - Meat</div>
+  </div>
+  <div class="question-text">HOW OFTEN DO YOU EAT BEEF?</div>
+  <div class="input-container">
+    <select class="input-field" id="meat">
+      <option value="">Select frequency...</option>
+      <option value="daily">Daily</option>
+      <option value="few-times-week">Few times a week</option>
+      <option value="weekly">Weekly</option>
+      <option value="monthly">Monthly</option>
+      <option value="rarely">Rarely</option>
+      <option value="never">Never</option>
+    </select>
+  </div>
+  <button class="submit-btn" onclick="nextQuestion(2)">Next</button>
+</div>
 
-        if (selection && footprintValues[selection]) {
-            carbonValue.textContent = footprintValues[selection];
-            resultDisplay.classList.add('show');
+<!-- Question 3 (Food - Fish) -->
+<div class="form-section" id="question3" style="display:none;">
+  <div class="section-header">
+    <div class="section-title">FOOD - Fish</div>
+  </div>
+  <div class="question-text">HOW OFTEN DO YOU EAT FISH?</div>
+  <div class="input-container">
+    <select class="input-field" id="fish">
+      <option value="">Select frequency...</option>
+      <option value="daily">Daily</option>
+      <option value="few-times-week">Few times a week</option>
+      <option value="weekly">Weekly</option>
+      <option value="monthly">Monthly</option>
+      <option value="rarely">Rarely</option>
+      <option value="never">Never</option>
+    </select>
+  </div>
+  <button class="submit-btn" onclick="nextQuestion(3)">Next</button>
+</div>
 
-            setTimeout(() => {
-                carbonValue.style.animation = 'pulse 1s ease-in-out';
-            }, 500);
-        } else {
-            alert('Please select a frequency option to calculate your footprint!');
-        }
+<!-- Question 4 (Transport - Usage) -->
+<div class="form-section" id="question4" style="display:none;">
+  <div class="section-header">
+    <div class="section-title">TRANSPORTATION</div>
+  </div>
+  <div class="question-text">HOW OFTEN DO YOU USE A CAR OR MOTORCYCLE?</div>
+  <div class="input-container">
+    <select class="input-field" id="transport">
+      <option value="">Select frequency...</option>
+      <option value="daily">Daily</option>
+      <option value="few-times-week">Few times a week</option>
+      <option value="weekly">Weekly</option>
+      <option value="rarely">Rarely</option>
+      <option value="never">Never</option>
+    </select>
+  </div>
+  <button class="submit-btn" onclick="nextQuestion(4)">Next</button>
+</div>
+
+<!-- Question 5 (Transport - Gas Spend) -->
+<div class="form-section" id="question5" style="display:none;">
+  <div class="section-header">
+    <div class="section-title">TRANSPORTATION</div>
+  </div>
+  <div class="question-text">HOW MUCH MONEY DO YOU SPEND ON GAS PER WEEK?</div>
+  <div class="input-container">
+    <select class="input-field" id="gasSpend">
+      <option value="">Select...</option>
+      <option value="low">₱0–₱500</option>
+      <option value="medium">₱500–₱1500</option>
+      <option value="high">₱1500+</option>
+    </select>
+  </div>
+  <button class="submit-btn" onclick="nextQuestion(5)">Next</button>
+</div>
+
+<!-- Question 6 (Transport - Driving Time) -->
+<div class="form-section" id="question6" style="display:none;">
+  <div class="section-header">
+    <div class="section-title">TRANSPORTATION</div>
+  </div>
+  <div class="question-text">HOW MANY HOURS DO YOU DRIVE PER WEEK?</div>
+  <div class="input-container">
+    <select class="input-field" id="driveTime">
+      <option value="">Select...</option>
+      <option value="short">0–3 hours</option>
+      <option value="medium">3–10 hours</option>
+      <option value="long">10+ hours</option>
+    </select>
+  </div>
+  <button class="submit-btn" onclick="nextQuestion(6)">Next</button>
+</div>
+
+<!-- Question 7 (Energy) -->
+<div class="form-section" id="question7" style="display:none;">
+  <div class="section-header">
+    <div class="section-title">ENERGY</div>
+  </div>
+  <div class="question-text">WHAT’S YOUR MAIN SOURCE OF ELECTRICITY?</div>
+  <div class="input-container">
+    <select class="input-field" id="energy">
+      <option value="">Select...</option>
+      <option value="coal">Mostly Coal</option>
+      <option value="mixed">Mixed Sources</option>
+      <option value="renewable">Mostly Renewable</option>
+    </select>
+  </div>
+  <button class="submit-btn" onclick="calculateFootprint()">Finish</button>
+</div>
+
+    <!-- Results -->
+    <div class="result-display" id="resultDisplay" style="display:none;">
+      <div class="result-text">Your estimated weekly carbon footprint:</div>
+      <div class="carbon-value" id="carbonValue">0.0</div>
+      <div class="carbon-unit">kg CO₂</div>
+    </div>
+
+    <div class="farm-scene">
+      <div class="farm-element barn">🏠</div>
+      <div class="farm-element cow">🐄</div>
+      <div class="farm-element chicken">🐔</div>
+      <div class="farm-element crops">🌾</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const footprintValues = {
+  dairy: { daily: 12, "few-times-week": 8, weekly: 5, monthly: 2, rarely: 1, never: 0.5 },
+  meat: { daily: 20, "few-times-week": 15, weekly: 10, monthly: 4, rarely: 2, never: 1 },
+  fish: { daily: 10, "few-times-week": 7, weekly: 4, monthly: 2, rarely: 1, never: 0.5 },
+  transport: { daily: 50, "few-times-week": 30, weekly: 15, rarely: 5, never: 0 },
+  gasSpend: { low: 5, medium: 15, high: 30 },
+  driveTime: { short: 5, medium: 15, long: 30 },
+  energy: { coal: 40, mixed: 20, renewable: 5 }
+};
+let answers = {};
+
+function nextQuestion(step) {
+  const ids = ["dairy", "meat", "fish", "transport", "gasSpend", "driveTime", "energy"];
+  let inputId = ids[step - 1];
+  let value = document.getElementById(inputId).value;
+
+  if (!value) {
+    alert("Please select an option before proceeding.");
+    return;
+  }
+
+  answers[inputId] = value;
+
+  document.getElementById(`question${step}`).style.display = "none";
+  document.getElementById(`question${step + 1}`).style.display = "block";
+
+  let progress = (step / ids.length) * 100;
+  document.getElementById("progressFill").style.width = progress + "%";
+}
+
+function calculateFootprint() {
+  let value = document.getElementById("energy").value;
+  if (!value) {
+    alert("Please select an option before finishing.");
+    return;
+  }
+  answers["energy"] = value;
+
+  let total = 0;
+  for (let key in answers) {
+    total += footprintValues[key][answers[key]];
+  }
+
+  document.getElementById("question7").style.display = "none";
+  document.getElementById("carbonValue").textContent = total.toFixed(1);
+  document.getElementById("resultDisplay").style.display = "block";
+
+  document.getElementById("progressFill").style.width = "100%";
+}
+
+// Keep your sidebar nav active effect
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', function(e) {
+    const href = this.getAttribute('href');
+    if (href === '#') {
+      e.preventDefault();
+    } else {
+      window.location.href = href;
     }
+    document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
 
-    document.querySelectorAll('.nav-item').forEach(item => {
-        item.addEventListener('click', function(e) {
-            const href = this.getAttribute('href');
-            if (href === '#') {
-                e.preventDefault();
-            } else {
-                window.location.href = href;
-            }
-            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-            this.classList.add('active');
-        });
-    });
+// Animate progress bar when page loads
+window.addEventListener('load', function () {
+  document.getElementById("progressFill").style.width = '0%';
+});
 
-    window.addEventListener('load', function () {
-        const progressBar = document.querySelector('.progress-fill');
-        setTimeout(() => {
-            progressBar.style.width = '60%';
-        }, 1000);
-    });
+// Farm animation
+document.querySelectorAll('.farm-element').forEach(element => {
+  element.addEventListener('mouseenter', function () {
+    this.style.transform = 'scale(1.2)';
+    this.style.transition = 'transform 0.3s ease';
+  });
 
-    document.querySelectorAll('.farm-element').forEach(element => {
-        element.addEventListener('mouseenter', function () {
-            this.style.transform = 'scale(1.2)';
-            this.style.transition = 'transform 0.3s ease';
-        });
-
-        element.addEventListener('mouseleave', function () {
-            this.style.transform = 'scale(1)';
-        });
-    });
+  element.addEventListener('mouseleave', function () {
+    this.style.transform = 'scale(1)';
+  });
+});
 </script>
-
 </body>
 </html>
