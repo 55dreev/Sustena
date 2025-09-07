@@ -449,14 +449,20 @@
       </div>
     </div>
 
-<!-- Question 1 (Food - Dairy) -->
+<!-- Progress Bar -->
+<div class="progress-bar">
+  <div class="progress-fill" id="progressFill"></div>
+</div>
+
+<!-- ================== FOOD ================== -->
+<!-- Q1: Dairy - Milk -->
 <div class="form-section" id="question1">
   <div class="section-header">
     <div class="section-title">FOOD - Dairy</div>
   </div>
   <div class="question-text">HOW OFTEN DO YOU DRINK MILK?</div>
   <div class="input-container">
-    <select class="input-field" id="dairy">
+    <select class="input-field" id="dairyMilk">
       <option value="">Select frequency...</option>
       <option value="daily">Daily</option>
       <option value="few-times-week">Few times a week</option>
@@ -469,14 +475,14 @@
   <button class="submit-btn" onclick="nextQuestion(1)">Next</button>
 </div>
 
-<!-- Question 2 (Food - Meat) -->
+<!-- Q2: Dairy - Cheese/Yogurt -->
 <div class="form-section" id="question2" style="display:none;">
   <div class="section-header">
-    <div class="section-title">FOOD - Meat</div>
+    <div class="section-title">FOOD - Dairy</div>
   </div>
-  <div class="question-text">HOW OFTEN DO YOU EAT BEEF?</div>
+  <div class="question-text">HOW OFTEN DO YOU EAT CHEESE OR YOGURT?</div>
   <div class="input-container">
-    <select class="input-field" id="meat">
+    <select class="input-field" id="dairyCheese">
       <option value="">Select frequency...</option>
       <option value="daily">Daily</option>
       <option value="few-times-week">Few times a week</option>
@@ -489,14 +495,14 @@
   <button class="submit-btn" onclick="nextQuestion(2)">Next</button>
 </div>
 
-<!-- Question 3 (Food - Fish) -->
+<!-- Q3: Meat - Beef -->
 <div class="form-section" id="question3" style="display:none;">
   <div class="section-header">
-    <div class="section-title">FOOD - Fish</div>
+    <div class="section-title">FOOD - Meat</div>
   </div>
-  <div class="question-text">HOW OFTEN DO YOU EAT FISH?</div>
+  <div class="question-text">HOW OFTEN DO YOU EAT BEEF?</div>
   <div class="input-container">
-    <select class="input-field" id="fish">
+    <select class="input-field" id="meatBeef">
       <option value="">Select frequency...</option>
       <option value="daily">Daily</option>
       <option value="few-times-week">Few times a week</option>
@@ -509,8 +515,49 @@
   <button class="submit-btn" onclick="nextQuestion(3)">Next</button>
 </div>
 
-<!-- Question 4 (Transport - Usage) -->
+<!-- Q4: Meat - Chicken/Pork -->
 <div class="form-section" id="question4" style="display:none;">
+  <div class="section-header">
+    <div class="section-title">FOOD - Meat</div>
+  </div>
+  <div class="question-text">HOW OFTEN DO YOU EAT CHICKEN OR PORK?</div>
+  <div class="input-container">
+    <select class="input-field" id="meatChickenPork">
+      <option value="">Select frequency...</option>
+      <option value="daily">Daily</option>
+      <option value="few-times-week">Few times a week</option>
+      <option value="weekly">Weekly</option>
+      <option value="monthly">Monthly</option>
+      <option value="rarely">Rarely</option>
+      <option value="never">Never</option>
+    </select>
+  </div>
+  <button class="submit-btn" onclick="nextQuestion(4)">Next</button>
+</div>
+
+<!-- Q5: Fish -->
+<div class="form-section" id="question5" style="display:none;">
+  <div class="section-header">
+    <div class="section-title">FOOD - Fish</div>
+  </div>
+  <div class="question-text">HOW OFTEN DO YOU EAT FISH OR SEAFOOD?</div>
+  <div class="input-container">
+    <select class="input-field" id="fish">
+      <option value="">Select frequency...</option>
+      <option value="daily">Daily</option>
+      <option value="few-times-week">Few times a week</option>
+      <option value="weekly">Weekly</option>
+      <option value="monthly">Monthly</option>
+      <option value="rarely">Rarely</option>
+      <option value="never">Never</option>
+    </select>
+  </div>
+  <button class="submit-btn" onclick="nextQuestion(5)">Next</button>
+</div>
+
+<!-- ================== TRANSPORTATION ================== -->
+<!-- Q6: Vehicle Usage -->
+<div class="form-section" id="question6" style="display:none;">
   <div class="section-header">
     <div class="section-title">TRANSPORTATION</div>
   </div>
@@ -525,11 +572,11 @@
       <option value="never">Never</option>
     </select>
   </div>
-  <button class="submit-btn" onclick="nextQuestion(4)">Next</button>
+  <button class="submit-btn" onclick="nextQuestion(6)">Next</button>
 </div>
 
-<!-- Question 5 (Transport - Gas Spend) -->
-<div class="form-section" id="question5" style="display:none;">
+<!-- Q7: Gas Spend -->
+<div class="form-section" id="question7" style="display:none;">
   <div class="section-header">
     <div class="section-title">TRANSPORTATION</div>
   </div>
@@ -542,11 +589,11 @@
       <option value="high">₱1500+</option>
     </select>
   </div>
-  <button class="submit-btn" onclick="nextQuestion(5)">Next</button>
+  <button class="submit-btn" onclick="nextQuestion(7)">Next</button>
 </div>
 
-<!-- Question 6 (Transport - Driving Time) -->
-<div class="form-section" id="question6" style="display:none;">
+<!-- Q8: Driving Time -->
+<div class="form-section" id="question8" style="display:none;">
   <div class="section-header">
     <div class="section-title">TRANSPORTATION</div>
   </div>
@@ -559,56 +606,112 @@
       <option value="long">10+ hours</option>
     </select>
   </div>
-  <button class="submit-btn" onclick="nextQuestion(6)">Next</button>
+  <button class="submit-btn" onclick="nextQuestion(8)">Next</button>
 </div>
 
-<!-- Question 7 (Energy) -->
-<div class="form-section" id="question7" style="display:none;">
+<!-- Q9: Public Transport -->
+<div class="form-section" id="question9" style="display:none;">
+  <div class="section-header">
+    <div class="section-title">TRANSPORTATION</div>
+  </div>
+  <div class="question-text">HOW OFTEN DO YOU USE PUBLIC TRANSPORTATION?</div>
+  <div class="input-container">
+    <select class="input-field" id="publicTransport">
+      <option value="">Select frequency...</option>
+      <option value="daily">Daily</option>
+      <option value="few-times-week">Few times a week</option>
+      <option value="weekly">Weekly</option>
+      <option value="rarely">Rarely</option>
+      <option value="never">Never</option>
+    </select>
+  </div>
+  <button class="submit-btn" onclick="nextQuestion(9)">Next</button>
+</div>
+
+<!-- ================== ENERGY ================== -->
+<!-- Q10: Main Source -->
+<div class="form-section" id="question10" style="display:none;">
   <div class="section-header">
     <div class="section-title">ENERGY</div>
   </div>
-  <div class="question-text">WHAT’S YOUR MAIN SOURCE OF ELECTRICITY?</div>
+  <div class="question-text">WHAT'S YOUR MAIN SOURCE OF ELECTRICITY?</div>
   <div class="input-container">
-    <select class="input-field" id="energy">
+    <select class="input-field" id="energySource">
       <option value="">Select...</option>
       <option value="coal">Mostly Coal</option>
       <option value="mixed">Mixed Sources</option>
       <option value="renewable">Mostly Renewable</option>
     </select>
   </div>
+  <button class="submit-btn" onclick="nextQuestion(10)">Next</button>
+</div>
+
+<!-- Q11: Electric Bill -->
+<div class="form-section" id="question11" style="display:none;">
+  <div class="section-header">
+    <div class="section-title">ENERGY</div>
+  </div>
+  <div class="question-text">HOW MUCH IS YOUR AVERAGE MONTHLY ELECTRIC BILL?</div>
+  <div class="input-container">
+    <select class="input-field" id="electricBill">
+      <option value="">Select...</option>
+      <option value="low">₱0–₱2000</option>
+      <option value="medium">₱2000–₱5000</option>
+      <option value="high">₱5000+</option>
+    </select>
+  </div>
+  <button class="submit-btn" onclick="nextQuestion(11)">Next</button>
+</div>
+
+<!-- Q12: Appliance Usage -->
+<div class="form-section" id="question12" style="display:none;">
+  <div class="section-header">
+    <div class="section-title">ENERGY</div>
+  </div>
+  <div class="question-text">HOW MANY HOURS DO YOU USE AIR CONDITIONING OR ELECTRIC FANS PER DAY?</div>
+  <div class="input-container">
+    <select class="input-field" id="applianceUsage">
+      <option value="">Select...</option>
+      <option value="low">0–2 hours</option>
+      <option value="medium">2–6 hours</option>
+      <option value="high">6+ hours</option>
+    </select>
+  </div>
   <button class="submit-btn" onclick="calculateFootprint()">Finish</button>
 </div>
 
-    <!-- Results -->
-    <div class="result-display" id="resultDisplay" style="display:none;">
-      <div class="result-text">Your estimated weekly carbon footprint:</div>
-      <div class="carbon-value" id="carbonValue">0.0</div>
-      <div class="carbon-unit">kg CO₂</div>
-    </div>
-
-    <div class="farm-scene">
-      <div class="farm-element barn">🏠</div>
-      <div class="farm-element cow">🐄</div>
-      <div class="farm-element chicken">🐔</div>
-      <div class="farm-element crops">🌾</div>
-    </div>
-  </div>
+<!-- ================== RESULTS ================== -->
+<div class="result-display" id="resultDisplay" style="display:none;">
+  <div class="result-text">Your estimated weekly carbon footprint:</div>
+  <div class="carbon-value" id="carbonValue">0.0</div>
+  <div class="carbon-unit">kg CO₂</div>
 </div>
 
+<!-- ================== SCRIPT ================== -->
 <script>
 const footprintValues = {
-  dairy: { daily: 12, "few-times-week": 8, weekly: 5, monthly: 2, rarely: 1, never: 0.5 },
-  meat: { daily: 20, "few-times-week": 15, weekly: 10, monthly: 4, rarely: 2, never: 1 },
+  dairyMilk: { daily: 12, "few-times-week": 8, weekly: 5, monthly: 2, rarely: 1, never: 0.5 },
+  dairyCheese: { daily: 10, "few-times-week": 7, weekly: 4, monthly: 2, rarely: 1, never: 0.5 },
+  meatBeef: { daily: 25, "few-times-week": 18, weekly: 10, monthly: 5, rarely: 2, never: 1 },
+  meatChickenPork: { daily: 20, "few-times-week": 15, weekly: 8, monthly: 4, rarely: 2, never: 1 },
   fish: { daily: 10, "few-times-week": 7, weekly: 4, monthly: 2, rarely: 1, never: 0.5 },
   transport: { daily: 50, "few-times-week": 30, weekly: 15, rarely: 5, never: 0 },
   gasSpend: { low: 5, medium: 15, high: 30 },
   driveTime: { short: 5, medium: 15, long: 30 },
-  energy: { coal: 40, mixed: 20, renewable: 5 }
+  publicTransport: { daily: 5, "few-times-week": 3, weekly: 2, rarely: 1, never: 0 },
+  energySource: { coal: 40, mixed: 20, renewable: 5 },
+  electricBill: { low: 5, medium: 15, high: 30 },
+  applianceUsage: { low: 5, medium: 15, high: 30 }
 };
+
 let answers = {};
+const ids = [
+  "dairyMilk", "dairyCheese", "meatBeef", "meatChickenPork", "fish",
+  "transport", "gasSpend", "driveTime", "publicTransport",
+  "energySource", "electricBill", "applianceUsage"
+];
 
 function nextQuestion(step) {
-  const ids = ["dairy", "meat", "fish", "transport", "gasSpend", "driveTime", "energy"];
   let inputId = ids[step - 1];
   let value = document.getElementById(inputId).value;
 
@@ -627,54 +730,28 @@ function nextQuestion(step) {
 }
 
 function calculateFootprint() {
-  let value = document.getElementById("energy").value;
+  let value = document.getElementById("applianceUsage").value;
   if (!value) {
     alert("Please select an option before finishing.");
     return;
   }
-  answers["energy"] = value;
+  answers["applianceUsage"] = value;
 
   let total = 0;
   for (let key in answers) {
     total += footprintValues[key][answers[key]];
   }
 
-  document.getElementById("question7").style.display = "none";
+  document.getElementById("question12").style.display = "none";
   document.getElementById("carbonValue").textContent = total.toFixed(1);
   document.getElementById("resultDisplay").style.display = "block";
 
   document.getElementById("progressFill").style.width = "100%";
 }
 
-// Keep your sidebar nav active effect
-document.querySelectorAll('.nav-item').forEach(item => {
-  item.addEventListener('click', function(e) {
-    const href = this.getAttribute('href');
-    if (href === '#') {
-      e.preventDefault();
-    } else {
-      window.location.href = href;
-    }
-    document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-    this.classList.add('active');
-  });
-});
-
-// Animate progress bar when page loads
-window.addEventListener('load', function () {
+// Progress bar animation on load
+window.addEventListener('load', () => {
   document.getElementById("progressFill").style.width = '0%';
-});
-
-// Farm animation
-document.querySelectorAll('.farm-element').forEach(element => {
-  element.addEventListener('mouseenter', function () {
-    this.style.transform = 'scale(1.2)';
-    this.style.transition = 'transform 0.3s ease';
-  });
-
-  element.addEventListener('mouseleave', function () {
-    this.style.transform = 'scale(1)';
-  });
 });
 </script>
 </body>
