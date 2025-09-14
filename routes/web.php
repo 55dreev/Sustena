@@ -6,6 +6,25 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 
+
+Route::get('/waterconservation', function () {
+    return view('waterconservation'); 
+});
+
+Route::get('/recycling', function () {
+    return view('recycling'); 
+});
+
+Route::get('/climatechange', function () {
+    return view('climatechange');
+});
+
+Route::get('/energy-saving', function () {
+    return view('energysaving');
+});
+
+
+
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
 
 Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
