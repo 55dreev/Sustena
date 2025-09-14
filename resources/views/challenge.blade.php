@@ -8,11 +8,13 @@
 </head>
 
 <body>
-<div class="sidebar">
-  <div class="logo">
-    <div class="logo-icon">🌱</div>
-    <div class="logo-text">SUSTENA</div>
-  </div>
+
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div>
+    <div class="logo">
+        <div class="logo-icon">🌱</div>
+        <div class="logo-text">SUSTENA</div>
+    </div>
   <a href="{{ url('/landing-page') }}" class="nav-item">
     <div class="nav-icon">🏠</div>
     <span>Home</span>
@@ -199,6 +201,13 @@
                 this.style.transform = 'translateY(0) scale(1)';
             });
         });
+
+         function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+            }
     </script>
 </body>
 </html>

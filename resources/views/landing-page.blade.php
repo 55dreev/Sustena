@@ -7,11 +7,14 @@
    <link rel="stylesheet" href="{{ asset('css/landing.css') }}">
 </head>
 <body>
-<div class="sidebar">
-  <div class="logo">
-    <div class="logo-icon">🌱</div>
-    <div class="logo-text">SUSTENA</div>
-  </div>
+    
+<!-- Sidebar (default open) -->
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div>
+    <div class="logo">
+        <div class="logo-icon">🌱</div>
+        <div class="logo-text">SUSTENA</div>
+    </div>
   <a href="{{ url('/landing-page') }}" class="nav-item active">
     <div class="nav-icon">🏠</div>
     <span>Home</span>
@@ -21,17 +24,17 @@
     <span>Footprint Tracker</span>
   </a>
   <a href="{{ url('/learning-modules') }}" class="nav-item">
-  <div class="nav-icon">📚</div>
-  <span>Learn</span>
-</a>
-<a href="{{ url('/challenge') }}" class="nav-item">
-  <div class="nav-icon">🏆</div>
-  <span>Challenges</span>
-</a>
-<a href="{{ url('/forum') }}" class="nav-item">
-  <div class="nav-icon">💬</div>
-  <span>MicroForum</span>
-</a>
+    <div class="nav-icon">📚</div>
+    <span>Learn</span>
+  </a>
+  <a href="{{ url('/challenge') }}" class="nav-item">
+    <div class="nav-icon">🏆</div>
+    <span>Challenges</span>
+  </a>
+  <a href="{{ url('/forum') }}" class="nav-item">
+    <div class="nav-icon">💬</div>
+    <span>MicroForum</span>
+  </a>
   <a href="{{ url('/profile') }}" class="nav-item">
     <div class="nav-icon">👤</div>
     <span>Profile</span>
@@ -181,6 +184,13 @@
                 progressBar.style.width = '60%';
             }, 1000);
         });
+
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+            }
     </script>
 </body>
 </html>

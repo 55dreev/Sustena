@@ -24,16 +24,54 @@
     pointer-events: none;        /* so it never blocks clicks */
 }
                
+/* Sidebar */
+.sidebar {
+    width: 200px;
+    background: linear-gradient(180deg, #4a7c59 0%, #2d5a3d 100%);
+    padding: 20px;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+    z-index: 1000;
+}
 
-        .sidebar {
-            width: 200px;
-            background: linear-gradient(180deg, #4a7c59 0%, #2d5a3d 100%);
-            padding: 20px;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-        }
+/* Collapsed sidebar */
+.sidebar.collapsed {
+    transform: translateX(-160px); /* leave ~20px visible for button */
+}
+
+/* Sidebar toggle (hamburger) */
+.sidebar-toggle {
+    position: absolute;
+    top: 20px;
+    right: 0px;  /* width of the hamburger button */
+    font-size: 24px;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    z-index: 1101;
+    transition: background 0.2s ease, right 0.3s ease;
+}
+
+.sidebar-toggle:hover {
+    background: #1a252f;
+}
+
+/* Main content */
+.main-content {
+    margin-left: 200px;
+    transition: margin-left 0.3s ease;
+    padding: 20px;
+}
+
+.main-content.expanded {
+    margin-left: 40px; /* leave space for the fully visible hamburger */
+}
 
         .logo {
             display: flex;
@@ -80,10 +118,12 @@
         }
 
         .nav-item.active {
-            background: #66bb6a;
-            color: white;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
+        background: #66bb6a;
+        color: white;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        width: 85%;
+    }
+
 
         .nav-icon {
             width: 24px;
