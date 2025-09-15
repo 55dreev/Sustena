@@ -14,6 +14,32 @@
       padding: 0;
       color: #333;
     }
+    .quiz-instructions {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 20px;
+  }
+
+  .quiz-instructions ul {
+    padding-left: 20px;
+    list-style-type: disc;
+  }
+
+  .start-btn {
+    background-color: #388e3c;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.3s;
+  }
+
+  .start-btn:hover {
+    background-color: #2e7d32;
+  }
 
     .module-container {
       max-width: 1000px;
@@ -87,18 +113,114 @@
       background-color: #256528;
     }
 
-    /* Responsive */
+    /* Quiz Button */
+    .quiz-launch-btn {
+      display: block;
+      width: 200px;
+      margin: 30px auto 0;
+      text-align: center;
+      background-color: #388e3c;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .quiz-launch-btn:hover {
+      background-color: #2e7d32;
+    }
+
+    /* Modal Background */
+    .quiz-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    /* Modal Content Box */
+    .quiz-box {
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      text-align: center;
+      position: relative;
+      transform: translateY(-50px);
+      opacity: 0;
+      transition: all 0.4s ease;
+    }
+
+    /* Animation when active */
+    .quiz-modal.active .quiz-box {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Close Button */
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 1.5rem;
+      color: #666;
+      cursor: pointer;
+    }
+
+    .close-btn:hover {
+      color: #000;
+    }
+
+    /* Quiz Content */
+    .quiz-question {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+    }
+
+    .quiz-buttons button {
+      background-color: #2e7d32;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin: 0 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s;
+    }
+
+    .quiz-buttons button:hover {
+      background-color: #256528;
+    }
+
+    .quiz-timer {
+      font-size: 1rem;
+      color: #555;
+      margin-top: 10px;
+    }
+
+    .quiz-result {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #2e7d32;
+      margin-top: 20px;
+    }
+
     @media (max-width: 768px) {
-      .module-container {
+      .quiz-box {
+        width: 95%;
         padding: 20px;
-      }
-
-      .module-header h1 {
-        font-size: 2rem;
-      }
-
-      .video-container iframe {
-        height: 250px;
       }
     }
   </style>
@@ -156,12 +278,166 @@
       </ul>
     </div>
 
+    <!-- Take a Quiz Button -->
+    <button class="quiz-launch-btn" onclick="openQuiz()">Take a Quiz</button> <br><br><br>
+
     <!-- Back button -->
     <div class="module-footer" style="text-align:center;">
       <a href="{{ url('/learning-modules') }}" class="back-button">← Back to Learning Modules</a>
-
     </div>
   </div>
+
+  <!-- Quiz Modal -->
+<div class="quiz-modal" id="quizModal" onclick="outsideClick(event)">
+  <div class="quiz-box">
+    <span class="close-btn" onclick="closeQuiz()">&times;</span>
+    <h2>SpeedQuiz</h2>
+
+    <!-- Instructions -->
+    <div class="quiz-instructions" id="instructions">
+      <p>
+        Test your knowledge about climate change!  
+        <br><br>
+        <strong>How it works:</strong>
+        <ul style="text-align:left; margin-left:15px;">
+          <li>You have <strong>1 minute</strong> to answer as many questions as you can.</li>
+          <li>Each question has <strong>True</strong> or <strong>False</strong> answers.</li>
+          <li>Your final score will be shown when the timer ends or you finish all questions.</li>
+        </ul>
+      </p>
+      <button class="start-btn" onclick="startQuiz()">Start Quiz</button>
+    </div>
+
+    <!-- Quiz Content -->
+    <div id="quiz" style="display:none;">
+      <div class="quiz-question" id="question">Loading question...</div>
+      <div class="quiz-buttons">
+        <button onclick="answer(true)">True</button>
+        <button onclick="answer(false)">False</button>
+      </div>
+      <div class="quiz-timer" id="timer">Time left: 60s</div>
+      <div class="quiz-result" id="result"></div>
+    </div>
+  </div>
+</div>
+
+
+
+<script>
+  const questions = [
+    { text: "Climate change is caused only by natural factors like volcanoes and the sun.", correct: false },
+    { text: "Deforestation increases greenhouse gases in the atmosphere.", correct: true },
+    { text: "The Paris Agreement was signed in 2015.", correct: true },
+    { text: "Using renewable energy can help fight climate change.", correct: true },
+    { text: "Global warming has no effect on sea levels.", correct: false },
+    { text: "Burning fossil fuels releases carbon dioxide, a greenhouse gas.", correct: true },
+    { text: "Recycling has no impact on reducing greenhouse gas emissions.", correct: false },
+    { text: "Melting glaciers are a direct result of global warming.", correct: true },
+    { text: "Switching to LED lights can help reduce energy consumption.", correct: true },
+    { text: "Greenhouse gases trap heat in the Earth’s atmosphere.", correct: true },
+    { text: "Sea levels are decreasing due to climate change.", correct: false },
+    { text: "Deforestation can lead to loss of biodiversity.", correct: true },
+    { text: "Electric cars produce zero direct carbon emissions.", correct: true },
+    { text: "Plastic pollution has no relation to climate change.", correct: false },
+    { text: "The industrial revolution increased greenhouse gas emissions drastically.", correct: true },
+    { text: "Planting trees can help absorb carbon dioxide from the atmosphere.", correct: true },
+    { text: "Climate change only affects polar regions.", correct: false },
+    { text: "Global temperatures have been rising steadily over the past century.", correct: true },
+    { text: "Oceans absorb a significant amount of the Earth's heat.", correct: true },
+    { text: "Renewable energy sources include solar and wind power.", correct: true },
+    { text: "Air pollution and climate change are completely unrelated.", correct: false },
+    { text: "Coral reefs are vulnerable to rising ocean temperatures.", correct: true },
+    { text: "Energy-efficient appliances can reduce carbon footprints.", correct: true },
+    { text: "Climate change is a myth and has no scientific basis.", correct: false },
+    { text: "Public transportation can help reduce greenhouse gas emissions.", correct: true },
+    { text: "Global warming leads to more extreme weather patterns.", correct: true },
+    { text: "The Kyoto Protocol was an agreement to reduce greenhouse gases.", correct: true },
+    { text: "Polar bears are unaffected by climate change.", correct: false },
+    { text: "Methane is a greenhouse gas that comes from livestock like cows.", correct: true },
+    { text: "Climate change is only a future problem, not affecting us now.", correct: false }
+  ];
+
+  let currentQuestion = 0;
+  let score = 0;
+  let timeLeft = 60; // 1 minute
+  let timer;
+  let shuffledQuestions = [];
+
+  const modal = document.getElementById('quizModal');
+  const questionElement = document.getElementById('question');
+  const timerElement = document.getElementById('timer');
+  const resultElement = document.getElementById('result');
+  const instructionsElement = document.getElementById('instructions');
+  const quizElement = document.getElementById('quiz');
+
+  function openQuiz() {
+    modal.style.display = 'flex';
+    modal.classList.add('active');
+    instructionsElement.style.display = 'block'; // Show instructions
+    quizElement.style.display = 'none';          // Hide quiz
+  }
+
+  function closeQuiz() {
+    modal.style.display = 'none';
+    clearInterval(timer);
+  }
+
+  function outsideClick(e) {
+    if (e.target === modal) {
+      closeQuiz();
+    }
+  }
+
+  function startQuiz() {
+    instructionsElement.style.display = 'none'; // Hide instructions
+    quizElement.style.display = 'block';        // Show quiz
+    score = 0;
+    currentQuestion = 0;
+
+    // Shuffle questions
+    shuffledQuestions = [...questions].sort(() => Math.random() - 0.5);
+
+    // Start global 1-minute timer
+    timeLeft = 60;
+    timerElement.innerText = `Time left: ${timeLeft}s`;
+    clearInterval(timer);
+    timer = setInterval(() => {
+      timeLeft--;
+      timerElement.innerText = `Time left: ${timeLeft}s`;
+      if (timeLeft <= 0) {
+        clearInterval(timer);
+        endQuiz();
+      }
+    }, 1000);
+
+    showQuestion();
+  }
+
+  function showQuestion() {
+    if (currentQuestion >= shuffledQuestions.length) {
+      endQuiz();
+      return;
+    }
+    questionElement.innerText = shuffledQuestions[currentQuestion].text;
+    resultElement.innerText = "";
+  }
+
+  function answer(choice) {
+    if (choice === shuffledQuestions[currentQuestion].correct) {
+      score++;
+    }
+    currentQuestion++;
+    showQuestion();
+  }
+
+  function endQuiz() {
+    questionElement.innerText = "Time's up or quiz completed!";
+    resultElement.innerText = `Your Final Score: ${score}/${shuffledQuestions.length}`;
+    document.querySelector('.quiz-buttons').style.display = 'none';
+    timerElement.innerText = "";
+  }
+</script>
+
 
 </body>
 </html>

@@ -15,6 +15,71 @@
       color: #333;
     }
 
+    /* Modals */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      animation: fadeIn 0.3s ease-in-out;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* Game Layout */
+    .game-area {
+      max-width: 800px;
+    }
+
+    .game-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+
+    .bins {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 20px;
+    }
+
+    .bin {
+      width: 100px;
+      cursor: pointer;
+    }
+
+    .items-area {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .draggable-item {
+      width: 80px;
+      cursor: grab;
+    }
+
     .module-container {
       max-width: 1000px;
       margin: 20px auto;
@@ -87,6 +152,8 @@
       text-decoration: none;
       font-weight: 600;
       transition: background 0.3s;
+      border: none;
+      cursor: pointer;
     }
 
     .back-button:hover {
@@ -174,9 +241,165 @@
 
     <!-- Back button -->
     <div class="module-footer" style="text-align:center;">
+        <!-- Start Game Button -->
+  <div style="text-align:center; margin-top: 30px;">
+    <button id="startGameBtn" class="back-button">Start Recycling Game</button> <br><br><br>
+  </div>
       <a href="{{ url('/learning-modules') }}" class="back-button">← Back to Learning Modules</a>
     </div>
   </div>
 
+
+
+  <!-- Instruction Modal -->
+  <div id="instructionModal" class="modal">
+    <div class="modal-content">
+      <h2>How to Play</h2>
+      <p>Drag each item into the correct bin before the timer runs out!</p>
+      <ul style="text-align:left;">
+        <li><strong>Recycling Bin:</strong> bottles, cans, newspapers, cardboard, glass</li>
+        <li><strong>Trash Bin:</strong> food waste, tissues, plastic utensils, dirty containers</li>
+        <li>+1 point for correct, -1 point for wrong</li>
+        <li>You have 60 seconds!</li>
+      </ul>
+      <button class="back-button" onclick="startGame()">Start</button>
+    </div>
+  </div>
+
+  <!-- Game Modal -->
+  <div id="gameModal" class="modal">
+    <div class="modal-content game-area">
+      <div class="game-header">
+        <div>⏱️ Time: <span id="time">60</span>s</div>
+        <div>⭐ Score: <span id="score">0</span></div>
+      </div>
+
+      <div class="bins">
+        <div class="bin-area">
+          <img src="{{ asset('assets/recbin.png') }}" class="bin" data-type="recycle">
+          <p>Recycling Bin</p>
+        </div>
+        <div class="bin-area">
+          <img src="{{ asset('assets/bin.png') }}" class="bin" data-type="trash">
+          <p>Trash Bin</p>
+        </div>
+      </div>
+
+      <div id="itemsArea" class="items-area"></div>
+    </div>
+  </div>
+
+  <!-- Game Over Modal -->
+  <div id="gameOverModal" class="modal">
+    <div class="modal-content">
+      <h2>Game Over!</h2>
+      <p>Your Score: <span id="finalScore">0</span></p>
+      <button class="back-button" onclick="restartGame()">Play Again</button>
+      <button class="back-button" onclick="closeGame()">Close</button>
+    </div>
+  </div>
+
+  <script>
+    const items = [
+      // Recyclables
+      { name: 'Plastic Bottle', img: '{{ asset('assets/pbottle.png') }}', type: 'recycle' },
+      { name: 'Can', img: '{{ asset('assets/can.png') }}', type: 'recycle' },
+      { name: 'Box', img: '{{ asset('assets/box.png') }}', type: 'recycle' },
+      { name: 'Glass', img: '{{ asset('assets/glass.png') }}', type: 'recycle' },
+      { name: 'Newspaper', img: '{{ asset('assets/newspaper.png') }}', type: 'recycle' },
+
+      // Trash
+      { name: 'Old Food', img: '{{ asset('assets/oldfood.png') }}', type: 'trash' },
+      { name: 'Tissue', img: '{{ asset('assets/tissue.png') }}', type: 'trash' },
+      { name: 'Plastic Cup', img: '{{ asset('assets/plasticup.png') }}', type: 'trash' },
+      { name: 'Plastic Utensils', img: '{{ asset('assets/plasticutens.png') }}', type: 'trash' }
+    ];
+
+    let score = 0;
+    let timeLeft = 60;
+    let timer;
+
+    const instructionModal = document.getElementById('instructionModal');
+    const gameModal = document.getElementById('gameModal');
+    const gameOverModal = document.getElementById('gameOverModal');
+    const itemsArea = document.getElementById('itemsArea');
+
+    // Open Instructions
+    document.getElementById('startGameBtn').addEventListener('click', () => {
+      instructionModal.style.display = 'flex';
+    });
+
+    function startGame() {
+      instructionModal.style.display = 'none';
+      gameModal.style.display = 'flex';
+      score = 0;
+      timeLeft = 60;
+      document.getElementById('score').textContent = score;
+      document.getElementById('time').textContent = timeLeft;
+      spawnItems();
+      timer = setInterval(updateTimer, 1000);
+    }
+
+    function updateTimer() {
+      if (timeLeft > 0) {
+        timeLeft--;
+        document.getElementById('time').textContent = timeLeft;
+      } else {
+        endGame();
+      }
+    }
+
+    function spawnItems() {
+      itemsArea.innerHTML = '';
+      const randomItems = [...items].sort(() => 0.5 - Math.random()).slice(0, 5);
+      randomItems.forEach(item => {
+        const img = document.createElement('img');
+        img.src = item.img;
+        img.classList.add('draggable-item');
+        img.draggable = true;
+        img.dataset.type = item.type;
+        
+        img.addEventListener('dragstart', function(ev) {
+          ev.dataTransfer.setData("type", ev.target.dataset.type);
+        });
+
+        itemsArea.appendChild(img);
+      });
+    }
+
+    document.querySelectorAll('.bin').forEach(bin => {
+      bin.addEventListener('dragover', (ev) => ev.preventDefault());
+
+      bin.addEventListener('drop', (ev) => {
+        ev.preventDefault();
+        const droppedType = ev.dataTransfer.getData("type");
+
+        if (droppedType === bin.dataset.type) {
+          score++;
+        } else {
+          score--;
+        }
+
+        document.getElementById('score').textContent = score;
+        spawnItems();
+      });
+    });
+
+    function endGame() {
+      clearInterval(timer);
+      gameModal.style.display = 'none';
+      document.getElementById('finalScore').textContent = score;
+      gameOverModal.style.display = 'flex';
+    }
+
+    function restartGame() {
+      gameOverModal.style.display = 'none';
+      startGame();
+    }
+
+    function closeGame() {
+      gameOverModal.style.display = 'none';
+    }
+  </script>
 </body>
 </html>
