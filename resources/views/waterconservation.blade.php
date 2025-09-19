@@ -185,49 +185,48 @@
   </div>
 
   <script>
-  const modal = document.getElementById("gameModal");
-  const canvas = document.getElementById("gameCanvas");
-  const ctx = canvas.getContext("2d");
+const modal = document.getElementById("gameModal");
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
 
-  // Images
-  const bucketImg = new Image();
-  bucketImg.src = "https://img.icons8.com/emoji/96/bucket-emoji.png";
-  const dropImg = new Image();
-  dropImg.src = "https://img.icons8.com/fluency/96/water.png";
-  const dirtyImg = new Image();
-  dirtyImg.src = "https://img.icons8.com/emoji/96/pile-of-poo.png";
+// Images
+const bucketImg = new Image();
+bucketImg.src = "https://img.icons8.com/emoji/96/bucket-emoji.png";
+const dropImg = new Image();
+dropImg.src = "https://img.icons8.com/fluency/96/water.png";
+const dirtyImg = new Image();
+dirtyImg.src = "https://img.icons8.com/emoji/96/pile-of-poo.png";
 
-  // Audio
-  const waterSound = new Audio("{{ asset('sounds/water.mp3') }}");
-  const poopSound = new Audio("{{ asset('sounds/poop.m4a') }}");
-  const bgMusic = new Audio("{{ asset('sounds/WaterGame.mp3') }}");
-  bgMusic.loop = true;
+// Audio
+const waterSound = new Audio("{{ asset('sounds/water.mp3') }}");
+const poopSound = new Audio("{{ asset('sounds/poop.m4a') }}");
+const bgMusic = new Audio("{{ asset('sounds/WaterGame.mp3') }}");
+bgMusic.loop = true;
 
-  let bucket = { x: 170, y: 420, width: 50, height: 50, speed: 3 };
-  let drops = [];
-  let litersSaved = 0, litersWasted = 0, startTime, elapsedTime = 0;
-  let poopChance = 0.3;
-  let gameRunning = false;
-  let gameOverState = false;
+let bucket = { x: 170, y: 420, width: 50, height: 50, speed: 5 };
+let drops = [];
+let litersSaved = 0, litersWasted = 0, startTime, elapsedTime = 0;
+let poopChance = 0.3;
+let gameRunning = false;
+let gameOverState = false;
 
- 
-  let keys = { left: false, right: false };
+// Track key states for smooth movement
+let keys = { left: false, right: false };
 
-  function openGame() {
+function openGame() {
   if (gameRunning) return; 
   modal.style.display = "flex";
   resetGame();
 }
 
-  function closeGame() {
-    modal.style.display = "none";
-    bgMusic.pause();
-    bgMusic.currentTime = 0;
-    gameRunning = false;
-  }
+function closeGame() {
+  modal.style.display = "none";
+  bgMusic.pause();
+  bgMusic.currentTime = 0;
+  gameRunning = false;
+}
 
-  function resetGame() {
-  if (gameRunning) return;
+function resetGame() {
   litersSaved = 0;
   litersWasted = 0;
   drops = [];
@@ -244,88 +243,94 @@
   requestAnimationFrame(update);
 }
 
-  function spawnDrop() {
-    const type = Math.random() < poopChance ? "poop" : "water";
-    drops.push({ x: Math.random() * 360, y: 0, width: 40, height: 40, type });
+function spawnDrop() {
+  const type = Math.random() < poopChance ? "poop" : "water";
+  drops.push({ x: Math.random() * (canvas.width - 40), y: 0, width: 40, height: 40, type });
+}
+
+function update() {
+  if (!gameRunning) return;
+
+  elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+
+  // Increase spawn rate over time
+  if (Math.random() < 0.05 + elapsedTime * 0.001) {
+    spawnDrop();
   }
 
-  function update() {
-    if (!gameRunning) return;
+  // Smooth bucket movement
+  if (keys.left && bucket.x > 0) bucket.x -= bucket.speed;
+  if (keys.right && bucket.x + bucket.width < canvas.width) bucket.x += bucket.speed;
 
-    elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+  // Draw game
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(bucketImg, bucket.x, bucket.y, bucket.width, bucket.height);
 
-    // Spawn drops more often as time passes
-    if (Math.random() < 0.05 + elapsedTime * 0.001) {
-      spawnDrop();
+  for (let i = drops.length - 1; i >= 0; i--) {
+    let d = drops[i];
+    d.y += 3 + elapsedTime * 0.05;
+    ctx.drawImage(d.type === "water" ? dropImg : dirtyImg, d.x, d.y, d.width, d.height);
+
+    // Collision with bucket
+    if (
+        d.y + d.height > bucket.y + 5 &&
+        d.y < bucket.y + bucket.height - 5 &&
+        d.x + d.width > bucket.x + 10 &&
+        d.x < bucket.x + bucket.width - 10
+      ) {
+      if (d.type === "water") {
+        litersSaved++;
+        waterSound.cloneNode().play();
+      } else {
+        poopSound.cloneNode().play();
+        gameOver();
+      }
+      drops.splice(i, 1);
     }
-
-    // Handle smooth bucket movement
-    if (keys.left && bucket.x > 0) bucket.x -= bucket.speed;
-    if (keys.right && bucket.x + bucket.width < canvas.width) bucket.x += bucket.speed;
-
-    // Draw game
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(bucketImg, bucket.x, bucket.y, bucket.width, bucket.height);
-
-    for (let i = drops.length - 1; i >= 0; i--) {
-      let d = drops[i];
-      d.y += 3 + elapsedTime * 0.05;
-      ctx.drawImage(d.type === "water" ? dropImg : dirtyImg, d.x, d.y, d.width, d.height);
-
-      if (
-          d.y + d.height > bucket.y + 5 &&       // top padding
-          d.y < bucket.y + bucket.height - 5 &&  // bottom padding
-          d.x + d.width > bucket.x + 10 &&       // left padding
-          d.x < bucket.x + bucket.width - 10     // right padding
-        ) {
-          if (d.type === "water") {
-            litersSaved++;
-            waterSound.cloneNode().play();
-          } else {
-            poopSound.cloneNode().play();
-            gameOver();
-          }
-          drops.splice(i, 1);
-        }
-      
+    // Drop falls past bottom
+    else if (d.y > canvas.height) {
+      if (d.type === "water") litersWasted++;
+      drops.splice(i, 1);
     }
-
-    ctx.fillStyle = "#2e7d32";
-    ctx.font = "16px Poppins";
-    ctx.fillText("💧 Saved: " + litersSaved + " L", 10, 20);
-    ctx.fillText("💦 Wasted: " + litersWasted + " L", 10, 40);
-    ctx.fillText("⏱ Time: " + elapsedTime + "s", 10, 60);
-
-    if (!gameOverState) requestAnimationFrame(update);
   }
 
-  function gameOver() {
-    bgMusic.pause();
-    bgMusic.currentTime = 0;
-    gameRunning = false;
-    gameOverState = true;
+  // Display stats
+  ctx.fillStyle = "#2e7d32";
+  ctx.font = "16px Poppins";
+  ctx.fillText("💧 Saved: " + litersSaved + " L", 10, 20);
+  ctx.fillText("💦 Wasted: " + litersWasted + " L", 10, 40);
+  ctx.fillText("⏱ Time: " + elapsedTime + "s", 10, 60);
 
-    ctx.fillStyle = "rgba(0,0,0,0.7)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  if (!gameOverState) requestAnimationFrame(update);
+}
 
-    ctx.fillStyle = "#fff";
-    ctx.font = "24px Poppins";
-    ctx.fillText("GAME OVER", canvas.width / 2 - 70, canvas.height / 2 - 40);
-    ctx.font = "18px Poppins";
-    ctx.fillText("💧 Saved: " + litersSaved + " L", canvas.width / 2 - 70, canvas.height / 2);
-    ctx.fillText("💦 Wasted: " + litersWasted + " L", canvas.width / 2 - 70, canvas.height / 2 + 30);
-    ctx.fillText("⏱ Time: " + elapsedTime + "s", canvas.width / 2 - 70, canvas.height / 2 + 60);
-  }
+function gameOver() {
+  bgMusic.pause();
+  bgMusic.currentTime = 0;
+  gameRunning = false;
+  gameOverState = true;
 
-  // Smooth key handling
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowLeft") keys.left = true;
-    if (e.key === "ArrowRight") keys.right = true;
-  });
-  document.addEventListener("keyup", (e) => {
-    if (e.key === "ArrowLeft") keys.left = false;
-    if (e.key === "ArrowRight") keys.right = false;
-  });
+  ctx.fillStyle = "rgba(0,0,0,0.7)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = "#fff";
+  ctx.font = "24px Poppins";
+  ctx.fillText("GAME OVER", canvas.width / 2 - 70, canvas.height / 2 - 40);
+  ctx.font = "18px Poppins";
+  ctx.fillText("💧 Saved: " + litersSaved + " L", canvas.width / 2 - 70, canvas.height / 2);
+  ctx.fillText("💦 Wasted: " + litersWasted + " L", canvas.width / 2 - 70, canvas.height / 2 + 30);
+  ctx.fillText("⏱ Time: " + elapsedTime + "s", canvas.width / 2 - 70, canvas.height / 2 + 60);
+}
+
+// Smooth key handling
+document.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowLeft") keys.left = true;
+  if (e.key === "ArrowRight") keys.right = true;
+});
+document.addEventListener("keyup", (e) => {
+  if (e.key === "ArrowLeft") keys.left = false;
+  if (e.key === "ArrowRight") keys.right = false;
+});
 </script>
 </body>
 </html>
