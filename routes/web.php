@@ -5,6 +5,26 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use Illuminate\Http\Request;
+
+
+Route::post('/update-profile', function (Request $request) {
+    session([
+        'username' => $request->input('username'),
+        'diet' => $request->input('diet'),
+        'transport' => $request->input('transport'),
+    ]);
+
+    return redirect('/profile')->with('success', 'Profile updated successfully!');
+})->name('update-profile');
+
+Route::post('/save-footprint-score', function (Request $request) {
+    // Save score to session
+    session(['footprint_score' => $request->input('score')]);
+
+    // Redirect back to profile
+    return redirect('/profile')->with('success', 'Footprint score updated!');
+});
 
 
 Route::get('/waterconservation', function () {

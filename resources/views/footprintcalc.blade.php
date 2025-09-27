@@ -378,10 +378,23 @@
 
 <!--  RESULTS  -->
 <div class="result-display" id="resultDisplay" style="display:none;">
-  <div class="result-text">Your estimated weekly carbon footprint:</div>
-  <div class="carbon-value" id="carbonValue">0.0</div>
-  <div class="carbon-unit">kg CO₂</div>
+    <div class="result-text">Your estimated weekly carbon footprint:</div>
+    <div class="carbon-value" id="carbonValue">0.0</div>
+    <div class="carbon-unit">kg CO₂</div>
+
+    <!-- Form to save the score to session -->
+    <form id="saveScoreForm" method="POST" action="{{ url('/save-footprint-score') }}">
+        @csrf
+        <input type="hidden" name="score" id="scoreInput">
+        <button type="submit" class="submit-btn">Save Score to Profile</button>
+    </form>
+
+    <!-- Restart button -->
+    <button type="button" class="submit-btn" onclick="restartQuiz()" style="background-color: #777; margin-top: 10px;">
+        Restart
+    </button>
 </div>
+
 
 <!--  SCRIPT  -->
 <script>
@@ -456,12 +469,20 @@ function calculateFootprint() {
     total += footprintValues[key][answers[key]];
   }
 
+  // Hide last question
   document.getElementById("question17").style.display = "none";
+
+  // Show result
   document.getElementById("carbonValue").textContent = total.toFixed(1);
   document.getElementById("resultDisplay").style.display = "block";
 
+  // Set the score value in hidden form input
+  document.getElementById("scoreInput").value = total.toFixed(1);
+
+  // Fill progress bar
   document.getElementById("progressFill").style.width = "100%";
 }
+
 
 // Progress bar reset on page load
 window.addEventListener('load', () => {
@@ -474,6 +495,26 @@ window.addEventListener('load', () => {
             sidebar.classList.toggle('collapsed');
             mainContent.classList.toggle('expanded');
             }
+    function restartQuiz() {
+  // Reset answers
+  answers = {};
+
+  // Hide result
+  document.getElementById("resultDisplay").style.display = "none";
+
+  // Reset all questions
+  ids.forEach((id, index) => {
+    document.getElementById(`question${index + 1}`).style.display = "none";
+    document.getElementById(id).value = ""; // clear selected options
+  });
+
+  // Show the first question
+  document.getElementById("question1").style.display = "block";
+
+  // Reset progress bar
+  document.getElementById("progressFill").style.width = '0%';
+}
+
 </script>
 </body>
 </html>
