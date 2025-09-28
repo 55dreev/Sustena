@@ -117,7 +117,28 @@ Route::middleware([\App\Http\Middleware\CheckAuth::class, \App\Http\Middleware\N
     Route::get('/profile', function () {
         return view('profilepage');
     })->name('profile');
-    
+
+    // ✅ Added New Pages
+    Route::get('/analytics', function () {
+        return view('analytic');
+    })->name('analytics');
+
+    Route::get('/badges', function () {
+        return view('badges');
+    })->name('badges');
+
+    Route::get('/leaderboard', function () {
+        return view('leader');
+    })->name('leaderboard');
+
+    Route::get('/settings', function () {
+        return view('settings');
+    })->name('settings');
+
+    Route::get('/streaks', function () {
+        return view('streakpage');
+    })->name('streaks');
+
     // DB connection test (only for authenticated users)
     Route::get('/db-test', function () {
         try {
@@ -127,7 +148,7 @@ Route::middleware([\App\Http\Middleware\CheckAuth::class, \App\Http\Middleware\N
             return "❌ Failed to connect: " . $e->getMessage();
         }
     })->name('db-test');
-    
+
 });
 
 // Catch-all route for unauthorized access attempts

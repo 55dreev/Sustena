@@ -51,13 +51,33 @@
 
 <!-- Main Content -->
 <div class="main-content">
-  <div class="top-nav">
-    <div class="nav-icon-top">🔥</div>
-    <div class="nav-icon-top">🌱</div>
-    <div class="nav-icon-top">🏆</div>
-    <div class="nav-icon-top">💰</div>
-    <div class="nav-icon-top">⚙️</div>
-  </div>
+ <div class="top-nav">
+    <!-- Analytics -->
+    <a href="{{ route('analytics') }}" class="nav-icon-top" title="Analytics">
+        🔥
+    </a>
+
+    <!-- Learning Modules -->
+    <a href="{{ route('learning-modules') }}" class="nav-icon-top" title="Learning Modules">
+        🌱
+    </a>
+
+    <!-- Leaderboard -->
+    <a href="{{ route('leaderboard') }}" class="nav-icon-top" title="Leaderboard">
+        🏆
+    </a>
+
+    <!-- Badges / Achievements -->
+    <a href="{{ route('badges') }}" class="nav-icon-top" title="Badges">
+        🥇
+    </a>
+
+    <!-- Settings -->
+    <a href="{{ route('settings') }}" class="nav-icon-top" title="Settings">
+        ⚙️
+    </a>
+</div>
+
 
   <div class="header-section">
     <div class="cloud cloud-1">☁️</div>

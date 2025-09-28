@@ -40,13 +40,33 @@
 </div>
 
 <div class="main-content">
-  <div class="header-icons">
-    <div class="header-icon">🔥</div>
-    <div class="header-icon">🌱</div>
-    <div class="header-icon">🏆</div>
-    <div class="header-icon">💰</div>
-    <div class="header-icon">⚙️</div>
-  </div>
+  <div class="floating-icons">
+    <!-- Analytics -->
+    <a href="{{ route('analytics') }}" class="floating-icon" title="Analytics">
+        🔥
+    </a>
+
+    <!-- Learning Modules (or Sustainability Section) -->
+    <a href="{{ route('learning-modules') }}" class="floating-icon" title="Learning Modules">
+        🌱
+    </a>
+
+    <!-- Leaderboard -->
+    <a href="{{ route('leaderboard') }}" class="floating-icon" title="Leaderboard">
+        🏆
+    </a>
+
+    <!-- Badges / Achievements -->
+    <a href="{{ route('badges') }}" class="floating-icon" title="Badges">
+        🥇
+    </a>
+
+    <!-- Settings -->
+    <a href="{{ route('settings') }}" class="floating-icon" title="Settings">
+        ⚙️
+    </a>
+</div>
+
 
   <div class="calculator-container">
     <div class="calculator-header">

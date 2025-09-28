@@ -144,12 +144,32 @@
 
 <!-- Top Navigation -->
 <div class="floating-icons">
-  <div class="floating-icon">🔥</div>
-  <div class="floating-icon">🌱</div>
-  <div class="floating-icon">🏆</div>
-  <div class="floating-icon">🥇</div>
-  <div class="floating-icon">⚙️</div>
+    <!-- Analytics -->
+    <a href="{{ route('analytics') }}" class="floating-icon" title="Analytics">
+        🔥
+    </a>
+
+    <!-- Learning Modules (or Sustainability Section) -->
+    <a href="{{ route('learning-modules') }}" class="floating-icon" title="Learning Modules">
+        🌱
+    </a>
+
+    <!-- Leaderboard -->
+    <a href="{{ route('leaderboard') }}" class="floating-icon" title="Leaderboard">
+        🏆
+    </a>
+
+    <!-- Badges / Achievements -->
+    <a href="{{ route('badges') }}" class="floating-icon" title="Badges">
+        🥇
+    </a>
+
+    <!-- Settings -->
+    <a href="{{ route('settings') }}" class="floating-icon" title="Settings">
+        ⚙️
+    </a>
 </div>
+
 
 <!-- Main Content -->
 <div class="main-content">
