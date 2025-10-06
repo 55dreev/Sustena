@@ -49,7 +49,6 @@
     background: #1a252f;
 }
 
-/* Main content */
 .main-content {
     margin-left: 200px;
     transition: margin-left 0.3s ease;
@@ -136,6 +135,7 @@
         width: 85%;
     }
 
+
         .nav-icon {
             width: 24px;
             height: 24px;
@@ -153,7 +153,7 @@
                 inset 1px 1px 0px rgba(255,255,255,0.3),
                 inset -1px -1px 0px rgba(0,0,0,0.2);
         }
-
+        
         .main-content {
             margin-left: 200px;
             flex: 1;
@@ -197,7 +197,7 @@
 
         .calculator-container {
     background: linear-gradient(135deg, #87ceeb 0%, #b0e0e6 100%);
-    transition: background 0.5s ease;
+    transition: background-image 2s ease-in-out;
     border-radius: 20px;
     padding: 40px;
     padding-bottom: 180px; /* make room for the icons */
@@ -205,9 +205,23 @@
     box-shadow: 0 8px 32px rgba(0,0,0,0.1);
     position: relative;
     overflow: visible; /* 🔧 FIX: allow icons to appear outside */
+    position: relative;
+     transition: none;
+}
+.calculator-container .gradient-layer {
+  position: absolute;
+  inset: 0;
+  transition: opacity 2s ease-in-out;
+  z-index: 0;
 }
 
+.calculator-container .gradient-layer.active {
+  opacity: 1;
+}
 
+.calculator-container .gradient-layer.inactive {
+  opacity: 0;
+}
         .calculator-container::before {
             content: "";
             position: absolute;
@@ -218,8 +232,21 @@
             pointer-events: none;
             background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
             animation: float 20s infinite linear;
-            
         }
+
+        .calculator-container::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 80px; 
+            background: linear-gradient(to top, #6bbf59 0%, #a8e6a3 80%, transparent 100%);
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            pointer-events: none;
+            z-index: 0;
+            }
 
         @keyframes float {
             0% { transform: translateX(0) translateY(0); }
@@ -260,7 +287,7 @@
     height: 100%;
     background: linear-gradient(90deg, #4ecdc4, #44a08d);
     border-radius: 4px;
-    width: 0%; /* start empty */
+    width: 0%; 
     transition: width 0.5s ease-in-out;
 }
 
@@ -287,12 +314,14 @@
             font-weight: bold;
             color: #27ae60;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            
         }
 
         .question-text {
             font-size: 18px;
             color: #2c3e50;
-            margin-bottom: 20px;
+            margin-bottom: 100px;    
+            gap: 25px; 
             font-weight: 600;
         }
 
@@ -303,7 +332,7 @@
         }
 
         .input-container {
-            margin-bottom: 30px;
+            margin-top: 60px;
         }
 
         .input-field {
@@ -457,26 +486,27 @@
         }
 
         .category-label {
-    font-size: 34px;
-    color: green;
-    text-transform: uppercase;
+            font-size: 34px;
+            color: green;
+            text-transform: uppercase;
+            margin-top: 20px;
         }
 
         .slider-container {
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: 25px; /* leave space for the label above */
-    margin-top: 15px;
+    gap: 15px; 
+    margin-top: 25px;
 }
-.slider-label {
+        .slider-label {
     position: absolute;
-    top: -25px; /* above the thumb */
+    top: -25px; 
     left: 50%;
     transform: translateX(-50%);
     font-size: 0.9rem;
     font-weight: bold;
-    color: #0a7d00; /* dark green */
+    color: #0a7d00; 
 }
 input[type=range] {
     -webkit-appearance: none;
@@ -533,7 +563,7 @@ input[type=range]::-moz-range-thumb {
 }
 
 .option-btn {
-    padding: 22px 20px;      
+    padding: 12px 10px;      
     font-size: 1.1rem;        
     border: 2px solid #0a7d00;
     background-color: #fff;
@@ -571,3 +601,108 @@ input[type=range]::-moz-range-thumb {
     0% { background-position: 0% 0; }
     100% { background-position: 100% 0; }
 }
+
+.farm-decor {
+  position: absolute;
+  top: 500px; 
+  font-size: 4rem;
+  opacity: 0.95;
+  user-select: none;
+  z-index: 1;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2)); 
+}
+.farm-decor.cow {
+  left: 10%;
+  animation: cowWalk 8s ease-in-out infinite alternate;
+}
+
+.farm-decor.chicken {
+  left: 30%;
+  animation: chickenWalk 6s ease-in-out infinite alternate;
+}
+
+
+.farm-decor.tree {
+  left: 60%;
+  animation: floaty 5s ease-in-out infinite;
+}
+
+.farm-decor.barn {
+  left: 80%;
+  animation: floaty 4.5s ease-in-out infinite reverse;
+}
+
+@keyframes cowWalk {
+  0% {
+    transform: translateX(0) scaleX(1); /* facing right */
+  }
+  25% {
+    transform: translateX(12.5%) scaleX(1); /* move right */
+  }
+  50% {
+    transform: translateX(12.5%) scaleX(-1); /* flip to face left */
+  }
+  75% {
+    transform: translateX(0) scaleX(-1); /* move left */
+  }
+  100% {
+    transform: translateX(0) scaleX(1); /* reset to original */
+  }
+}
+
+/* Chicken walking with faster pace + bounce */
+@keyframes chickenWalk {
+  0% {
+    transform: translateX(0) translateY(0) scaleX(1);
+  }
+  25% {
+    transform: translateX(12.5%) translateY(-2px) scaleX(1);
+  }
+  50% {
+    transform: translateX(12.5%) translateY(0) scaleX(-1);
+  }
+  75% {
+    transform: translateX(0) translateY(-2px) scaleX(-1);
+  }
+  100% {
+    transform: translateX(0) translateY(0) scaleX(1);
+  }
+}
+@keyframes floaty {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
+
+    .floating-icons {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .floating-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                inset 2px 2px 0px rgba(255,255,255,0.8),
+                inset -2px -2px 0px rgba(0,0,0,0.3),
+                0px 4px 12px rgba(0,0,0,0.15);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+            filter: contrast(1.2) brightness(1.1);
+        }
+
+        .floating-icon:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }

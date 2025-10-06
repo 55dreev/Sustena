@@ -5,8 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SUSTENA - Footprint Tracker</title>
 <link rel="stylesheet" href="{{ asset('css/footprintcalc.css') }}">
-
 </head>
+
+
 <body>
 <div class="sidebar" id="sidebar">
     <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div>
@@ -60,7 +61,11 @@
 
         <div id="quizContainer" class="form-section"></div>
 
-        <!-- Result Display -->
+            <div class="farm-decor cow">🐄</div>
+            <div class="farm-decor chicken">🐓</div>
+            <div class="farm-decor barn">🏠</div>
+            <div class="farm-decor tree">🌳</div>
+            
         <div class="result-display" id="resultDisplay">
             <div class="result-text">Your estimated weekly carbon footprint:</div>
             <div class="carbon-value" id="carbonValue">0.0</div>
@@ -78,7 +83,7 @@
 </div>
 
 <script>
-    // Sidebar toggle
+   
     function toggleSidebar() {
         const sidebar = document.getElementById('sidebar');
         const main = document.getElementById('mainContent');
@@ -86,13 +91,36 @@
         main.classList.toggle('expanded');
     }
 
-    const categoryBackgrounds = {
-    'Food': '#f0f9f0',           // soft green
-    'Transportation': '#fff7e6', // soft orange
-    'Energy': '#fffdf0',         // pale yellow
-    'Water Usage': '#e6f7fd',    // light blue
-    'Waste Management': '#fdeff0'// pale pink
-};
+    
+   function getDayCycleBackground(progress) {
+    if (progress < 0.25) {
+        return "linear-gradient(to top, #fff1c1 0%, #a8edea 100%)";
+    } else if (progress < 0.5) {
+        return "linear-gradient(to top, #89f7fe 0%, #66a6ff 100%)";
+    } else if (progress < 0.75) {
+        return "linear-gradient(to top, #f6d365 0%, #fda085 100%)";
+    } else {
+        return "linear-gradient(to top, #2c3e50 0%, #4ca1af 100%)";
+    }
+}
+
+function updateDayCycle(progress) {
+  const container = document.querySelector('.calculator-container');
+  const newLayer = document.createElement('div');
+  newLayer.classList.add('gradient-layer', 'inactive');
+  newLayer.style.background = getDayCycleBackground(progress);
+
+  container.appendChild(newLayer);
+
+  requestAnimationFrame(() => {
+    newLayer.classList.replace('inactive', 'active');
+  });
+
+  const oldLayers = container.querySelectorAll('.gradient-layer:not(:last-child)');
+  setTimeout(() => oldLayers.forEach(l => l.remove()), 4000);
+}
+
+
 
     // Quiz questions and values (same as before)...
     const frequencyOptions = ['daily','few-times-week','weekly','monthly','rarely','never'];
@@ -240,7 +268,11 @@
         const q = flatQuestions[currentIndex];
 
         const quizContainerDiv = document.querySelector('.calculator-container');
-        quizContainerDiv.style.background = categoryBackgrounds[q.category] || '#ffffff';
+        const progress = currentIndex / flatQuestions.length;
+        updateDayCycle(progress);
+
+   
+
 
         const questionDiv = document.createElement('div');
         questionDiv.classList.add('input-container');
