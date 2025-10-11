@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <title>SUSTENA - Footprint Tracker</title>
 <link rel="stylesheet" href="{{ asset('css/footprintcalc.css') }}">
 </head>
-
 
 <body>
 <div class="sidebar" id="sidebar">
@@ -50,349 +50,531 @@
         <a href="{{ route('settings') }}" class="floating-icon" title="Settings">⚙️</a>
     </div>
 
+    <!-- Toast -->
+    <div id="xpToast" style="display:none;position:fixed;right:20px;bottom:20px;background:#111;color:#fff;padding:12px 14px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.2);z-index:9999;transition:opacity .25s ease;">
+      <div id="xpToastText">—</div>
+    </div>
+
     <div class="calculator-container">
         <div class="calculator-header">
             <h1 class="calculator-title">CARBON FOOTPRINT CALCULATOR</h1>
             <p class="calculator-subtitle">" MEASURE YOUR IMPACT ON THE PLANET! "</p>
             <div class="progress-bar" style="position: relative;">
-    <div class="progress-fill" id="progressFill"></div>
-</div>
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
 
-
-        <div id="quizContainer" class="form-section"></div>
+            <div id="quizContainer" class="form-section"></div>
 
             <div class="farm-decor cow">🐄</div>
             <div class="farm-decor chicken">🐓</div>
             <div class="farm-decor barn">🏠</div>
             <div class="farm-decor tree">🌳</div>
             
-        <div class="result-display" id="resultDisplay">
-            <div class="result-text">Your estimated weekly carbon footprint:</div>
-            <div class="carbon-value" id="carbonValue">0.0</div>
-            <div class="carbon-unit">kg CO₂</div>
-            <form id="saveScoreForm" method="POST" action="{{ url('/save-footprint-score') }}">
-                @csrf
-                <input type="hidden" name="score" id="scoreInput">
-                <button type="submit" class="submit-btn">Save Score to Profile</button>
-            </form>
-            <button type="button" class="submit-btn" onclick="restartQuiz()" style="background-color:#777; margin-top:10px;">
-                Restart
-            </button>
+            <div class="result-display" id="resultDisplay">
+                <div class="result-text">Your estimated weekly carbon footprint:</div>
+                <div class="carbon-value" id="carbonValue">0.0</div>
+                <div class="carbon-unit">kg CO₂</div>
+
+                <form id="saveScoreForm" method="POST" action="{{ url('/save-footprint-score') }}">
+                  @csrf
+                  <input type="hidden" name="score" id="scoreInput">
+                  <input type="hidden" name="attempt_id" id="attemptInput">
+                  <button type="submit" class="submit-btn">Save Score to Profile</button>
+                </form>
+
+                <button type="button" class="submit-btn" onclick="restartQuiz()" style="background-color:#777; margin-top:10px;">
+                    Restart
+                </button>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-   
-    function toggleSidebar() {
-        const sidebar = document.getElementById('sidebar');
-        const main = document.getElementById('mainContent');
-        sidebar.classList.toggle('collapsed');
-        main.classList.toggle('expanded');
-    }
-
-    
-   function getDayCycleBackground(progress) {
-    if (progress < 0.25) {
-        return "linear-gradient(to top, #fff1c1 0%, #a8edea 100%)";
-    } else if (progress < 0.5) {
-        return "linear-gradient(to top, #89f7fe 0%, #66a6ff 100%)";
-    } else if (progress < 0.75) {
-        return "linear-gradient(to top, #f6d365 0%, #fda085 100%)";
-    } else {
-        return "linear-gradient(to top, #2c3e50 0%, #4ca1af 100%)";
-    }
+/* ------- small helpers ------- */
+function toggleSidebar(){
+  const s = document.getElementById('sidebar');
+  const m = document.getElementById('mainContent');
+  if (!s || !m) return;
+  s.classList.toggle('collapsed');
+  m.classList.toggle('expanded');
 }
 
+(function attachToast(){
+  // Simple toast with auto-hide. Falls back to alert if container missing.
+  window.toast = function(message, type='info'){
+    const el  = document.getElementById('xpToast');
+    const txt = document.getElementById('xpToastText');
+    if(!el || !txt){ alert(message); return; }
+    txt.textContent = message;
+    el.style.background = (type==='error') ? '#e74c3c' :
+                          (type==='success') ? '#2ecc71' : '#111';
+    el.style.display = 'block';
+    el.style.opacity = '1';
+    clearTimeout(window.__xpToastTimer);
+    window.__xpToastTimer = setTimeout(()=>{
+      el.style.opacity = '0';
+      setTimeout(()=>{ el.style.display='none'; el.style.opacity='1'; }, 250);
+    }, 3000);
+  };
+})();
+
+/** =========================================================
+ *  NORMALIZATION + EVIDENCE-BASED EMISSION FACTORS (kgCO2e)
+ *  ====================================================== */
+const ANALYTICS_BASIS = 'weekly';
+
+const eventsPerWeek = {
+  daily: 7,
+  'few-times-week': 3.5,
+  weekly: 1,
+  monthly: 1 / 4.345,
+  rarely: 0.25,
+  never: 0
+};
+function toBasis(eventsPerWeekValue, basis = ANALYTICS_BASIS) {
+  switch (basis) {
+    case 'daily':   return eventsPerWeekValue / 7;
+    case 'weekly':  return eventsPerWeekValue;
+    case 'monthly': return eventsPerWeekValue * 4.345;
+    case 'yearly':  return eventsPerWeekValue * 52.1429;
+    default:        return eventsPerWeekValue;
+  }
+}
+
+/** Factors & assumptions (unchanged) */
+const FACTORS = {
+  food_kg: {
+    beef: 60, chicken: 6, pork: 7, fish: 5, eggs: 4.8, milk_l: 3.15, cheese: 21,
+    tofu: 3, legumes: 0.9, processed_generic: 6, organic_bonus: -0.2, local_bonus: -0.1
+  },
+  electricity: { grid_PH_kg_per_kWh: 0.67 },
+  transport: { car_avg_kg_per_km: 0.171, rail_kg_per_pkm: 0.035, bus_kg_per_pkm: 0.103 },
+  flights: { one_way_shorthaul_kg: 250, one_way_longhaul_kg: 750 },
+  water_waste: { shower_kg_per_min: 0.05, laundry_kg_per_load: 0.6, dishwasher_kg_per_run: 0.5 }
+};
+const ASSUMPTIONS = {
+  portions: { meat_g:150, cheese_g:30, milk_ml:250, eggs_per_serving:2, tofu_g:150, fish_g:150, legumes_g:150 },
+  avg_drive_speed_kmh: 25,
+  commute_km_midpoints: { '0 - 5 km':2.5,'5 - 10 km':7.5,'10 - 20 km':15,'20 - 50 km':35,'50+ km':60 },
+};
+
+/** Attempt tracking */
+const categoryTotals = {};
+const categoryCounts = {};
+let attemptId;
+function newAttemptId() {
+  attemptId = (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now());
+}
+newAttemptId();
+
+/** BG helpers (unchanged) */
+function getDayCycleBackground(progress) {
+  if (progress < 0.25) return "linear-gradient(to top, #fff1c1 0%, #a8edea 100%)";
+  if (progress < 0.5)  return "linear-gradient(to top, #89f7fe 0%, #66a6ff 100%)";
+  if (progress < 0.75) return "linear-gradient(to top, #f6d365 0%, #fda085 100%)";
+  return "linear-gradient(to top, #2c3e50 0%, #4ca1af 100%)";
+}
 function updateDayCycle(progress) {
   const container = document.querySelector('.calculator-container');
   const newLayer = document.createElement('div');
   newLayer.classList.add('gradient-layer', 'inactive');
   newLayer.style.background = getDayCycleBackground(progress);
-
   container.appendChild(newLayer);
-
-  requestAnimationFrame(() => {
-    newLayer.classList.replace('inactive', 'active');
-  });
-
+  requestAnimationFrame(() => newLayer.classList.replace('inactive', 'active'));
   const oldLayers = container.querySelectorAll('.gradient-layer:not(:last-child)');
   setTimeout(() => oldLayers.forEach(l => l.remove()), 4000);
 }
 
+/** Questions (unchanged) */
+const frequencyOptions = ['daily','few-times-week','weekly','monthly','rarely','never'];
+const questions = {
+  'Food': [
+    {id:'dairyMilk',text:'How often do you drink milk?',options:frequencyOptions},
+    {id:'dairyCheese',text:'How often do you eat cheese or yogurt?',options:frequencyOptions},
+    {id:'meatBeef',text:'How often do you eat beef?',options:frequencyOptions},
+    {id:'meatChickenPork',text:'How often do you eat chicken or pork?',options:frequencyOptions},
+    {id:'fish',text:'How often do you eat fish or seafood?',options:frequencyOptions},
+    {id:'eggs',text:'How often do you eat eggs?',options:frequencyOptions},
+    {id:'plantProtein',text:'How often do you eat plant-based protein?',options:frequencyOptions},
+    {id:'processedFoods',text:'How often do you eat processed foods?',options:frequencyOptions},
+    {id:'organicFoods',text:'How often do you eat organic foods?',options:frequencyOptions},
+    {id:'localFoods',text:'How often do you eat locally-sourced foods?',options:frequencyOptions},
+  ],
+  'Transportation': [
+    {id:'transport',text:'How often do you use a car or motorcycle?',options:frequencyOptions},
+    {id:'gasSpend',text:'How much money do you spend on gas per week?',options:['₱0 - ₱500','₱500 - ₱1000','₱1000 - ₱2000','₱2000 - ₱5000','₱5000+']},
+    {id:'driveTime',text:'How many hours do you drive per week?',options:['0 - 2 hours','3 - 5 hours','6 - 8 hours','9 - 12 hours','12+ hours']},
+    {id:'publicTransport',text:'How often do you use public transportation?',options:frequencyOptions},
+    {id:'rideSharing',text:'How often do you use ride sharing services?',options:frequencyOptions},
+    {id:'bikeWalk',text:'How often do you bike or walk instead of driving?',options:frequencyOptions},
+    {id:'flights',text:'How many flights do you take per year?',options:['0','1 - 2','3 - 5','6 - 10','10+']},
+    {id:'commuteDistance',text:'Average distance of daily commute',options:['0 - 5 km','5 - 10 km','10 - 20 km','20 - 50 km','50+ km']},
+    {id:'electricVehicle',text:'Do you use an electric/hybrid vehicle?',options:['Yes','No']},
+    {id:'carpool',text:'How often do you carpool?',options:frequencyOptions},
+  ],
+  'Energy': [
+    {id:'energySource',text:'What is your main source of electricity?',options:['Coal','Mixed','Renewable']},
+    {id:'electricBill',text:'How much is your average monthly electric bill?',options:['₱0 - ₱1000','₱1000 - ₱2000','₱2000 - ₱3000','₱3000 - ₱4000','₱4000+']},
+    {id:'applianceUsage',text:'How many hours do you use air conditioning or fans per day?',options:['0 - 2 hours','3 - 4 hours','5 - 6 hours','7 - 8 hours','8+ hours']},
+    {id:'solarPanels',text:'Do you have solar panels at home?',options:['Yes','No']},
+    {id:'energySaving',text:'Do you use energy-saving lightbulbs?',options:['Always','Sometimes','Never']},
+    {id:'unplugDevices',text:'Do you unplug unused devices?',options:['Always','Sometimes','Never']},
+    {id:'efficientAppliances',text:'Do you use energy-efficient appliances?',options:['Yes','No']},
+    {id:'smartThermostat',text:'Do you use smart thermostats or timers?',options:['Yes','No']},
+    {id:'coldWash',text:'How often do you wash clothes with cold water?',options:frequencyOptions},
+    {id:'checkLeaks',text:'Do you regularly check for energy leaks?',options:['Always','Sometimes','Never']},
+  ],
+  'Water Usage': [
+    {id:'showerLength',text:'How long are your showers on average?',options:['0 - 3 mins','4 - 6 mins','7 - 9 mins','10 - 12 mins','12+ mins']},
+    {id:'laundry',text:'How many times do you do laundry per week?',options:['0 - 1 times','2 - 3 times','4 times','5 - 6 times','7+ times']},
+    {id:'dishwashing',text:'How many times do you run the dishwasher per week?',options:['0 - 1 times','2 times','3 - 4 times','5 - 6 times','7+ times']},
+    {id:'leaks',text:'Do you regularly check for water leaks?',options:['Always','Sometimes','Never']},
+    {id:'gardenWatering',text:'How often do you water your garden?',options:frequencyOptions},
+    {id:'lowFlowShower',text:'Do you use a low-flow showerhead?',options:['Yes','No']},
+    {id:'rainwater',text:'Do you collect rainwater for garden use?',options:['Yes','No']},
+    {id:'reuseGreywater',text:'Do you reuse greywater for plants?',options:['Yes','No']},
+    {id:'bathInsteadShower',text:'How often do you take baths instead of showers?',options:frequencyOptions},
+    {id:'turnOffTap',text:'Do you turn off the tap while brushing teeth?',options:['Always','Sometimes','Never']},
+    {id:'waterEfficientAppliances',text:'Do you use water-efficient appliances?',options:['Yes','No']},
+  ],
+  'Waste Management': [
+    {id:'trashBags',text:'How many bags of trash do you produce per week?',options:['0 to 1 bags','2 to 3 bags','4 to 5 bags','6 to 7 bags','8+ bags']},
+    {id:'recycle',text:'How often do you recycle plastics, paper, or metals?',options:['Always','Sometimes','Never']},
+    {id:'plasticUsage',text:'How often do you use single-use plastic items?',options:frequencyOptions},
+    {id:'compost',text:'Do you compost organic waste?',options:['Always','Sometimes','Never']},
+    {id:'electronicsWaste',text:'How often do you dispose electronic waste?',options:['Monthly','Quarterly','Yearly','Every few years','Never']},
+    {id:'donateItems',text:'Do you donate or sell unused items instead of throwing them away?',options:['Always','Sometimes','Never']},
+    {id:'minimalPackaging',text:'Do you purchase products with minimal packaging?',options:['Always','Sometimes','Never']},
+    {id:'reusableBags',text:'Do you use reusable shopping bags?',options:['Always','Sometimes','Never']},
+    {id:'recycleBatteries',text:'Do you recycle batteries and lightbulbs?',options:['Always','Sometimes','Never']},
+    {id:'secondHand',text:'Do you buy second-hand or refurbished products?',options:['Always','Sometimes','Never']},
+  ]
+};
 
+/** Compute emissions (unchanged logic) */
+function computeEmission(qid, option) {
+  const evPerWeek = eventsPerWeek[option] ?? null;
 
-    // Quiz questions and values (same as before)...
-    const frequencyOptions = ['daily','few-times-week','weekly','monthly','rarely','never'];
-    const questions = {
-        'Food': [
-            {id:'dairyMilk',text:'How often do you drink milk?',options:frequencyOptions},
-            {id:'dairyCheese',text:'How often do you eat cheese or yogurt?',options:frequencyOptions},
-            {id:'meatBeef',text:'How often do you eat beef?',options:frequencyOptions},
-            {id:'meatChickenPork',text:'How often do you eat chicken or pork?',options:frequencyOptions},
-            {id:'fish',text:'How often do you eat fish or seafood?',options:frequencyOptions},
-            {id:'eggs',text:'How often do you eat eggs?',options:frequencyOptions},
-            {id:'plantProtein',text:'How often do you eat plant-based protein?',options:frequencyOptions},
-            {id:'processedFoods',text:'How often do you eat processed foods?',options:frequencyOptions},
-            {id:'organicFoods',text:'How often do you eat organic foods?',options:frequencyOptions},
-            {id:'localFoods',text:'How often do you eat locally-sourced foods?',options:frequencyOptions},
-        ],
-        'Transportation': [
-            {id:'transport',text:'How often do you use a car or motorcycle?',options:frequencyOptions},
-            {id:'gasSpend',text:'How much money do you spend on gas per week?',options:['₱0 - ₱500','₱500 - ₱1000','₱1000 - ₱2000','₱2000 - ₱5000','₱5000+']},
-            {id:'driveTime',text:'How many hours do you drive per week?',options:['0 - 2 hours','3 - 5 hours','6 - 8 hours','9 - 12 hours','12+ hours']},
-            {id:'publicTransport',text:'How often do you use public transportation?',options:frequencyOptions},
-            {id:'rideSharing',text:'How often do you use ride sharing services?',options:frequencyOptions},
-            {id:'bikeWalk',text:'How often do you bike or walk instead of driving?',options:frequencyOptions},
-            {id:'flights',text:'How many flights do you take per year?',options:['0','1 - 2','3 - 5','6 - 10','10+']},
-            {id:'commuteDistance',text:'Average distance of daily commute',options:['0 - 5 km','5 - 10 km','10 - 20 km','20 - 50 km','50+ km']},
-            {id:'electricVehicle',text:'Do you use an electric/hybrid vehicle?',options:['Yes','No']},
-            {id:'carpool',text:'How often do you carpool?',options:frequencyOptions},
-        ],
-        'Energy': [
-            {id:'energySource',text:'What is your main source of electricity?',options:['Coal','Mixed','Renewable']},
-            {id:'electricBill',text:'How much is your average monthly electric bill?',options:['₱0 - ₱1000','₱1000 - ₱2000','₱2000 - ₱3000','₱3000 - ₱4000','₱4000+']},
-            {id:'applianceUsage',text:'How many hours do you use air conditioning or fans per day?',options:['0 - 2 hours','3 - 4 hours','5 - 6 hours','7 - 8 hours','8+ hours']},
-            {id:'solarPanels',text:'Do you have solar panels at home?',options:['Yes','No']},
-            {id:'energySaving',text:'Do you use energy-saving lightbulbs?',options:['Always','Sometimes','Never']},
-            {id:'unplugDevices',text:'Do you unplug unused devices?',options:['Always','Sometimes','Never']},
-            {id:'efficientAppliances',text:'Do you use energy-efficient appliances?',options:['Yes','No']},
-            {id:'smartThermostat',text:'Do you use smart thermostats or timers?',options:['Yes','No']},
-            {id:'coldWash',text:'How often do you wash clothes with cold water?',options:frequencyOptions},
-            {id:'checkLeaks',text:'Do you regularly check for energy leaks?',options:['Always','Sometimes','Never']},
-        ],
-        'Water Usage': [
-            {id:'showerLength',text:'How long are your showers on average?',options:['0 - 3 mins','4 - 6 mins','7 - 9 mins','10 - 12 mins','12+ mins']},
-            {id:'laundry',text:'How many times do you do laundry per week?',options:['0 - 1 times','2 - 3 times','4 times','5 - 6 times','7+ times']},
-            {id:'dishwashing',text:'How many times do you run the dishwasher per week?',options:['0 - 1 times','2 times','3 - 4 times','5 - 6 times','7+ times']},
-            {id:'leaks',text:'Do you regularly check for water leaks?',options:['Always','Sometimes','Never']},
-            {id:'gardenWatering',text:'How often do you water your garden?',options:frequencyOptions},
-            {id:'lowFlowShower',text:'Do you use a low-flow showerhead?',options:['Yes','No']},
-            {id:'rainwater',text:'Do you collect rainwater for garden use?',options:['Yes','No']},
-            {id:'reuseGreywater',text:'Do you reuse greywater for plants?',options:['Yes','No']},
-            {id:'bathInsteadShower',text:'How often do you take baths instead of showers?',options:frequencyOptions},
-            {id:'turnOffTap',text:'Do you turn off the tap while brushing teeth?',options:['Always','Sometimes','Never']},
-            {id:'waterEfficientAppliances',text:'Do you use water-efficient appliances?',options:['Yes','No']},
-        ],
-        'Waste Management': [
-            {id:'trashBags',text:'How many bags of trash do you produce per week?',options:['0 to 1 bags','2 to 3 bags','4 to 5 bags','6 to 7 bags','8+ bags']},
-            {id:'recycle',text:'How often do you recycle plastics, paper, or metals?',options:['Always','Sometimes','Never']},
-            {id:'plasticUsage',text:'How often do you use single-use plastic items?',options:frequencyOptions},
-            {id:'compost',text:'Do you compost organic waste?',options:['Always','Sometimes','Never']},
-            {id:'electronicsWaste',text:'How often do you dispose electronic waste?',options:['Monthly','Quarterly','Yearly','Every few years','Never']},
-            {id:'donateItems',text:'Do you donate or sell unused items instead of throwing them away?',options:['Always','Sometimes','Never']},
-            {id:'minimalPackaging',text:'Do you purchase products with minimal packaging?',options:['Always','Sometimes','Never']},
-            {id:'reusableBags',text:'Do you use reusable shopping bags?',options:['Always','Sometimes','Never']},
-            {id:'recycleBatteries',text:'Do you recycle batteries and lightbulbs?',options:['Always','Sometimes','Never']},
-            {id:'secondHand',text:'Do you buy second-hand or refurbished products?',options:['Always','Sometimes','Never']},
-        ]
-    };
+  // FOOD
+  if (qid === 'meatBeef') {
+    const kgPerServing = ASSUMPTIONS.portions.meat_g / 1000;
+    return toBasis((evPerWeek ?? 0) * kgPerServing * FACTORS.food_kg.beef);
+  }
+  if (qid === 'meatChickenPork') {
+    const kgPerServing = ASSUMPTIONS.portions.meat_g / 1000;
+    const perKg = (FACTORS.food_kg.chicken + FACTORS.food_kg.pork) / 2;
+    return toBasis((evPerWeek ?? 0) * kgPerServing * perKg);
+  }
+  if (qid === 'fish') {
+    const kgPerServing = ASSUMPTIONS.portions.fish_g / 1000;
+    return toBasis((evPerWeek ?? 0) * kgPerServing * FACTORS.food_kg.fish);
+  }
+  if (qid === 'dairyMilk') {
+    const litersPerGlass = ASSUMPTIONS.portions.milk_ml / 1000;
+    return toBasis((evPerWeek ?? 0) * litersPerGlass * FACTORS.food_kg.milk_l);
+  }
+  if (qid === 'dairyCheese') {
+    const kg = ASSUMPTIONS.portions.cheese_g / 1000;
+    return toBasis((evPerWeek ?? 0) * kg * FACTORS.food_kg.cheese);
+  }
+  if (qid === 'eggs') {
+    const kg = (ASSUMPTIONS.portions.eggs_per_serving * 60) / 1000;
+    return toBasis((evPerWeek ?? 0) * kg * FACTORS.food_kg.eggs);
+  }
+  if (qid === 'plantProtein') {
+    const kg = ASSUMPTIONS.portions.tofu_g / 1000;
+    return toBasis((evPerWeek ?? 0) * kg * FACTORS.food_kg.tofu);
+  }
+  if (qid === 'processedFoods') {
+    const kg = 0.15;
+    return toBasis((evPerWeek ?? 0) * kg * FACTORS.food_kg.processed_generic);
+  }
+  if (qid === 'organicFoods') {
+    const kg = 0.5;
+    return toBasis((evPerWeek ?? 0) * kg * FACTORS.food_kg.organic_bonus);
+  }
+  if (qid === 'localFoods') {
+    const kg = 0.5;
+    return toBasis((evPerWeek ?? 0) * kg * FACTORS.food_kg.local_bonus);
+  }
 
- const footprintValues = {
-        dairyMilk: {daily:12,"few-times-week":8,weekly:5,monthly:2,rarely:1,never:0.5},
-        dairyCheese: {daily:10,"few-times-week":7,weekly:4,monthly:2,rarely:1,never:0.5},
-        meatBeef: {daily:25,"few-times-week":18,weekly:10,monthly:5,rarely:2,never:1},
-        meatChickenPork: {daily:20,"few-times-week":15,weekly:8,monthly:4,rarely:2,never:1},
-        fish: {daily:10,"few-times-week":7,weekly:4,monthly:2,rarely:1,never:0.5},
-        eggs: {daily:5,"few-times-week":4,weekly:2,monthly:1,rarely:0.5,never:0.2},
-        plantProtein: {daily:1,"few-times-week":0.8,weekly:0.5,monthly:0.2,rarely:0.1,never:0.05},
-        processedFoods: {daily:8,"few-times-week":5,weekly:3,monthly:1,rarely:0.5,never:0.2},
-        organicFoods: {daily:2,"few-times-week":1.5,weekly:1,monthly:0.5,rarely:0.2,never:0.1},
-        localFoods: {daily:1,"few-times-week":0.8,weekly:0.5,monthly:0.2,rarely:0.1,never:0.05},
-        transport: {daily:50,"few-times-week":30,weekly:15,monthly:5,rarely:2,never:0},
-        gasSpend: {"₱0 - ₱500":5,"₱500 - ₱1000":15,"₱1000 - ₱2000":25,"₱2000 - ₱5000":40,"₱5000+":60},
-        driveTime: {"0 - 2 hours":5,"3 - 5 hours":15,"6 - 8 hours":25,"9 - 12 hours":40,"12+ hours":60},
-        publicTransport: {daily:5,"few-times-week":3,weekly:2,monthly:1,rarely:0.5,never:0},
-        rideSharing: {daily:2,"few-times-week":1,weekly:0.5,monthly:0.2,rarely:0.1,never:0},
-        bikeWalk: {daily:0,"few-times-week":0.5,weekly:1,monthly:2,rarely:3,never:5},
-        flights: {"0":0,"1 - 2":50,"3 - 5":120,"6 - 10":200,"10+":400},
-        commuteDistance: {"0 - 5 km":2,"5 - 10 km":5,"10 - 20 km":10,"20 - 50 km":20,"50+ km":40},
-        electricVehicle: {"Yes":5,"No":30},
-        carpool: {daily:0,"few-times-week":2,weekly:3,monthly:5,rarely:8,never:10},
-        energySource: {"Coal":40,"Mixed":20,"Renewable":5},
-        electricBill: {"₱0 - ₱1000":5,"₱1000 - ₱2000":10,"₱2000 - ₱3000":15,"₱3000 - ₱4000":20,"₱4000+":30},
-        applianceUsage: {"0 - 2 hours":5,"3 - 4 hours":10,"5 - 6 hours":15,"7 - 8 hours":20,"8+ hours":25},
-        solarPanels: {"Yes":0,"No":10},
-        energySaving: {"Always":0,"Sometimes":5,"Never":10},
-        unplugDevices: {"Always":0,"Sometimes":5,"Never":10},
-        efficientAppliances: {"Yes":0,"No":10},
-        smartThermostat: {"Yes":0,"No":5},
-        coldWash: {daily:0,"few-times-week":1,weekly:2,monthly:3,rarely:4,never:5},
-        checkLeaks: {"Always":0,"Sometimes":5,"Never":10},
-        showerLength: {"0 - 3 mins":2,"4 - 6 mins":5,"7 - 9 mins":10,"10 - 12 mins":15,"12+ mins":20},
-        laundry: {"0 - 1 times":2,"2 - 3 times":5,"4 times":10,"5 - 6 times":15,"7+ times":20},
-        dishwashing: {"0 - 1 times":1,"2 times":3,"3 - 4 times":5,"5 - 6 times":8,"7+ times":12},
-        leaks: {"Always":0,"Sometimes":5,"Never":10},
-        gardenWatering: {daily:5,"few-times-week":3,weekly:2,monthly:1,rarely:0,never:0},
-        lowFlowShower: {"Yes":0,"No":5},
-        rainwater: {"Yes":0,"No":5},
-        reuseGreywater: {"Yes":0,"No":5},
-        bathInsteadShower: {daily:5,"few-times-week":3,weekly:2,monthly:1,rarely:0,never:0},
-        turnOffTap: {"Always":0,"Sometimes":2,"Never":5},
-        waterEfficientAppliances: {"Yes":0,"No":5},
-        trashBags: {"0 to 1 bags":2,"2 to 3 bags":5,"4 to 5 bags":10,"6 to 7 bags":15,"8+ bags":20},
-        recycle: {"Always":0,"Sometimes":2,"Never":5},
-        plasticUsage: {"Always":10,"Sometimes":5,"Never":0},
-        compost: {"Always":0,"Sometimes":2,"Never":5},
-        electronicsWaste: {"Monthly":2,"Quarterly":5,"Yearly":10,"Every few years":12,"Never":15},
-        donateItems: {"Always":0,"Sometimes":2,"Never":5},
-        minimalPackaging: {"Always":0,"Sometimes":2,"Never":5},
-        reusableBags: {"Always":0,"Sometimes":1,"Never":2},
-        recycleBatteries: {"Always":0,"Sometimes":2,"Never":5},
-        secondHand: {"Always":0,"Sometimes":1,"Never":3},
-    };
+  // TRANSPORT
+  if (qid === 'driveTime') {
+    const hoursMap = {'0 - 2 hours':1,'3 - 5 hours':4,'6 - 8 hours':7,'9 - 12 hours':10.5,'12+ hours':14};
+    const hours = hoursMap[option] ?? 0;
+    const km = hours * ASSUMPTIONS.avg_drive_speed_kmh;
+    return toBasis(km) * FACTORS.transport.car_avg_kg_per_km;
+  }
+  if (qid === 'commuteDistance') {
+    const kmPerDay = ASSUMPTIONS.commute_km_midpoints[option] ?? 0;
+    return toBasis(kmPerDay * 5) * FACTORS.transport.car_avg_kg_per_km;
+  }
+  if (qid === 'publicTransport') {
+    const kmPerEvent = 10;
+    const ev = evPerWeek ?? 0;
+    return toBasis(ev * kmPerEvent) * FACTORS.transport.bus_kg_per_pkm;
+  }
+  if (qid === 'rideSharing') {
+    const kmPerEvent = 8;
+    const ev = evPerWeek ?? 0;
+    return toBasis(ev * kmPerEvent) * FACTORS.transport.car_avg_kg_per_km;
+  }
+  if (qid === 'bikeWalk') {
+    const avoidedKmPerEvent = 3;
+    const savings = toBasis((evPerWeek ?? 0) * avoidedKmPerEvent) * FACTORS.transport.car_avg_kg_per_km;
+    return -savings;
+  }
+  if (qid === 'flights') {
+    const flightsMap = {'0':0,'1 - 2':1.5,'3 - 5':4,'6 - 10':8,'10+':12};
+    const oneWayCountPerYear = (flightsMap[option] ?? 0) * 2;
+    const yearlyKg = oneWayCountPerYear * FACTORS.flights.one_way_shorthaul_kg;
+    return toBasis(yearlyKg / 52.1429);
+  }
+  if (qid === 'electricVehicle') { return 0; }
+  if (qid === 'carpool') {
+    const kmPerEvent = 10;
+    const saving = 0.5 * kmPerEvent * FACTORS.transport.car_avg_kg_per_km;
+    return toBasis((evPerWeek ?? 0) * (-saving));
+  }
 
+  // ENERGY
+  if (qid === 'applianceUsage') {
+    const hoursMap = {'0 - 2 hours':1,'3 - 4 hours':3.5,'5 - 6 hours':5.5,'7 - 8 hours':7.5,'8+ hours':9};
+    const hoursPerDay = hoursMap[option] ?? 0;
+    const kWhPerWeek = 0.4 * hoursPerDay * 7;
+    return toBasis(kWhPerWeek) * FACTORS.electricity.grid_PH_kg_per_kWh;
+  }
+  if (qid === 'electricBill') { return 0; }
+  if (qid === 'energySaving' || qid === 'unplugDevices' || qid === 'efficientAppliances' ||
+      qid === 'smartThermostat' || qid === 'checkLeaks' || qid === 'coldWash') {
+    return 0;
+  }
 
-    let flatQuestions = [];
-    for (const category in questions) {
-        questions[category].forEach(q => flatQuestions.push({...q, category}));
-    }
+  // WATER
+  if (qid === 'showerLength') {
+    const minsMap = {'0 - 3 mins':2,'4 - 6 mins':5,'7 - 9 mins':8,'10 - 12 mins':11,'12+ mins':14};
+    return toBasis((minsMap[option] ?? 0) * FACTORS.water_waste.shower_kg_per_min * 7);
+  }
+  if (qid === 'laundry') {
+    const loadsMap = {'0 - 1 times':0.5,'2 - 3 times':2.5,'4 times':4,'5 - 6 times':5.5,'7+ times':7.5};
+    return toBasis((loadsMap[option] ?? 0) * FACTORS.water_waste.laundry_kg_per_load);
+  }
+  if (qid === 'dishwashing') {
+    const runsMap = {'0 - 1 times':0.5,'2 times':2,'3 - 4 times':3.5,'5 - 6 times':5.5,'7+ times':7.5};
+    return toBasis((runsMap[option] ?? 0) * FACTORS.water_waste.dishwasher_kg_per_run);
+  }
 
-    let currentIndex = 0;
-    let totalScore = 0;
+  // WASTE – neutral
+  return 0;
+}
 
-    const quizContainer = document.getElementById('quizContainer');
-    const progressFill = document.getElementById('progressFill');
-    const resultDisplay = document.getElementById('resultDisplay');
-    const carbonValue = document.getElementById('carbonValue');
-    const scoreInput = document.getElementById('scoreInput');
+/** Quiz engine (unchanged core) */
+let flatQuestions = [];
+for (const category in questions) {
+  questions[category].forEach(q => flatQuestions.push({...q, category}));
+}
+let currentIndex = 0;
+let totalScore = 0;
 
-    function showQuestion() {
-        quizContainer.innerHTML = '';
+const quizContainer = document.getElementById('quizContainer');
+const progressFill = document.getElementById('progressFill');
+const resultDisplay = document.getElementById('resultDisplay');
+const carbonValue = document.getElementById('carbonValue');
+const scoreInput = document.getElementById('scoreInput');
 
-        if (currentIndex >= flatQuestions.length) {
-            showResult();
-            return;
-        }
+function addToCategory(category, scoreKg) {
+  categoryTotals[category] = (categoryTotals[category] || 0) + scoreKg;
+  categoryCounts[category] = (categoryCounts[category] || 0) + 1;
+}
 
-        const q = flatQuestions[currentIndex];
+function showQuestion() {
+  quizContainer.innerHTML = '';
+  if (currentIndex >= flatQuestions.length) { showResult(); return; }
 
-        const quizContainerDiv = document.querySelector('.calculator-container');
-        const progress = currentIndex / flatQuestions.length;
-        updateDayCycle(progress);
+  const q = flatQuestions[currentIndex];
+  const progress = currentIndex / flatQuestions.length;
+  updateDayCycle(progress);
 
-   
+  const questionDiv = document.createElement('div');
+  questionDiv.classList.add('input-container');
 
+  const categoryLabel = document.createElement('div');
+  categoryLabel.classList.add('category-label');
+  categoryLabel.textContent = q.category;
+  categoryLabel.style.fontWeight = 'bold';
+  categoryLabel.style.marginBottom = '5px';
+  questionDiv.appendChild(categoryLabel);
 
-        const questionDiv = document.createElement('div');
-        questionDiv.classList.add('input-container');
+  const label = document.createElement('div');
+  label.classList.add('question-text');
+  label.textContent = q.text;
+  questionDiv.appendChild(label);
 
-        const categoryLabel = document.createElement('div');
-        categoryLabel.classList.add('category-label');
-        categoryLabel.textContent = q.category;
-        categoryLabel.style.fontWeight = 'bold';
-        categoryLabel.style.marginBottom = '5px';
-        questionDiv.appendChild(categoryLabel);
+  const frequencyValues = ['daily','few-times-week','weekly','monthly','rarely','never'];
+  let val;
 
-        const label = document.createElement('div');
-        label.classList.add('question-text');
-        label.textContent = q.text;
-        questionDiv.appendChild(label);
+  if (q.options.every(opt => frequencyValues.includes(opt))) {
+    const sliderContainer = document.createElement('div');
+    sliderContainer.classList.add('slider-container');
 
-        const frequencyValues = ['daily','few-times-week','weekly','monthly','rarely','never'];
-        let val;
+    const slider = document.createElement('input');
+    slider.type = 'range';
+    slider.min = 0;
+    slider.max = q.options.length - 1;
+    slider.value = Math.floor((q.options.length - 1)/2);
+    slider.step = 1;
+    slider.id = q.id;
 
-        if (q.options.every(opt => frequencyValues.includes(opt))) {
-            const sliderContainer = document.createElement('div');
-            sliderContainer.classList.add('slider-container');
+    const sliderLabel = document.createElement('div');
+    sliderLabel.classList.add('slider-label');
+    sliderLabel.textContent = q.options[slider.value];
 
-            const slider = document.createElement('input');
-            slider.type = 'range';
-            slider.min = 0;
-            slider.max = q.options.length - 1;
-            slider.value = 0;
-            slider.step = 1;
-            slider.id = q.id;
+    slider.addEventListener('input', () => {
+      sliderLabel.textContent = q.options[slider.value];
+      const percent = slider.value / (slider.max - slider.min);
+      sliderLabel.style.left = `calc(${percent * 100}% )`;
+      sliderLabel.style.transform = 'translateX(-50%)';
+    });
 
-            const sliderLabel = document.createElement('div');
-            sliderLabel.classList.add('slider-label');
-            sliderLabel.textContent = q.options[0];
+    sliderContainer.appendChild(slider);
+    sliderContainer.appendChild(sliderLabel);
+    questionDiv.appendChild(sliderContainer);
+  } else {
+    const optionsContainer = document.createElement('div');
+    optionsContainer.classList.add('options-container');
 
-            slider.addEventListener('input', () => {
-            sliderLabel.textContent = q.options[slider.value];
-
-          
-              const percent = slider.value / (slider.max - slider.min);
-              const sliderWidth = slider.offsetWidth;
-              sliderLabel.style.left = `calc(${percent * 100}% )`;
-              sliderLabel.style.transform = 'translateX(-50%)';
-          });
-
-
-            sliderContainer.appendChild(slider);
-            sliderContainer.appendChild(sliderLabel);
-            questionDiv.appendChild(sliderContainer);
-        } else {
-            const optionsContainer = document.createElement('div');
-optionsContainer.classList.add('options-container');
-
-q.options.forEach(opt => {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.textContent = opt;
-    btn.classList.add('option-btn');
-    btn.style.margin = '5px 5px 0 0';
-    btn.addEventListener('click', () => {
+    q.options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = opt;
+      btn.classList.add('option-btn');
+      btn.style.margin = '5px 5px 0 0';
+      btn.addEventListener('click', () => {
         val = opt;
-
-        totalScore += footprintValues[q.id][val] || 0;
+        const score = computeEmission(q.id, val) || 0;
+        totalScore += score;
+        addToCategory(q.category, score);
         currentIndex++;
         updateProgress();
         showQuestion();
+      });
+      optionsContainer.appendChild(btn);
     });
-    optionsContainer.appendChild(btn);
-});
-questionDiv.appendChild(optionsContainer);
-        }
+    questionDiv.appendChild(optionsContainer);
+  }
 
-        const nextButton = document.createElement('button');
-        nextButton.textContent = currentIndex === flatQuestions.length - 1 ? 'Finish' : 'Next';
-        nextButton.classList.add('submit-btn');
-        nextButton.style.marginTop = '15px';
-        nextButton.addEventListener('click', function() {
-            if (q.options.every(opt => frequencyValues.includes(opt))) {
-                const slider = document.getElementById(q.id);
-                val = q.options[slider.value];
-            } else {
-                const select = document.getElementById(q.id);
-                val = select.value;
-                if (!val) { alert('Please select an option!'); return; }
-            }
-
-            totalScore += footprintValues[q.id][val] || 0;
-            currentIndex++;
-            updateProgress();
-            showQuestion();
-        });
-
-        questionDiv.appendChild(nextButton);
-        quizContainer.appendChild(questionDiv);
+  const nextButton = document.createElement('button');
+  nextButton.textContent = currentIndex === flatQuestions.length - 1 ? 'Finish' : 'Next';
+  nextButton.classList.add('submit-btn');
+  nextButton.style.marginTop = '15px';
+  nextButton.addEventListener('click', function() {
+    if (q.options.every(opt => frequencyValues.includes(opt))) {
+      const slider = document.getElementById(q.id);
+      val = q.options[slider.value];
+    } else {
+      const select = document.getElementById(q.id);
+      if (select) { val = select.value; if (!val) { alert('Please select an option!'); return; } }
+      else { return; }
     }
+    const score = computeEmission(q.id, val) || 0;
+    totalScore += score;
+    addToCategory(q.category, score);
+    currentIndex++;
+    updateProgress();
+    showQuestion();
+  });
 
-    function updateProgress() {
-    const percent = ((currentIndex) / flatQuestions.length) * 100;
-    progressFill.style.width = percent + '%';
+  questionDiv.appendChild(nextButton);
+  quizContainer.appendChild(questionDiv);
 }
 
+function updateProgress() {
+  const percent = (currentIndex / flatQuestions.length) * 100;
+  progressFill.style.width = percent + '%';
+}
 
-    function showResult() {
-        quizContainer.style.display = 'none';
-        resultDisplay.classList.add('show');
-        carbonValue.textContent = totalScore.toFixed(1);
-        scoreInput.value = totalScore.toFixed(1);
-    }
+/** Finalize and POST category totals */
+function showResult() {
+  quizContainer.style.display = 'none';
+  resultDisplay.classList.add('show');
+  carbonValue.textContent = totalScore.toFixed(1);
+  if (scoreInput) scoreInput.value = totalScore.toFixed(1);
 
-    function restartQuiz() {
-        currentIndex = 0;
-        totalScore = 0;
-        resultDisplay.classList.remove('show');
-        quizContainer.style.display = 'block';
-        updateProgress();
-        showQuestion();
-    }
+  const attemptInput = document.getElementById('attemptInput');
+  if (attemptInput) attemptInput.value = attemptId;
 
-    showQuestion();
-    updateProgress();
+  const timeframe = (document.getElementById('timeframeSelect')?.value ?? 'weekly');
+  const period_start = document.getElementById('periodStart')?.value || null;
+  const period_end   = document.getElementById('periodEnd')?.value || null;
+
+  fetch('/save-footprint-category-totals', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? ''
+    },
+    credentials: 'same-origin',
+    body: JSON.stringify({
+      attempt_id: attemptId,
+      totals: categoryTotals,
+      counts: categoryCounts,
+      overall: totalScore,
+      basis: ANALYTICS_BASIS,
+      timeframe,
+      period_start,
+      period_end
+    })
+  })
+  .then(async (r) => {
+  const raw = await r.text();
+  let data; try { data = raw ? JSON.parse(raw) : null; }
+  catch { throw new Error('Bad JSON from server'); }
+
+  if (!r.ok || !data || data.status !== 'ok') {
+    const msg = (data && (data.message || data.reason)) || `HTTP ${r.status}`;
+    throw new Error(msg);
+  }
+
+  // --- NEW: read both XP and Points from response ---
+  const xp  = (data.xp && (data.xp.awarded ?? data.xp.awarded_xp)) ?? 0;
+  const pts = (data.points && data.points.awarded) ?? 0;
+
+  // Optional: write into the DOM if the element exists
+  const ptsEl = document.getElementById('pointsEarned');
+  if (ptsEl) ptsEl.textContent = `+${pts} pts`;
+
+  // Updated toast
+  const parts = [];
+  parts.push('Saved!');
+  parts.push(`+${xp} XP`);
+  parts.push(`+${pts} pts`);
+  toast(parts.join(' • '), 'success');
+
+  console.log('Saved category totals', data);
+  return data;
+})
+  .catch((err) => {
+    console.error('Save error', err);
+    toast(`Save failed: ${err.message}`, 'error');
+  });
+}
+
+function restartQuiz() {
+  currentIndex = 0;
+  totalScore = 0;
+  for (const k in categoryTotals) delete categoryTotals[k];
+  for (const k in categoryCounts) delete categoryCounts[k];
+  newAttemptId();
+  resultDisplay.classList.remove('show');
+  quizContainer.style.display = 'block';
+  updateProgress();
+  showQuestion();
+}
+
+showQuestion();
+updateProgress();
 </script>
 </body>
 </html>

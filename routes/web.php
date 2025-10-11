@@ -6,6 +6,32 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use Illuminate\Http\Request;
+use App\Http\Controllers\FootprintController;
+use App\Http\Controllers\AnalyticsController;
+use App\Http\Controllers\LandingPage;
+// routes/web.php
+use App\Http\Controllers\LeaderboardController;
+
+
+
+Route::get('/landing-page', [LandingPage::class, 'landing'])
+    ->middleware('auth')   // remove if not using auth
+    ->name('landing-page');
+
+
+Route::get('/me/xp', function () {
+    $u = Auth::user();
+    abort_unless($u, 401);
+    return ['xp' => (int)($u->xp_total ?? 0), 'level' => (int)($u->level ?? 1)];
+})->middleware('auth');
+
+Route::middleware('auth')->get('/analytics/summary', [AnalyticsController::class, 'summary']);
+
+
+Route::middleware('auth')->group(function () {
+    Route::post('/save-footprint-category-totals', [FootprintController::class, 'saveCategoryTotals']);
+    Route::post('/save-footprint-score',           [FootprintController::class, 'saveOverall']); // if you also save overall
+});
 
 
 Route::post('/update-profile', function (Request $request) {
@@ -93,6 +119,8 @@ Route::middleware(\App\Http\Middleware\RedirectIfAuthenticatedCustom::class)->gr
 // Protected routes - require authentication and proper navigation
 Route::middleware([\App\Http\Middleware\CheckAuth::class, \App\Http\Middleware\NavigationTracker::class])->group(function () {
 
+    Route::get('/leaderboard', [LeaderboardController::class, 'index'])->name('leaderboard');
+    
     // Protected pages - require login
     Route::get('/landing-page', function () {
         return view('landing-page');
@@ -127,9 +155,6 @@ Route::middleware([\App\Http\Middleware\CheckAuth::class, \App\Http\Middleware\N
         return view('badges');
     })->name('badges');
 
-    Route::get('/leaderboard', function () {
-        return view('leader');
-    })->name('leaderboard');
 
     Route::get('/settings', function () {
         return view('settings');

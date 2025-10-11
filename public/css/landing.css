@@ -496,7 +496,7 @@
             width: 40px;
             height: 40px;
             background: rgba(255,255,255,0.9);
-            border-radius: 2px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -516,3 +516,10 @@
             transform: scale(1.1);
             box-shadow: 0 6px 20px rgba(0,0,0,0.2);
         }
+.delta-pill{display:inline-block;padding:6px 12px;border-radius:9999px;font-weight:600;font-size:.95rem;line-height:1}
+.delta-pill.good{background:#dcfce7;color:#166534}  /* improvement */
+.delta-pill.bad{background:#fee2e2;color:#991b1b}   /* worse */
+.delta-pill.neutral{background:#e5e7eb;color:#111827}
+.delta-pill .arrow{margin-right:6px;font-weight:700}
+
+

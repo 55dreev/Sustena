@@ -9,7 +9,11 @@ class User extends Authenticatable
 {
     use Notifiable;
 
-    protected $primaryKey = 'user_id';
+    // app/Models/User.php
+protected $primaryKey = 'user_id';
+public $incrementing = true;
+protected $keyType = 'int';
+
     public $timestamps = false;
 
     protected $fillable = ['username', 'email', 'password'];
