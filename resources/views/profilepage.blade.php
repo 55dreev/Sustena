@@ -30,8 +30,8 @@
     .get-score-btn:hover { background-color: #2980b9; }
 
     /* Simple progress bars */
-    .progress-bar { width: 100%; height: 8px; background: #e5e7eb; border-radius: 999px; overflow: hidden; margin: 10px 0; }
-    .progress-fill { height: 100%; background: linear-gradient(90deg, #66bb6a, #4caf50); width: 0%; transition: width .4s ease; }
+    .progress-bar { width: 100%; height: 8px; background: #ffffcc; border-radius: 999px; overflow: hidden; margin: 10px 0; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, #ffffcc, ##ffeb3b); width: 0%; transition: width .4s ease; }
 
     .xp-row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
     .xp-pill { background:#eef6ee; padding:4px 8px; border-radius:999px; font-size:.85rem; }

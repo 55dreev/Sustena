@@ -119,6 +119,46 @@ function toggleSidebar(){
   };
 })();
 
+function showBadgesPopup(badges){
+  // create container if missing
+  let el = document.getElementById('badgePopup');
+  if(!el){
+    el = document.createElement('div');
+    el.id = 'badgePopup';
+    el.style.cssText = `
+      position:fixed; right:20px; bottom:80px; z-index:10000;
+      background:#fff; color:#2d2d2d; border-radius:12px; box-shadow:0 12px 30px rgba(0,0,0,.2);
+      padding:14px 16px; max-width:320px; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;
+    `;
+    document.body.appendChild(el);
+  }
+  const items = badges.map(b => `
+    <div style="display:flex;align-items:center;gap:10px;margin:6px 0;">
+      <div style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#4CAF50;color:#fff;">🏅</div>
+      <div style="flex:1;">
+        <div style="font-weight:700;">${b.name || b.slug}</div>
+        ${b.points_reward ? `<div style="font-size:12px;opacity:.75;">+${b.points_reward} pts</div>` : ''}
+      </div>
+    </div>
+  `).join('');
+  el.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+      <div style="font-weight:800;">New Badge${badges.length>1?'s':''} Unlocked!</div>
+      <button onclick="this.closest('#badgePopup').remove()" style="border:none;background:transparent;font-size:18px;cursor:pointer;">×</button>
+    </div>
+    ${items}
+  `;
+
+  // auto-hide after 4s
+  clearTimeout(window.__badgePopupTimer);
+  window.__badgePopupTimer = setTimeout(() => {
+    el.style.transition = 'opacity .25s ease, transform .25s ease';
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(8px)';
+    setTimeout(()=> el.remove(), 250);
+  }, 4000);
+}
+
 /** =========================================================
  *  NORMALIZATION + EVIDENCE-BASED EMISSION FACTORS (kgCO2e)
  *  ====================================================== */
@@ -152,6 +192,33 @@ const FACTORS = {
   transport: { car_avg_kg_per_km: 0.171, rail_kg_per_pkm: 0.035, bus_kg_per_pkm: 0.103 },
   flights: { one_way_shorthaul_kg: 250, one_way_longhaul_kg: 750 },
   water_waste: { shower_kg_per_min: 0.05, laundry_kg_per_load: 0.6, dishwasher_kg_per_run: 0.5 }
+   ,waste: {
+    kg_per_trash_bag: 3.0,                 // kg CO2e per full bag to landfill
+    single_use_plastic_kg_per_event: 0.2,  // per single-use “event”
+
+    recycle_saving_always:   -1.5,         // weekly savings
+    recycle_saving_sometimes:-0.5,
+
+    compost_saving_always:   -1.5,
+    compost_saving_sometimes:-0.5,
+
+    donate_saving_always:    -0.5,  
+    donate_saving_sometimes: -0.2,
+
+    minimal_pack_saving_always: -0.3,
+    minimal_pack_saving_sometimes: -0.1,
+
+    reusable_bag_saving_always: -0.2,
+    reusable_bag_saving_sometimes: -0.05,
+
+    battery_bulb_recycle_saving_always: -0.3,
+    battery_bulb_recycle_sometimes:     -0.1,
+
+    second_hand_saving_always: -0.5,
+    second_hand_saving_sometimes: -0.2,
+
+    e_waste_kg_per_event: 5.0             // per electronics disposal event
+  }
 };
 const ASSUMPTIONS = {
   portions: { meat_g:150, cheese_g:30, milk_ml:250, eggs_per_serving:2, tofu_g:150, fish_g:150, legumes_g:150 },
@@ -366,7 +433,70 @@ function computeEmission(qid, option) {
   }
 
   // WASTE – neutral
+    // WASTE
+  if (qid === 'trashBags') {
+    // '0 to 1 bags','2 to 3 bags','4 to 5 bags','6 to 7 bags','8+ bags'
+    const bagsMap = {'0 to 1 bags':0.5,'2 to 3 bags':2.5,'4 to 5 bags':4.5,'6 to 7 bags':6.5,'8+ bags':8.5};
+    const bagsPerWeek = bagsMap[option] ?? 0;
+    return toBasis(bagsPerWeek) * FACTORS.waste.kg_per_trash_bag;
+  }
+
+  if (qid === 'recycle') {
+    if (option === 'Always')    return FACTORS.waste.recycle_saving_always;
+    if (option === 'Sometimes') return FACTORS.waste.recycle_saving_sometimes;
+    return 0;
+  }
+
+  if (qid === 'plasticUsage') {
+    const ev = eventsPerWeek[option] ?? 0;
+    return toBasis(ev) * FACTORS.waste.single_use_plastic_kg_per_event;
+  }
+
+  if (qid === 'compost') {
+    if (option === 'Always')    return FACTORS.waste.compost_saving_always;
+    if (option === 'Sometimes') return FACTORS.waste.compost_saving_sometimes;
+    return 0;
+  }
+
+  if (qid === 'electronicsWaste') {
+    // 'Monthly','Quarterly','Yearly','Every few years','Never'
+    const perYearMap = { 'Monthly':12, 'Quarterly':4, 'Yearly':1, 'Every few years':0.25, 'Never':0 };
+    const eventsPerYear = perYearMap[option] ?? 0;
+    return (eventsPerYear * FACTORS.waste.e_waste_kg_per_event) / 52.1429; // weekly
+  }
+
+  if (qid === 'donateItems') {
+    if (option === 'Always')    return FACTORS.waste.donate_saving_always;
+    if (option === 'Sometimes') return FACTORS.waste.donate_saving_sometimes;
+    return 0;
+  }
+
+  if (qid === 'minimalPackaging') {
+    if (option === 'Always')    return FACTORS.waste.minimal_pack_saving_always;
+    if (option === 'Sometimes') return FACTORS.waste.minimal_pack_saving_sometimes;
+    return 0;
+  }
+
+  if (qid === 'reusableBags') {
+    if (option === 'Always')    return FACTORS.waste.reusable_bag_saving_always;
+    if (option === 'Sometimes') return FACTORS.waste.reusable_bag_saving_sometimes;
+    return 0;
+  }
+
+  if (qid === 'recycleBatteries') {
+    if (option === 'Always')    return FACTORS.waste.battery_bulb_recycle_saving_always;
+    if (option === 'Sometimes') return FACTORS.waste.battery_bulb_recycle_sometimes;
+    return 0;
+  }
+
+  if (qid === 'secondHand') {
+    if (option === 'Always')    return FACTORS.waste.second_hand_saving_always;
+    if (option === 'Sometimes') return FACTORS.waste.second_hand_saving_sometimes;
+    return 0;
+  }
+
   return 0;
+
 }
 
 /** Quiz engine (unchanged core) */
@@ -537,28 +667,36 @@ function showResult() {
     throw new Error(msg);
   }
 
-  // --- NEW: read both XP and Points from response ---
+  // XP + Points
   const xp  = (data.xp && (data.xp.awarded ?? data.xp.awarded_xp)) ?? 0;
   const pts = (data.points && data.points.awarded) ?? 0;
+
+  // NEW: badges from backend (array of {slug,name,points_reward?...})
+  const badges = Array.isArray(data.badges_awarded) ? data.badges_awarded : [];
 
   // Optional: write into the DOM if the element exists
   const ptsEl = document.getElementById('pointsEarned');
   if (ptsEl) ptsEl.textContent = `+${pts} pts`;
 
-  // Updated toast
-  const parts = [];
-  parts.push('Saved!');
-  parts.push(`+${xp} XP`);
-  parts.push(`+${pts} pts`);
+  // Build toast text
+  const parts = ['Saved!', `+${xp} XP`, `+${pts} pts`];
+  if (badges.length) {
+    const names = badges.map(b => b.name || b.slug).join(', ');
+    parts.push(`${badges.length} badge${badges.length>1?'s':''}: ${names}`);
+  }
   toast(parts.join(' • '), 'success');
+
+  // Optional: show a quick popup card with the badges
+  if (badges.length) showBadgesPopup(badges);
 
   console.log('Saved category totals', data);
   return data;
 })
-  .catch((err) => {
-    console.error('Save error', err);
-    toast(`Save failed: ${err.message}`, 'error');
-  });
+.catch((err) => {
+  console.error('Save error', err);
+  toast(`Save failed: ${err.message}`, 'error');
+});
+
 }
 
 function restartQuiz() {

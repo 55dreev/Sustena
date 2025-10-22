@@ -29,7 +29,7 @@ class AnalyticsController extends Controller
         }
 
         $limit             = max(1, min(20, (int) $request->query('limit', 5)));
-        $includePracticeRq = (bool) $request->boolean('include_practice', false);
+        $includePracticeRq = (bool) $request->boolean('include_practice', true);
 
         /**
          * Helper to load attempts + category rows + overall scores.

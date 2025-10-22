@@ -470,16 +470,46 @@ class FootprintController extends Controller
             $points = ['awarded' => 0, 'reason' => 'points_error', 'error' => $e->getMessage()];
         }
 
-        return response()->json([
-            'status'       => 'ok',
-            'attempt_id'   => $attemptId,
-            'is_official'  => (bool)$isOfficial,
-            'reason'       => $reason,
-            'weekly_kg'    => round((float)$thisWeekly, 3),
-            'xp'           => $xp,
-            'points'       => $points,
-        ]);
+        // continue to badges handling and final response below
+        $badgesAwarded = [];
+try {
+    /** @var \App\Services\BadgeService $badgeService */
+    $badgeService = app(\App\Services\BadgeService::class);
+
+    // Let the service read whatever it needs about the attempt
+    $award = $badgeService->evaluateAttempt(
+        (int) $userId,
+        (string) $attemptId,
+        true
+    );
+
+    // badges just earned this save
+    $badgesAwarded = $award['badges'] ?? [];
+
+    // OPTIONAL: if your BadgeService returns extra points,
+    // add them to the points payload you already computed.
+    if (!empty($award['points'])) {
+        $points['awarded'] = (int)($points['awarded'] ?? 0) + (int)$award['points'];
     }
+} catch (\Throwable $e) {
+    // Don't fail the save on badge errors
+    \Log::warning('Badge award failed: '.$e->getMessage());
+    $badgesAwarded = [];
+}
+
+// Final response
+return response()->json([
+    'status'         => 'ok',
+    'attempt_id'     => $attemptId,
+    'is_official'    => (bool) $isOfficial,
+    'reason'         => $reason,
+    'weekly_kg'      => round((float) $thisWeekly, 3),
+    'xp'             => $xp,
+    'points'         => $points,       // <-- include points for the UI
+    'badges_awarded' => $badgesAwarded // <-- newly earned badges
+]);
+    }
+
 
     /**
      * Practice-only: save overall (no XP).

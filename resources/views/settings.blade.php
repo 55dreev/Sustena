@@ -358,39 +358,77 @@
         .bottom-section {
             animation-delay: 0.2s;
         }
+           /* Sidebar */
+.sidebar {
+    width: 200px;
+    background: linear-gradient(180deg, #4a7c59 0%, #2d5a3d 100%);
+    padding: 20px;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+    z-index: 1000;
+}
+
+/* Collapsed sidebar */
+.sidebar.collapsed {
+    transform: translateX(-160px); /* leave ~20px visible for button */
+}
+
+/* Sidebar toggle (hamburger) */
+.sidebar-toggle {
+    position: absolute;
+    top: 20px;
+    right: 0px;  /* width of the hamburger button */
+    font-size: 24px;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    z-index: 1101;
+    transition: background 0.2s ease, right 0.3s ease;
+}
+
+.sidebar-toggle:hover {
+    background: #1a252f;
+}
     </style>
 </head>
 <body>
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar">
+    <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div>
     <div class="logo">
-      <div class="logo-icon">🌱</div>
-      <div class="logo-text">SUSTENA</div>
+        <div class="logo-icon">🌱</div>
+        <div class="logo-text">SUSTENA</div>
     </div>
-    <a href="{{ url('/landing-page') }}" class="nav-item ">
-      <div class="nav-icon">🏠</div>
-      <span>Home</span>
+    <a href="{{ url('/landing-page') }}" class="nav-item">
+        <div class="nav-icon">🏠</div>
+        <span>Home</span>
     </a>
-    <a href="{{ url('/footprint-calculator') }}" class="nav-item">
-      <div class="nav-icon">👣</div>
-      <span>Footprint Tracker</span>
+    <a href="{{ url('/footprint-calculator') }}" class="nav-item active">
+        <div class="nav-icon">👣</div>
+        <span>Footprint Tracker</span>
     </a>
-    <a href="{{ url('/learn') }}" class="nav-item">
-      <div class="nav-icon">📚</div>
-      <span>Learn</span>
+    <a href="{{ url('/learning-modules') }}" class="nav-item">
+        <div class="nav-icon">📚</div>
+        <span>Learn</span>
     </a>
-    <a href="{{ url('/challenges') }}" class="nav-item">
-      <div class="nav-icon">🏆</div>
-      <span>Challenges</span>
+    <a href="{{ url('/challenge') }}" class="nav-item">
+        <div class="nav-icon">🏆</div>
+        <span>Challenges</span>
     </a>
-    <a href="{{ url('/microforum') }}" class="nav-item">
-      <div class="nav-icon">💬</div>
-      <span>MicroForum</span>
+    <a href="{{ url('/forum') }}" class="nav-item">
+        <div class="nav-icon">💬</div>
+        <span>MicroForum</span>
     </a>
     <a href="{{ url('/profile') }}" class="nav-item">
-      <div class="nav-icon">👤</div>
-      <span>Profile</span>
+        <div class="nav-icon">👤</div>
+        <span>Profile</span>
     </a>
-  </div>
+</div>
 
     <div class="main-content">
         <div class="header">
@@ -528,6 +566,13 @@
 
 
     <script>
+        // Toggle sidebar
+  function toggleSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    const mainContent = document.querySelector('.main-content');
+    sidebar.classList.toggle('collapsed');
+    mainContent.classList.toggle('expanded');
+  }
         // Navigation functionality
         document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', function(e) {

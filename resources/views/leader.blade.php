@@ -57,6 +57,43 @@
         .rank-number.gold { background: linear-gradient(145deg, #ffd700, #ffb300); color: #333; animation: goldGlow 2s ease-in-out infinite; }
         .rank-number.silver { background: linear-gradient(145deg, #c0c0c0, #a0a0a0); color: #333; }
         .rank-number.bronze { background: linear-gradient(145deg, #cd7f32, #b8860b); color: white; }
+           /* Sidebar */
+.sidebar {
+    width: 200px;
+    background: linear-gradient(180deg, #4a7c59 0%, #2d5a3d 100%);
+    padding: 20px;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+    z-index: 1000;
+}
+
+/* Collapsed sidebar */
+.sidebar.collapsed {
+    transform: translateX(-160px); /* leave ~20px visible for button */
+}
+
+/* Sidebar toggle (hamburger) */
+.sidebar-toggle {
+    position: absolute;
+    top: 20px;
+    right: 0px;  /* width of the hamburger button */
+    font-size: 24px;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    z-index: 1101;
+    transition: background 0.2s ease, right 0.3s ease;
+}
+
+.sidebar-toggle:hover {
+    background: #1a252f;
+}
         @keyframes goldGlow { 0%,100% { box-shadow: 0 6px 15px rgba(255,215,0,0.3);} 50% { box-shadow: 0 6px 25px rgba(255,215,0,0.6);} }
 
         .user-avatar { width: 50px; height: 50px; background: rgba(255,255,255,0.9); border-radius: 50%; margin-right: 20px; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); position: relative; z-index: 2; }
@@ -77,36 +114,37 @@
     </style>
 </head>
 <body>
-  <div class="sidebar">
+ <div class="sidebar" id="sidebar">
+    <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div>
     <div class="logo">
-      <div class="logo-icon">🌱</div>
-      <div class="logo-text">SUSTENA</div>
+        <div class="logo-icon">🌱</div>
+        <div class="logo-text">SUSTENA</div>
     </div>
-    <a href="{{ url('/landing-page') }}" class="nav-item ">
-      <div class="nav-icon">🏠</div>
-      <span>Home</span>
+    <a href="{{ url('/landing-page') }}" class="nav-item">
+        <div class="nav-icon">🏠</div>
+        <span>Home</span>
     </a>
-    <a href="{{ url('/footprint-calculator') }}" class="nav-item">
-      <div class="nav-icon">👣</div>
-      <span>Footprint Tracker</span>
+    <a href="{{ url('/footprint-calculator') }}" class="nav-item active">
+        <div class="nav-icon">👣</div>
+        <span>Footprint Tracker</span>
     </a>
-    <a href="{{ url('/learn') }}" class="nav-item">
-      <div class="nav-icon">📚</div>
-      <span>Learn</span>
+    <a href="{{ url('/learning-modules') }}" class="nav-item">
+        <div class="nav-icon">📚</div>
+        <span>Learn</span>
     </a>
-    <a href="{{ url('/challenges') }}" class="nav-item">
-      <div class="nav-icon">🏆</div>
-      <span>Challenges</span>
+    <a href="{{ url('/challenge') }}" class="nav-item">
+        <div class="nav-icon">🏆</div>
+        <span>Challenges</span>
     </a>
-    <a href="{{ url('/microforum') }}" class="nav-item">
-      <div class="nav-icon">💬</div>
-      <span>MicroForum</span>
+    <a href="{{ url('/forum') }}" class="nav-item">
+        <div class="nav-icon">💬</div>
+        <span>MicroForum</span>
     </a>
     <a href="{{ url('/profile') }}" class="nav-item">
-      <div class="nav-icon">👤</div>
-      <span>Profile</span>
+        <div class="nav-icon">👤</div>
+        <span>Profile</span>
     </a>
-  </div>
+</div>
 
   @php
     // Expecting $leaders from the controller: id, name, points_total, xp_total, level
@@ -193,6 +231,13 @@
   </div>
 
   <script>
+    // Toggle sidebar
+  function toggleSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    const mainContent = document.querySelector('.main-content');
+    sidebar.classList.toggle('collapsed');
+    mainContent.classList.toggle('expanded');
+  }
     document.querySelectorAll('.nav-item').forEach(item => {
       item.addEventListener('click', function() {
         document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));

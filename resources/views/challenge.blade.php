@@ -96,7 +96,14 @@
     .difficulty.filled.easy { background-color: #4caf50; border-color: #4caf50; }    /* green */
     .difficulty.filled.medium { background-color: #ffeb3b; border-color: #ffeb3b; } /* yellow */
     .difficulty.filled.hard { background-color: #f44336; border-color: #f44336; }   /* red */
-
+    .floating-icons { position: fixed; top: 20px; right: 20px; display: flex; gap: 10px; z-index: 1000; }
+        .floating-icon {
+            width: 40px; height: 40px; background: rgba(255,255,255,0.9); border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            cursor: pointer; transition: all 0.3s ease; font-size: 20px;
+        }
+        .floating-icon:hover { transform: scale(1.1); box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
+        .floating-icons a { text-decoration: none; color: inherit; }
     @keyframes fadeInUp {
       from { transform: translateY(50px); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
@@ -125,6 +132,13 @@
       <h1 class="header-title">Challenges</h1>
       <div class="header-subtitle">Pick a challenge to complete</div>
       <div id="challenge-timer" style="margin-top:5px; font-size:14px; color:#444;">Refreshes in: --</div>
+    </div>
+    <div class="floating-icons">
+      <a href="{{ url('/analytics') }}" class="floating-icon" title="Analytics">🔥</a>
+      <a href="{{ url('/learning-modules') }}" class="floating-icon" title="Learning Modules">🌱</a>
+      <a href="{{ url('/leaderboard') }}" class="floating-icon" title="Leaderboard">🏆</a>
+      <a href="{{ url('/badges') }}" class="floating-icon" title="Badges">🥇</a>
+      <a href="{{ url('/settings') }}" class="floating-icon" title="Settings">⚙️</a>
     </div>
 
     <button id="refreshChallenges" style="margin: 20px; padding: 10px; cursor: pointer;">🔄 Refresh Challenges (Test)</button>

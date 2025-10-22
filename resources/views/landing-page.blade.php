@@ -8,12 +8,7 @@
 </head>
 <body>
 @php
-    // ===== Dynamic values with safe fallbacks =====
-    // Expect these to be passed by your HomeController:
-    // $level, $xp_total, $xp_to_next, $xp_percent, $streak_weeks, $streak_days,
-    // $badges (array of ['icon' => '🌿', 'name' => 'Green Starter']), $weekly_savings_kg,
-    // $energy_saved_kwh, $rank, $rank_change, $weekly_goal_count, $weekly_goal_target,
-    // $community_total_users, $daily_mission (string), $eco_tip (string)
+    // ===== Dynamic values with safe fallbacks (do NOT clobber controller data) =====
 
     $level               = $level               ?? (int) (Auth::user()->level ?? 1);
     $xp_total            = $xp_total            ?? (int) (Auth::user()->xp_total ?? 0);
@@ -21,23 +16,60 @@
     $xp_percent          = $xp_percent          ?? 0;                    // 0–100
     $streak_weeks        = $streak_weeks        ?? (int) (Auth::user()->streak_weeks ?? 0);
     $streak_days         = $streak_days         ?? null;                 // optional if you also track daily streaks
-    $badges              = $badges              ?? [];                   // [['icon'=>'🌿','name'=>'Green Starter'], ...]
-    $weekly_savings_kg   = $weekly_savings_kg   ?? 0.0;                  // latest official vs previous official
-    $energy_saved_kwh    = $energy_saved_kwh    ?? 0.0;                  // month-to-date
-    $rank                = $rank                ?? null;                 // integer like 47
-    $rank_change         = $rank_change         ?? 0;                    // +3 / -2 number
-    $weekly_goal_count   = $weekly_goal_count   ?? 0;                    // days completed
-    $weekly_goal_target  = $weekly_goal_target  ?? 7;                    // default weekly target
-    $community_total     = $community_total_users ?? null;               // total users
+    $badges              = $badges              ?? [];
+    $weekly_savings_kg   = $weekly_savings_kg   ?? 0.0;
+    $energy_saved_kwh    = $energy_saved_kwh    ?? 0.0;
+
+    // Rank pieces — prefer what the controller sent
+    // If the controller passed $community_total, keep it; else fall back to *_users if provided
+    $community_total     = $community_total      ?? ($community_total_users ?? null);
+
+    // If controller passed $rank_text, keep it; else build it from $rank (if provided)
+    if (!isset($rank_text)) {
+        if (isset($rank)) {
+            $rank_text = "#{$rank}";
+        } else {
+            $rank_text = "—";
+        }
+    }
+
+    // If controller passed $rank_delta, keep it; else derive from $rank_change if we have it
+    if (!isset($rank_delta)) {
+        $rank_change = $rank_change ?? 0;
+        $rank_delta  = ($rank_change === 0) ? "—"
+                     : (($rank_change > 0 ? "↗️ +" : "↘️ ").abs($rank_change));
+    }
+
     $daily_mission       = $daily_mission       ?? "Skip meat for lunch today!";
     $eco_tip             = $eco_tip             ?? "Turning off the tap while brushing saves ~6 L of water per minute.";
 
+        $weekly_goal_count  = isset($weekly_goal_count)  ? (int) $weekly_goal_count  : 0;
+    $weekly_goal_target = isset($weekly_goal_target) ? (int) $weekly_goal_target : 7;
+    if ($weekly_goal_target < 1) { $weekly_goal_target = 7; } // avoid divide-by-zero
+
     // Derived
     $goal_percent = $weekly_goal_target > 0 ? min(100, round(($weekly_goal_count / $weekly_goal_target) * 100)) : 0;
-    $rank_text    = $rank ? "#{$rank}" : "—";
-    $rank_delta   = ($rank_change === 0) ? "—" : (($rank_change > 0 ? "↗️ +" : "↘️ ").abs($rank_change));
     $badge_icons  = array_slice(array_map(fn($b) => $b['icon'] ?? '⭐', $badges), 0, 6); // show up to 6
     $streak_label = $streak_days !== null ? "{$streak_days}-Day" : "{$streak_weeks}-Week";
+
+    // Compute day streak here only if controller didn’t send it
+    if ($streak_days === null) {
+        $uid = Auth::guard('web')->user()?->user_id ?? Auth::id();
+        $streak_days = 0;
+        if ($uid) {
+            $last = DB::table('footprint_scores')->where('user_id', $uid)->max('created_at');
+            if ($last) {
+                $anchor = \Carbon\Carbon::parse($last)->startOfDay();
+                for ($i = 0; $i < 365; $i++) {
+                    $ds = (clone $anchor)->subDays($i);
+                    $de = (clone $ds)->endOfDay();
+                    $had = DB::table('footprint_scores')->where('user_id', $uid)
+                        ->whereBetween('created_at', [$ds, $de])->exists();
+                    if ($had) { $streak_days++; } else { break; }
+                }
+            }
+        }
+    }
 @endphp
 
 <!-- Sidebar -->
@@ -101,34 +133,148 @@
         <div class="mission-text">{{ $eco_tip }}</div>
     </div>
 
+{{-- === Streak (compact tile) === --}}
+@php
+  $uid = Auth::id();
+  $current = (int) ($streak_days ?? 0);
+
+  // milestone progress (tiny bar)
+  $milestones = [1,3,7,14,30,60,100];
+  sort($milestones);
+  $next  = collect($milestones)->first(fn($m) => $m > $current);
+  $prev  = collect(array_reverse($milestones))->first(fn($m) => $m <= $current) ?? 0;
+  $pct   = $next ? (int) round(($current - $prev) / max(1, $next - $prev) * 100) : 100;
+
+  // compact encouragement
+  $msg = match (true) {
+    $current === 0 => 'Start today 🔥',
+    $current === 1 => 'Back tomorrow for 2 ✨',
+    $current < 7   => 'Close to a week!',
+    $current < 14  => 'Halfway to 2 weeks 💪',
+    $current < 30  => '30-day badge in sight 🌟',
+    default        => 'Keep the flame alive 🔥',
+  };
+
+  // last activity (small muted line)
+  $lastAt = $uid
+      ? \Illuminate\Support\Facades\DB::table('footprint_scores')
+          ->where('user_id', $uid)->max('created_at')
+      : null;
+@endphp
+
     <div class="cards-grid">
-        <!-- Streak (shows Day streak if provided; else Week streak from XP system) -->
+        <!-- Streak -->
         <div class="card streak-card" title="Your current streak">
             <div class="card-icon">🔥</div>
-            <div class="card-title">{{ $streak_label }}</div>
-            <div class="card-subtitle">Streak</div>
-            <div class="card-text">{{ $streak_days !== null ? 'Keep it up!' : 'Consecutive official weeks' }}</div>
-        </div>
+            <div class="card-title">{{ $current }}</div>
+            <div class="card-subtitle">Day Streak</div>
 
-        <!-- Badges -->
-        <div class="card badges-card">
-            <div class="card-title">Badges Earned</div>
+            <div class="mini-progress" @if(!$next) aria-hidden="true" @endif>
+                <div class="mini-fill" style="width: {{ $pct }}%"></div>
+            </div>
 
-            @if (count($badge_icons))
-                <div class="badge-grid">
-                    @foreach ($badge_icons as $icon)
-                        <div class="badge">{{ $icon }}</div>
-                    @endforeach
-                </div>
-            @else
-                <div class="card-text" style="opacity:.8;">No badges yet — complete challenges to earn your first! ✨</div>
+            <div class="tiny-note">
+                @if($next)
+                  Next: {{ $next }} • {{ max(0, $next - $current) }}
+                  day{{ $next - $current === 1 ? '' : 's' }} to go
+                @else
+                  Milestones complete 🎉
+                @endif
+            </div>
+            <div class="card-text one-line">{{ $msg }}</div>
+
+            @if($lastAt)
+              <div class="tiny-note faint">Last activity • {{ \Carbon\Carbon::parse($lastAt)->diffForHumans() }}</div>
             @endif
-            <br>
-            <a class="view-all-btn" href="{{ route('badges') }}">View All</a>
         </div>
 
 @php
-    // Last two entries for this user
+// Pull badges here only if controller didn't pass them
+if (empty($badges)) {
+    $uid = Auth::user()?->user_id ?? Auth::id();
+    $rows = DB::table('user_badges as ub')
+        ->join('badges as b','b.id','=','ub.badge_id')
+        ->where('ub.user_id',$uid)
+        ->orderByDesc('ub.awarded_at')
+        ->get(['b.slug','b.name','b.category','b.points_reward','ub.awarded_at']);
+
+    $iconByCat = [
+      'energy'=>'⚡','water'=>'🌊','waste'=>'🗑️','carbon'=>'✅',
+      'trees'=>'🌳','transport'=>'🚲','home'=>'🏠','meta'=>'🏅',
+    ];
+
+    $badges = $rows->map(function($r) use ($iconByCat){
+        $cat = strtolower($r->category ?? '');
+        return [
+            'icon'       => $iconByCat[$cat] ?? '🥇',
+            'name'       => $r->name,
+            'slug'       => $r->slug,
+            'points'     => (int) $r->points_reward,
+            'awarded_at' => $r->awarded_at,
+        ];
+    })->values()->toArray();
+
+    $badges_count = count($badges);
+}
+@endphp
+
+@php
+  $badges = is_array($badges) ? $badges : collect($badges)->values()->toArray();
+  $badges_count = $badges_count ?? count($badges);
+  $total_badges_available = $total_badges_available ?? ($badges_count ?: null);
+
+  // Most recent first
+  usort($badges, fn($a,$b) => strcmp($b['awarded_at'] ?? '', $a['awarded_at'] ?? ''));
+  $topList = array_slice($badges, 0, 3);
+  $moreNum = max(0, $badges_count - 6);
+@endphp
+
+        <!-- Badges (compact) -->
+        <div class="card badges-card">
+          <div class="card-icon">📊</div>
+          <div class="card-title">Badges Earned</div>
+
+          @if($badges_count > 0)
+            <div class="badges-summary">
+              <span class="count-pill">
+                {{ $badges_count }}{{ $total_badges_available ? ' / '.$total_badges_available : '' }}
+              </span>
+              <span class="summary-note">Keep collecting to level up!</span>
+            </div>
+
+            <ul class="recent-badges">
+              @foreach($topList as $b)
+                <li class="recent-item">
+                  <span class="recent-icon" aria-hidden="true">{{ $b['icon'] }}</span>
+                  <span class="recent-text">
+                    <strong>{{ $b['name'] }}</strong>
+                    <span class="muted">+{{ (int)($b['points'] ?? 0) }} pts</span>
+                    @if(!empty($b['awarded_at']))
+                      <span class="muted">• {{ \Carbon\Carbon::parse($b['awarded_at'])->diffForHumans() }}</span>
+                    @endif
+                  </span>
+                </li>
+              @endforeach
+            </ul>
+
+            @if($moreNum > 0)
+              <div class="tiny-note" style="opacity:.8;margin-top:8px;">
+                +{{ $moreNum }} more — see full list
+              </div>
+            @endif
+          @else
+            <div class="card-text" style="opacity:.9;">
+              No badges yet — complete a challenge to earn your first ✨
+            </div>
+            <div class="badge-ctas">
+              <a class="primary-btn" href="{{ route('challenge') }}">Start a Challenge</a>
+              <a class="view-all-btn" href="{{ route('badges') }}">See Available Badges</a>
+            </div>
+          @endif
+        </div>
+
+@php
+    // Last two entries for this user (for the CO2 delta)
     $uid = Auth::guard('web')->user()?->user_id ?? Auth::id();
     $latestVal = null; $prevVal = null; $deltaPct = null; $deltaKg = null; $improved = null;
 
@@ -155,7 +301,6 @@
     $pillClass = !$hasData ? 'neutral' : ($improved ? 'good' : 'bad');
     $arrow     = !$hasData ? '' : ($improved ? '↓' : '↑');
 
-    // Human-readable labels
     $pctText = $hasData
         ? number_format(abs($deltaPct), 1) . '% ' . ($improved ? 'lower than last run' : 'higher than last run')
         : 'No previous run';
@@ -169,22 +314,20 @@
         : '';
 @endphp
 
-<div class="card co2-card" title="Change from your last run">
-  <div class="card-icon">🌳</div>
-  <div class="card-title">You've Saved</div>
+        <!-- CO2 delta -->
+        <div class="card co2-card" title="Change from your last run">
+          <div class="card-icon">🌳</div>
+          <div class="card-title">You've Saved</div>
 
-  <div class="delta-pill {{ $pillClass }}">
-    <span class="arrow">{{ $arrow }}</span>{{ $pctText }}
-  </div>
+          <div class="delta-pill {{ $pillClass }}">
+            <span class="arrow">{{ $arrow }}</span>{{ $pctText }}
+          </div>
 
-  <div class="kg-delta" style="margin-top:8px;opacity:.9;">{{ $kgText }}</div>
-  @if($trailText)
-    <div class="tiny-note" style="margin-top:4px;opacity:.7;font-size:.9rem;">{{ $trailText }}</div>
-  @endif
-</div>
-
-
-
+          <div class="kg-delta" style="margin-top:8px;opacity:.9;">{{ $kgText }}</div>
+          @if($trailText)
+            <div class="tiny-note" style="margin-top:4px;opacity:.7;font-size:.9rem;">{{ $trailText }}</div>
+          @endif
+        </div>
 
         <!-- XP / Level progress -->
         <div class="card progress-card" title="XP towards your next level">
@@ -203,7 +346,7 @@
             </div>
         </div>
 
-        <!-- Water / Energy -->
+        <!-- Energy -->
         <div class="card energy-card" title="Estimated household energy saved this month">
             <div class="card-icon">⚡</div>
             <div class="card-title">Energy Saved</div>
@@ -211,28 +354,93 @@
             <div class="card-text">this month</div>
         </div>
 
-        <!-- Leaderboard -->
-        <div class="card leaderboard-card" title="Your community rank">
-            <div class="card-icon">👥</div>
-            <div class="card-title">Community Rank</div>
-            <div class="card-subtitle">
-                {{ $rank_text }}
-                @if($community_total) <span style="opacity:.7;">of {{ number_format($community_total) }}</span>@endif
-            </div>
-            <div class="card-text">Keep climbing!</div>
-            <div class="rank-change">{{ $rank_delta }}</div>
-        </div>
+       {{-- ===== Leaderboard: compute in Blade (compact, safe) ===== --}}
+@php
+    use Illuminate\Support\Facades\DB;
+
+    // Current user + points column you rank by (change to xp_total if that’s your metric)
+    $me         = Auth::user();
+    $myPoints   = (int) ($me->points_total ?? $me->xp_total ?? 0);
+
+    // Compute only if not already passed by controller
+    if (!isset($community_total) || !isset($rank_text) || !isset($rank_percentile) || !isset($rank_delta)) {
+        // Community size
+        $community_total = (int) DB::table('users')->count();
+
+        // Dense rank: strictly greater points + 1
+        $rank_number = $community_total > 0
+            ? ((int) DB::table('users')->where('points_total', '>', $myPoints)->count() + 1)
+            : null;
+
+        // Text form
+        $rank_text = $rank_number ? "#{$rank_number}" : '—';
+
+        // Percentile (Top X%) — higher is better
+        $rank_percentile = $rank_number && $community_total > 0
+            ? max(1, min(100, (int) round(100 * (1 - ($rank_number - 1) / max(1, $community_total)))))
+            : null;
+
+        // Movement delta (optional) if you track previous rank on users.last_rank
+        $last_rank = $me->last_rank ?? null; // change to your column if different
+        if (is_null($last_rank) || is_null($rank_number)) {
+            $rank_delta = '—';
+        } else {
+            $diff = (int) $last_rank - (int) $rank_number; // positive = improved
+            $rank_delta = $diff === 0 ? '—' : ($diff > 0 ? "↗️ +{$diff}" : "↘️ " . abs($diff));
+        }
+    }
+@endphp
+
+{{-- ===== Leaderboard card (compact) ===== --}}
+<div class="card leaderboard-card" title="Your community rank">
+  <div class="card-icon">👥</div>
+
+  <!-- Big rank number -->
+  <div class="card-title">{{ $rank_text }}</div>
+
+  <!-- “of N users” -->
+  <div class="card-subtitle">
+    @if(!empty($community_total))
+      of {{ number_format($community_total) }}
+    @else
+      —
+    @endif
+  </div>
+
+  <!-- Friendly line + optional Top % -->
+  <div class="card-text">
+    @if(isset($rank_percentile))
+      Top {{ (int) $rank_percentile }}% in the community
+    @else
+      Keep climbing!
+    @endif
+  </div>
+
+  <!-- Tiny percentile bar (higher is better) -->
+  @if(isset($rank_percentile))
+    <div class="progress-bar" style="margin-top:6px;">
+      <div class="progress-fill" data-progress="{{ (int) $rank_percentile }}"></div>
+    </div>
+  @endif
+
+  <!-- Movement chip -->
+  <div class="rank-change">{{ $rank_delta ?? '—' }}</div>
+<br>
+  <!-- CTA -->
+  <a href="{{ route('leaderboard') }}" class="view-all-btn" style="margin-top:10px;">View Leaderboard</a>
+</div>
 
         <!-- Weekly goal -->
         <div class="card weekly-goal-card" title="Complete sustainable actions this week">
-            <div class="card-icon">🎯</div>
-            <div class="card-title">Weekly Goal</div>
-            <div class="card-subtitle">{{ $weekly_goal_count }}/{{ $weekly_goal_target }} days</div>
-            <div class="card-text">sustainable actions</div>
-            <div class="progress-bar">
-                <div class="progress-fill" data-progress="{{ (int) $goal_percent }}"></div>
-            </div>
-        </div>
+    <div class="card-icon">🎯</div>
+    <div class="card-title">Weekly Goal</div>
+    <div class="card-subtitle">{{ $weekly_goal_count }}/{{ $weekly_goal_target }} days</div>
+    <div class="card-text">sustainable actions</div>
+    <div class="progress-bar">
+        <div class="progress-fill" data-progress="{{ (int) $goal_percent }}"></div>
+    </div>
+</div>
+
     </div>
 </div>
 
@@ -275,11 +483,9 @@
     function initProgressBars() {
         document.querySelectorAll('.progress-fill').forEach(fill => {
             const pct = parseInt(fill.getAttribute('data-progress') || '0', 10);
-            // apply after a tick for simple transition effect
             setTimeout(() => { fill.style.width = Math.max(0, Math.min(100, pct)) + '%'; }, 300);
         });
     }
-
     window.addEventListener('load', initProgressBars);
 
     function toggleSidebar() {

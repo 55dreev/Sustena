@@ -8,13 +8,25 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\FootprintController;
 use App\Http\Controllers\AnalyticsController;
-use App\Http\Controllers\LandingPage;
+use App\Http\Controllers\HomeController;
 // routes/web.php
 use App\Http\Controllers\LeaderboardController;
+// routes/web.php
+use App\Http\Controllers\BadgesController;
+
+Route::get('/badges', [BadgesController::class, 'index'])->name('badges');
+
+// routes/web.php
+Route::get('/debug/badges/{attempt}', function ($attempt) {
+    $u = auth()->user();
+    $svc = app(\App\Services\BadgeService::class);
+    $out = $svc->evaluateAttempt($u->user_id ?? $u->id, $attempt, true);
+    return response()->json($out);
+})->middleware('auth');
 
 
 
-Route::get('/landing-page', [LandingPage::class, 'landing'])
+Route::get('/landing-page', [HomeController::class, 'landing'])
     ->middleware('auth')   // remove if not using auth
     ->name('landing-page');
 
@@ -150,11 +162,6 @@ Route::middleware([\App\Http\Middleware\CheckAuth::class, \App\Http\Middleware\N
     Route::get('/analytics', function () {
         return view('analytic');
     })->name('analytics');
-
-    Route::get('/badges', function () {
-        return view('badges');
-    })->name('badges');
-
 
     Route::get('/settings', function () {
         return view('settings');
