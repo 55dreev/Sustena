@@ -13,6 +13,26 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LeaderboardController;
 // routes/web.php
 use App\Http\Controllers\BadgesController;
+// routes/web.php
+// routes/web.php
+use App\Http\Controllers\ForumController;
+
+Route::get('/forum', [ForumController::class,'index'])->name('forum.index');
+Route::get('/forum/{post}', [ForumController::class,'show'])->name('forum.show');
+
+Route::middleware('auth')->group(function () {
+    Route::post('/forum', [ForumController::class,'storePost'])->name('forum.post.store');
+    Route::post('/forum/{post}/comment', [ForumController::class,'storeComment'])->name('forum.comment.store');
+    Route::post('/forum/{post}/like', [ForumController::class,'toggleLike'])->name('forum.like');
+    Route::delete('/forum/{post}', [ForumController::class,'destroyPost'])->name('forum.post.destroy');
+});
+
+
+// routes/web.php
+Route::get('/forum/active-users', [\App\Http\Controllers\ForumController::class, 'activeUsers'])
+     ->name('forum.activeUsers');
+
+
 
 Route::get('/badges', [BadgesController::class, 'index'])->name('badges');
 
@@ -145,10 +165,6 @@ Route::middleware([\App\Http\Middleware\CheckAuth::class, \App\Http\Middleware\N
     Route::get('/footprint-calculator', function () {
         return view('footprintcalc');
     })->name('footprint-calculator');
-
-    Route::get('/forum', function () {
-        return view('forum');
-    })->name('forum');
 
     Route::get('/learning-modules', function () {
         return view('learningmod');
