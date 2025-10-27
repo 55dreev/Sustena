@@ -313,3 +313,9 @@
         font-size: 36px;
       }
     }
+     /* Make cards clickable with pointer cursor */
+    .learning-card {
+      cursor: pointer;
+      text-decoration: none; /* Prevent underline */
+      color: inherit; /* Prevent default link color */
+    }

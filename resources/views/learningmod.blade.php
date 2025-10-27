@@ -5,14 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SUSTENA - Environmental Learning App</title>
   <link rel="stylesheet" href="{{ asset('css/learningmod.css') }}">
-  <style>
-    /* Make cards clickable with pointer cursor */
-    .learning-card {
-      cursor: pointer;
-      text-decoration: none; /* Prevent underline */
-      color: inherit; /* Prevent default link color */
-    }
-  </style>
+
 </head>
 <body>
 

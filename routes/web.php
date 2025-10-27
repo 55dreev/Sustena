@@ -27,6 +27,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/forum/{post}', [ForumController::class,'destroyPost'])->name('forum.post.destroy');
 });
 
+Route::get('/admin', function () {
+    return view('admin');
+});
 
 // routes/web.php
 Route::get('/forum/active-users', [\App\Http\Controllers\ForumController::class, 'activeUsers'])
