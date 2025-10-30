@@ -672,7 +672,11 @@ function showResult() {
   const pts = (data.points && data.points.awarded) ?? 0;
 
   // NEW: badges from backend (array of {slug,name,points_reward?...})
-  const badges = Array.isArray(data.badges_awarded) ? data.badges_awarded : [];
+const badges = Array.isArray(data.badges)
+  ? data.badges
+  : Array.isArray(data.badges_awarded)
+  ? data.badges_awarded
+  : [];
 
   // Optional: write into the DOM if the element exists
   const ptsEl = document.getElementById('pointsEarned');

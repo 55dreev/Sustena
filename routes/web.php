@@ -16,6 +16,7 @@ use App\Http\Controllers\BadgesController;
 // routes/web.php
 // routes/web.php
 use App\Http\Controllers\ForumController;
+use App\Http\Controllers\AdminController;
 
 Route::get('/forum', [ForumController::class,'index'])->name('forum.index');
 Route::get('/forum/{post}', [ForumController::class,'show'])->name('forum.show');
@@ -27,12 +28,17 @@ Route::middleware('auth')->group(function () {
     Route::delete('/forum/{post}', [ForumController::class,'destroyPost'])->name('forum.post.destroy');
 });
 
-Route::get('/admin', function () {
-    return view('admin');
-});
+Route::get('/admin', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+Route::get('/admin/users/search', [AdminController::class, 'searchUser'])->name('admin.searchUser');
+Route::post('/admin/users/update', [AdminController::class, 'updateUser'])->name('admin.updateUser');
+Route::post('/admin/badges/add', [AdminController::class, 'addBadge'])->name('admin.addBadge');
+Route::delete('/admin/badges/{id}', [AdminController::class, 'deleteBadge']);
+Route::post('/admin/challenges/add', [AdminController::class, 'addChallenge'])->name('admin.addChallenge');
+
+
 
 // routes/web.php
-Route::get('/forum/active-users', [\App\Http\Controllers\ForumController::class, 'activeUsers'])
+Route::get('/forum/active-users', [ForumController::class, 'activeUsers'])
      ->name('forum.activeUsers');
 
 
@@ -118,7 +124,7 @@ Route::get('/middleware-test', function () {
     return '✅ Middleware class is visible!';
 });
 Route::get('/debug-middleware', function () {
-    return app(\App\Http\Middleware\GuestRedirect::class) instanceof \App\Http\Middleware\GuestRedirect
+    return app(GuestRedirect::class) instanceof GuestRedirect
         ? '✅ Laravel resolves the middleware binding.'
         : '❌ Laravel cannot resolve the class.';
 });

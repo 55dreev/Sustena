@@ -5,65 +5,60 @@ namespace App\Services;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Log;
 
 class BadgeService
 {
-    public function evaluateAttempt(
-        int $userId,
-        string $attemptId,
-        bool $includePractice = true   // include practice attempts in “previous” lookup
-    ): array {
+    public function evaluateAttempt(int $userId, string $attemptId, bool $includePractice = true): array
+    {
         $awarded = [];
         $points  = 0;
 
-        // ------ load this attempt ------
+        // ------ Load attempt data ------
         $score = DB::table('footprint_scores')
             ->where('user_id', $userId)
             ->where('attempt_id', $attemptId)
             ->first();
 
         if (!$score) {
+            Log::warning("⚠️ No footprint score found for user {$userId} and attempt {$attemptId}");
             return ['badges' => [], 'points' => 0];
         }
 
-        // Use weekly everywhere
-        $weekly = !is_null($score->kg_per_week) ? (float)$score->kg_per_week
-                                                : (float)$score->total_score;
+        $weekly = (float)($score->kg_per_week ?? $score->total_score ?? 0);
 
-        // Category totals (use kg_per_week; fallback to total_score)
+        // Load category totals
         $cats = DB::table('footprint_category_totals')
             ->where('user_id', $userId)
             ->where('attempt_id', $attemptId)
-            ->get(['category','kg_per_week','total_score']);
+            ->get(['category', 'kg_per_week', 'total_score']);
 
         $nowCats = collect();
         foreach ($cats as $r) {
-            $nowCats[$r->category] = !is_null($r->kg_per_week) ? (float)$r->kg_per_week
-                                                               : (float)$r->total_score;
+            $nowCats[$r->category] = (float)($r->kg_per_week ?? $r->total_score ?? 0);
         }
 
-        // ------ previous attempt (now includes practice by default) ------
+        // ------ Previous attempt ------
         $prevAttempt = DB::table('footprint_category_totals')
             ->select('attempt_id', DB::raw('MAX(created_at) as done'))
             ->where('user_id', $userId)
             ->where('attempt_id', '<>', $attemptId)
-            ->when(!$includePractice, fn ($q) => $q->where('is_official', 1))
+            ->when(!$includePractice, fn($q) => $q->where('is_official', 1))
             ->groupBy('attempt_id')
             ->orderByDesc(DB::raw('MAX(created_at)'))
             ->first();
 
+        $prevCats = collect();
         $prevWeekly = null;
-        $prevCats   = collect();
 
         if ($prevAttempt) {
             $prevCatsRows = DB::table('footprint_category_totals')
                 ->where('user_id', $userId)
                 ->where('attempt_id', $prevAttempt->attempt_id)
-                ->get(['category','kg_per_week','total_score']);
+                ->get(['category', 'kg_per_week', 'total_score']);
 
             foreach ($prevCatsRows as $r) {
-                $prevCats[$r->category] = !is_null($r->kg_per_week) ? (float)$r->kg_per_week
-                                                                    : (float)$r->total_score;
+                $prevCats[$r->category] = (float)($r->kg_per_week ?? $r->total_score ?? 0);
             }
 
             $prevScore = DB::table('footprint_scores')
@@ -72,47 +67,85 @@ class BadgeService
                 ->first();
 
             if ($prevScore) {
-                $prevWeekly = !is_null($prevScore->kg_per_week) ? (float)$prevScore->kg_per_week
-                                                                : (float)$prevScore->total_score;
+                $prevWeekly = (float)($prevScore->kg_per_week ?? $prevScore->total_score ?? 0);
             }
         }
 
-        // ------------- RULES -------------
-
-        // R1: Carbon Under 100 (weekly) — works for practice too
+        // ------------- STATIC RULES -------------
         if ($weekly > 0 && $weekly < 100) {
-            $points += $this->awardOnce($userId, 'carbon-under-100', [
-                'weekly'     => $weekly,
-                'attempt_id' => $attemptId
-            ], $awarded);
+            $points += $this->awardOnce($userId, 'carbon-under-100', ['weekly' => $weekly], $awarded);
         }
 
-        // R2: Waste Reducer (Silver): waste down ≥10% vs previous attempt
         if ($prevCats->isNotEmpty()) {
-            $prevWaste = (float) ($prevCats['Waste Management'] ?? 0);
-            $nowWaste  = (float) ($nowCats['Waste Management'] ?? 0);
+            $prevWaste = $prevCats['Waste Management'] ?? 0;
+            $nowWaste  = $nowCats['Waste Management'] ?? 0;
             if ($prevWaste > 0) {
                 $dropPct = (($prevWaste - $nowWaste) / $prevWaste) * 100;
                 if ($dropPct >= 10) {
                     $points += $this->awardOnce($userId, 'waste-reducer-silver', [
-                        'prev'       => $prevWaste,
-                        'now'        => $nowWaste,
-                        'drop_pct'   => round($dropPct, 1),
-                        'attempt_id' => $attemptId
+                        'prev' => $prevWaste,
+                        'now' => $nowWaste,
+                        'drop_pct' => round($dropPct, 1)
                     ], $awarded);
                 }
             }
         }
 
-        // R3: Level milestone 10 (any run)
-        $pk = Schema::hasColumn('users','user_id') ? 'user_id' : 'id';
-$user = DB::table('users')->where($pk, $userId)->first();
+        // Load user safely
+        $pk = Schema::hasColumn('users', 'user_id') ? 'user_id' : 'id';
+        $user = DB::table('users')->where($pk, $userId)->first();
+
+        if (!$user) {
+            Log::warning("⚠️ BadgeService: No user found for ID {$userId} using key {$pk}");
+            return ['badges' => $awarded, 'points' => $points];
+        }
+
         $level = (int)($user->level ?? 1);
         if ($level >= 10) {
             $points += $this->awardOnce($userId, 'level-10', ['level' => $level], $awarded);
         }
 
-        return ['badges' => $awarded, 'points' => $points];
+        // ------------- DYNAMIC RULES (from badges table) -------------
+        $dynamicBadges = DB::table('badges')->get();
+        foreach ($dynamicBadges as $badge) {
+            if (empty($badge->rule) || $badge->rule === '[]') continue;
+
+            $rule = json_decode($badge->rule, true);
+            if (json_last_error() !== JSON_ERROR_NONE || !is_array($rule)) {
+                Log::warning("⚠️ Invalid JSON rule for badge {$badge->slug}");
+                continue;
+            }
+
+            $fact  = $rule['fact']  ?? null;
+            $op    = $rule['op']    ?? null;
+            $value = $rule['value'] ?? null;
+
+            if (!$fact || !$op || $value === null) continue;
+
+            $userValue = match ($fact) {
+                'weekly_kg'          => $weekly,
+                'missions_completed' => $user->missions_completed ?? 0,
+                'login_days'         => $user->login_days ?? 0,
+                default              => $nowCats[$fact] ?? null,
+            };
+
+            if ($userValue === null) continue;
+
+            if ($this->compare($userValue, $value, $op)) {
+                $points += $this->awardOnce($userId, $badge->slug, [
+                    'fact' => $fact,
+                    'op' => $op,
+                    'value' => $value,
+                    'user_value' => $userValue,
+                ], $awarded);
+            }
+        }
+
+        // ✅ Return full badge info so frontend gets name, icon, and points
+        return [
+            'badges' => array_values($awarded),
+            'points' => $points,
+        ];
     }
 
     protected function awardOnce(int $userId, string $slug, array $meta, array &$awarded): int
@@ -120,12 +153,12 @@ $user = DB::table('users')->where($pk, $userId)->first();
         $badge = DB::table('badges')->where('slug', $slug)->first();
         if (!$badge) return 0;
 
-        $has = DB::table('user_badges')
+        $exists = DB::table('user_badges')
             ->where('user_id', $userId)
             ->where('badge_id', $badge->id)
             ->exists();
 
-        if ($has) return 0;
+        if ($exists) return 0;
 
         return DB::transaction(function () use ($userId, $badge, $meta, &$awarded) {
             DB::table('user_badges')->insert([
@@ -137,16 +170,31 @@ $user = DB::table('users')->where($pk, $userId)->first();
                 'updated_at' => Carbon::now(),
             ]);
 
-            $points = (int) $badge->points_reward;
-            $pk = Schema::hasColumn('users','user_id') ? 'user_id' : (Schema::hasColumn('users','id') ? 'id' : null);
-if ($pk) {
-    DB::table('users')
-      ->where($pk, $userId)
-      ->update(['points_total' => DB::raw('COALESCE(points_total,0) + '.$points)]);
-}
+            $points = (int)$badge->points_reward;
+            $pk = Schema::hasColumn('users', 'user_id') ? 'user_id' : 'id';
+            DB::table('users')->where($pk, $userId)
+                ->update(['points_total' => DB::raw('COALESCE(points_total,0) + '.$points)]);
 
-            $awarded[] = $badge->slug;
+            // ✅ Add full badge info, not just slug
+            $awarded[] = [
+                'slug' => $badge->slug,
+                'name' => $badge->name,
+                'icon' => $badge->icon ?? '🏅',
+                'points_reward' => $badge->points_reward ?? 0
+            ];
+
+            Log::info("🏅 Badge '{$badge->slug}' awarded to user {$userId}");
             return $points;
         });
+    }
+
+    private function compare($a, $b, $op): bool
+    {
+        return match ($op) {
+            '<' => $a < $b,
+            '>' => $a > $b,
+            '=', '==' => $a == $b,
+            default => false,
+        };
     }
 }
