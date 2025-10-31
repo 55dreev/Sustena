@@ -55,6 +55,14 @@ class Kernel extends HttpKernel
         ],
     ];
 
+    // app/Console/Kernel.php
+
+protected function schedule(\Illuminate\Console\Scheduling\Schedule $schedule)
+{
+    // run shortly after midnight Manila time
+    $schedule->command('app:assign-daily-challenges')->dailyAt('00:05');
+}
+
     /**
      * Individually assignable middleware.
      */

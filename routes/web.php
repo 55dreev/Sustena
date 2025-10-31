@@ -17,6 +17,31 @@ use App\Http\Controllers\BadgesController;
 // routes/web.php
 use App\Http\Controllers\ForumController;
 use App\Http\Controllers\AdminController;
+// routes/web.php
+use App\Http\Controllers\ChallengePageController;
+use App\Http\Controllers\ChallengeApiController;
+use App\Http\Controllers\Admin\ChallengeAdminController;
+
+
+Route::middleware('auth')->group(function () {
+    Route::get('/proofs/{assignment}', [ChallengeApiController::class, 'showProof'])
+        ->name('proofs.show');
+});
+
+// routes/web.php
+Route::middleware(['auth'])->group(function () {
+    Route::view('/challenge', 'challenge.index')->name('challenge.index');
+
+    Route::get('/api/challenges/today', [ChallengeApiController::class, 'today']);
+    Route::post('/api/challenges/{assignment}/submit-proof', [ChallengeApiController::class, 'submitProof'])->whereNumber('assignment');
+    Route::post('/api/challenges/{assignment}/mark-completed', [ChallengeApiController::class, 'markCompleted'])->whereNumber('assignment');
+
+    Route::prefix('admin')->middleware('can:manage-challenges')->group(function () {
+        Route::resource('challenges', ChallengeAdminController::class)->except(['show']);
+    });
+});
+
+
 
 Route::get('/forum', [ForumController::class,'index'])->name('forum.index');
 Route::get('/forum/{post}', [ForumController::class,'show'])->name('forum.show');
@@ -167,9 +192,6 @@ Route::middleware([\App\Http\Middleware\CheckAuth::class, \App\Http\Middleware\N
         return view('landing-page');
     })->name('landing-page');
     
-    Route::get('/challenge', function () {
-        return view('challenge');
-    })->name('challenge');
 
     Route::get('/footprint-calculator', function () {
         return view('footprintcalc');
