@@ -22,6 +22,9 @@ use App\Http\Controllers\ChallengePageController;
 use App\Http\Controllers\ChallengeApiController;
 use App\Http\Controllers\Admin\ChallengeAdminController;
 
+Route::get('/moderation', function () {
+    return view('moderation');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/proofs/{assignment}', [ChallengeApiController::class, 'showProof'])
