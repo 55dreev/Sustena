@@ -22,12 +22,19 @@
     </div>
 
     <div class="container">
-      <div class="sidebar">
-        <div class="menu-item active"><span class="menu-icon">📊</span><span>Dashboard</span></div>
-        <div class="menu-item"><span class="menu-icon">📦</span><span>Content Management</span></div>
-        <div class="menu-item"><span class="menu-icon">💬</span><span>Feedback & Moderation</span></div>
-        <div class="menu-item"><span class="menu-icon">⚙️</span><span>Settings</span></div>
-      </div>
+       <div class="sidebar">
+  <a href="{{ url('/admin') }}" class="menu-item {{ request()->is('admin') ? 'active' : '' }}">
+    <span class="menu-icon">📊</span><span>Dashboard</span>
+  </a>
+
+  <a href="{{ url('/moderation') }}" class="menu-item {{ request()->is('moderation') ? 'active' : '' }}">
+    <span class="menu-icon">💬</span><span>Feedback & Moderation</span>
+  </a>
+
+  <a href="{{ url('/adminsettings') }}" class="menu-item {{ request()->is('adminsettings') ? 'active' : '' }}">
+    <span class="menu-icon">⚙️</span><span>Settings</span>
+  </a>
+</div>
 
       <div class="main-content">
         <div class="dashboard-grid">
@@ -115,7 +122,7 @@
           <h5 class="modal-title fw-bold">Manage Badges</h5>
           <button type="button" onclick="closeModal('badgeModal')" 
                   style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #888;">
-            ×
+            
           </button>
         </div>
 
