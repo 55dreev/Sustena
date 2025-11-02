@@ -5,108 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sustena - Feedback & Moderation</title>
   <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/adminmod.css') }}">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    /* ====== STATS CARDS ====== */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 15px;
-      margin-bottom: 25px;
-    }
-    .stat-card {
-      background: #1e293b;
-      color: white;
-      border-radius: 12px;
-      text-align: center;
-      padding: 20px 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    }
-    .stat-card h3 { margin: 0; font-size: 24px; }
-    .stat-card p { margin: 5px 0 0; font-size: 14px; color: #cbd5e1; }
 
-    /* ====== FILTER TOOLS ====== */
-    .tools-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: 15px 0;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    .tools-bar input {
-      padding: 8px 10px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      width: 250px;
-    }
-    .filter-tabs {
-      display: flex;
-      gap: 10px;
-    }
-    .filter-tab {
-      background: #f1f5f9;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: 0.2s;
-      font-weight: 600;
-    }
-    .filter-tab.active { background: #10b981; color: white; }
-    .filter-tab:hover { background: #d1fae5; }
-
-    /* ====== CHARTS ====== */
-    .charts-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 20px;
-      margin-bottom: 30px;
-    }
-    .chart-card {
-      background: white;
-      border-radius: 12px;
-      padding: 15px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      text-align: center;
-    }
-    canvas { max-height: 180px !important; }
-
-    /* ====== LIVE COMMENTS ====== */
-    .live-comments {
-      background: white;
-      border-radius: 12px;
-      padding: 15px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      height: 260px;
-      overflow-y: auto;
-    }
-    .live-comment { border-bottom: 1px solid #eee; padding: 8px 0; }
-    .live-comment:last-child { border-bottom: none; }
-    .live-comment strong { color: #1e293b; }
-    .live-comment span { font-size: 13px; color: #6b7280; }
-
-    /* ====== TABLE & BUTTONS ====== */
-    .activity-table input[type="checkbox"] { transform: scale(1.2); }
-    .bulk-actions { margin-top: 10px; }
-    .bulk-btn {
-      background: #334155;
-      color: white;
-      padding: 8px 14px;
-      border-radius: 8px;
-      margin-right: 5px;
-      border: none;
-      cursor: pointer;
-    }
-    .bulk-btn:hover { background: #475569; }
-
-    .no-results {
-      text-align: center;
-      color: #aaa;
-      padding: 15px;
-      font-style: italic;
-    }
-  </style>
 </head>
 <body>
   <div class="header">
@@ -123,12 +24,20 @@
   </div>
 
   <div class="container">
-    <div class="sidebar">
-      <div class="menu-item"><span class="menu-icon">📊</span><span>Dashboard</span></div>
-      <div class="menu-item"><span class="menu-icon">📦</span><span>Content Management</span></div>
-      <div class="menu-item active"><span class="menu-icon">💬</span><span>Feedback & Moderation</span></div>
-      <div class="menu-item"><span class="menu-icon">⚙️</span><span>Settings</span></div>
-    </div>
+   <div class="sidebar">
+  <a href="{{ url('/admin') }}" class="menu-item {{ request()->is('admin') ? 'active' : '' }}">
+    <span class="menu-icon">📊</span><span>Dashboard</span>
+  </a>
+
+  <a href="{{ url('/moderation') }}" class="menu-item {{ request()->is('moderation') ? 'active' : '' }}">
+    <span class="menu-icon">💬</span><span>Feedback & Moderation</span>
+  </a>
+
+  <a href="{{ url('/adminsettings') }}" class="menu-item {{ request()->is('adminsettings') ? 'active' : '' }}">
+    <span class="menu-icon">⚙️</span><span>Settings</span>
+  </a>
+</div>
+
 
     <div class="main-content">
       <h2 class="section-title">Community Feedback Overview</h2>

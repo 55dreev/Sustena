@@ -399,3 +399,39 @@
     .mt-3 { margin-top:1rem; }
     .fw-bold { font-weight:700; }
     .list-unstyled { padding-left:0; list-style:none; }
+
+    .sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 200px;
+  padding: 15px;
+  background: #d0f0c0;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 10px;
+  text-decoration: none;
+  background: #e8f5e9;
+  color: #333;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.menu-item:hover {
+  background: #d0f0c0;
+  transform: translateX(3px);
+}
+
+.menu-item.active {
+  background: #a5d6a7;
+  font-weight: 600;
+}
+
+.menu-icon {
+  font-size: 18px;
+}
