@@ -85,7 +85,7 @@
 
 <script>
   // ---- config ----
-  const BASE_URL = "{{ url('') }}";            // e.g., http://127.0.0.1:8000
+  const BASE_URL = "{{ url('') }}";         
   const CSRF     = document.querySelector('meta[name="csrf-token"]').content;
 
   // Sidebar toggle
@@ -119,41 +119,44 @@
   }
 
   function renderChallenges(list) {
-    const grid = document.querySelector(".challenges-grid");
-    grid.innerHTML = "";
+  const grid = document.querySelector(".challenges-grid");
+  grid.innerHTML = "";
 
-    list.forEach(ch => {
-      let diffHTML = '';
-      for (let i = 1; i <= 3; i++) {
-        diffHTML += (i <= ch.difficulty)
-          ? `<span class="difficulty filled ${ch.difficulty===1?'easy':ch.difficulty===2?'medium':'hard'}"></span>`
-          : '<span class="difficulty"></span>';
-      }
+  list.forEach(ch => {
+    let diffHTML = '';
+    for (let i = 1; i <= 3; i++) {
+      diffHTML += (i <= ch.difficulty)
+        ? `<span class="difficulty filled ${ch.difficulty===1?'easy':ch.difficulty===2?'medium':'hard'}"></span>`
+        : '<span class="difficulty"></span>';
+    }
 
-      const badgeText =
-        ch.status === "pending"   ? "Pending"   :
-        ch.status === "completed" ? "Completed" : "Not Started";
+    const badgeText =
+      ch.status === "pending"   ? "Pending"   :
+      ch.status === "completed" ? "Completed" : "Not Started";
 
-      const wrap = document.createElement('div');
-      wrap.classList.add('challenge-card');
-      wrap.innerHTML = `
-        <div class="challenge-points">${ch.points}</div>
-        <div class="challenge-icon">${ch.icon}</div>
-        <div class="challenge-content">
-          <div class="difficulty-circles">${diffHTML}</div>
-          <h3 class="challenge-title">${ch.title}</h3>
-          <p class="challenge-subtitle">${ch.subtitle ?? ''}</p>
-          <p class="challenge-description">${ch.description ?? ''}</p>
-          ${ch.status !== 'completed' ? '<button class="challenge-button">Open</button>' : ''}
-          <div class="status-badge ${ch.status}">${badgeText}</div>
-        </div>
-      `;
-      grid.appendChild(wrap);
+    const wrap = document.createElement('div');
+    wrap.classList.add('challenge-card');
+    wrap.innerHTML = `
+      <div class="challenge-points">${ch.points}</div>
+      <div class="challenge-icon">${ch.icon}</div>
+      <div class="challenge-content">
+        <div class="difficulty-circles">${diffHTML}</div>
+        <h3 class="challenge-title">${ch.title}</h3>
+        <p class="challenge-subtitle">${ch.subtitle ?? ''}</p> 
+        <p class="challenge-description">${ch.description ?? ''}</p>
+        ${ch.status === 'not-started' ? '<button class="challenge-button">Open</button>' : ''}
+        <div class="status-badge ${ch.status}">${badgeText}</div>
+      </div>
+    `;
 
-      if (ch.status !== 'completed') {
-        wrap.querySelector('.challenge-button').addEventListener('click', () => openModal(ch));
-      }
-    });
+    const btn = wrap.querySelector('.challenge-button');
+    if (btn) {
+      btn.addEventListener('click', () => openModal(ch));
+    }
+
+    grid.appendChild(wrap);
+  });
+
   }
 
   function openModal(ch) {
@@ -165,7 +168,8 @@
     document.getElementById("challengeModal").style.display = "flex";
 
     const btn = document.getElementById("submitProof");
-    btn.textContent = ch.status === "pending" ? "✔ Mark as Completed" : "✅ Submit Proof";
+    btn.textContent = "✅ Submit Proof";
+
   }
 
   function closeModal() {
