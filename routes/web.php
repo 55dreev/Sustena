@@ -27,6 +27,30 @@ Route::get('/adminsettings', function () {
     return view('adminsettings');
 })->name('adminsettings');
 
+
+
+Route::get('/adminlogin', function () {
+    return view('adminlogin');
+})->name('adminlogin');
+
+Route::post('/adminlogin', function (Request $request) {
+    // Simple static admin login (no middleware)
+    $username = $request->input('username');
+    $password = $request->input('password');
+
+    if ($username === 'admin' && $password === 'password') {
+        // Directly load dashboard without middleware
+        return redirect('/dashboard')->with('success', 'Welcome Admin!');
+    } else {
+        return back()->withErrors(['Invalid admin credentials.']);
+    }
+})->name('admin.login');
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->name('dashboard');
+
+
 // ✅ Proof file routes
 Route::middleware('auth')->group(function () {
     Route::get('/proofs/{assignment}', [ChallengeApiController::class, 'showProof'])

@@ -1,0 +1,177 @@
+ /* === Prevent White Flash === */
+    html, body {
+      background-color: #000;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #0a0f0a, #002200);
+      animation: pulseBg 6s infinite alternate;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      font-family: "Press Start 2P", monospace;
+      color: #e0ffe0;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: radial-gradient(circle at 15% 25%, rgba(0,255,102,0.06) 0%, transparent 70%),
+                  radial-gradient(circle at 85% 80%, rgba(0,255,150,0.1) 0%, transparent 70%);
+      animation: floatGlow 10s ease-in-out infinite alternate;
+      z-index: 0;
+    }
+
+    @keyframes pulseBg {
+      0% { background-color: #0a0f0a; }
+      100% { background-color: #003300; }
+    }
+
+    @keyframes floatGlow {
+      0% { transform: translateY(0px); opacity: 0.6; }
+      100% { transform: translateY(-10px); opacity: 1; }
+    }
+
+    /* === Loader === */
+    .loader {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #00ffee;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: 'Press Start 2P', monospace;
+      z-index: 3;
+    }
+
+    .words {
+      height: 18px;
+      overflow: hidden;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .word {
+      display: block;
+      color: #00ff66;
+      line-height: 18px;
+      animation: slide 6s ease-in-out infinite;
+    }
+
+    @keyframes slide {
+      0% { transform: translateY(0); }
+      25% { transform: translateY(-100%); }
+      50% { transform: translateY(-200%); }
+      75% { transform: translateY(-300%); }
+      100% { transform: translateY(0); }
+    }
+
+    .loader.fade-out {
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+
+    /* === Green Energy Reveal (fixed from white) === */
+    .reveal {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: radial-gradient(circle, rgba(0,255,100,0.9) 0%, rgba(0,50,0,1) 70%);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+      transition: width 1.5s ease-out, height 1.5s ease-out;
+    }
+
+    .reveal.expand {
+      width: 200vmax;
+      height: 200vmax;
+    }
+
+.admin-login {
+  display: none;
+  text-align: center;
+  padding: 35px;
+  width: 350px;
+  border-radius: 18px;
+  background: rgba(0, 20, 0, 0.35); /* transparent dark green tint */
+  backdrop-filter: blur(14px) saturate(180%);
+  -webkit-backdrop-filter: blur(14px) saturate(180%);
+  border: 1px solid rgba(0, 255, 102, 0.35);
+  box-shadow: 0 0 35px rgba(0, 255, 100, 0.25);
+  color: #00ff88;
+  z-index: 3;
+  animation: glowBox 3s infinite alternate;
+  transition: all 0.4s ease;
+}
+
+.admin-login:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 45px rgba(0, 255, 120, 0.4);
+}
+
+/* === Title === */
+.admin-login h1 {
+  margin-bottom: 20px;
+  color: #00ff88;
+  font-size: 14px;
+  text-shadow: 0 0 8px rgba(0, 255, 100, 0.5);
+}
+
+/* === Inputs === */
+.admin-login input {
+  display: block;
+  width: 90%;
+  margin: 10px auto;
+  padding: 10px;
+  background: rgba(0, 255, 100, 0.08);
+  border: 1px solid #00ff88;
+  color: #ccffcc;
+  border-radius: 8px;
+  font-size: 10px;
+  font-family: "Press Start 2P", monospace;
+  transition: 0.3s ease;
+}
+
+.admin-login input:focus {
+  border-color: #00ffaa;
+  box-shadow: 0 0 12px rgba(0, 255, 150, 0.3);
+}
+
+/* === Buttons === */
+.admin-login button {
+  width: 90%;
+  padding: 10px;
+  margin-top: 10px;
+  background: linear-gradient(90deg, #007a00, #00ff88);
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-weight: bold;
+  font-size: 10px;
+  font-family: "Press Start 2P", monospace;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.admin-login button:hover {
+  background: linear-gradient(90deg, #00cc55, #00ffaa);
+  transform: scale(1.05);
+}
+
+    @keyframes glowBox {
+      0% { box-shadow: 0 0 25px rgba(0, 255, 100, 0.2); }
+      100% { box-shadow: 0 0 45px rgba(0, 255, 150, 0.4); }
+    }
