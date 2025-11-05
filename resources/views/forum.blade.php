@@ -224,38 +224,7 @@
         </div>
       </div>
 
-            <!-- Right Sidebar -->
-        <div class="sidebar-right">
-            <div class="user-list" id="active-users">
-                <h3 class="section-title">Active Users</h3>
-                @forelse(($activeUsers ?? []) as $u)
-                    @php
-                        $uName = $u->display_name ?? $u->name ?? 'User';
-                        $uInitial = strtoupper(\Illuminate\Support\Str::substr($uName, 0, 1));
-                    @endphp
-                    <div class="user-item">
-                        <div class="user-avatar">{{ $uInitial }}</div>
-                        <div class="user-info">
-                            <div class="user-name">{{ $uName }}</div>
-                            <div class="user-status">Online</div>
-                        </div>
-                    </div>
-                @empty
-                    <div class="user-item">
-                        <div class="user-avatar">👥</div>
-                        <div class="user-info">
-                            <div class="user-name">Community</div>
-                            <div class="user-status">Be the first online</div>
-                        </div>
-                    </div>
-                @endforelse
-            </div>
-
-            <!-- Sentinel to trigger loading more users -->
-            <div id="users-sentinel" data-next-url="{{ $activeUsers->nextPageUrl() }}"></div>
-        </div>
-
-
+           
     </div>
 </div>
 

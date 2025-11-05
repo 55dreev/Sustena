@@ -7,6 +7,29 @@
   <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
   <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
+<style>
+  .proof-modal__backdrop{
+    position:fixed; inset:0; background:rgba(0,0,0,.7);
+    display:none; align-items:center; justify-content:center; z-index:2000;
+  }
+  .proof-modal__dialog{
+    background:#111; border-radius:12px; max-width:90vw; max-height:90vh;
+    padding:12px; position:relative;
+  }
+  .proof-modal__img{ max-width:88vw; max-height:80vh; display:block; margin:auto; }
+  .proof-modal__close{
+    position:absolute; top:8px; right:10px; border:0; background:transparent;
+    color:#fff; font-size:28px; cursor:pointer; line-height:1;
+  }
+</style>
+
+<div id="proofModal" class="proof-modal__backdrop" role="dialog" aria-modal="true" aria-label="Proof viewer">
+  <div class="proof-modal__dialog">
+    <button class="proof-modal__close" type="button" aria-label="Close">×</button>
+    <img id="proofModalImg" class="proof-modal__img" alt="Challenge proof">
+  </div>
+</div>
+
 <body>
   <div class="header">
     <div class="logo">
@@ -24,13 +47,13 @@
   <div class="container">
     <div class="sidebar">
       <div class="menu-item active"><span class="menu-icon">📊</span><span>Dashboard</span></div>
-      <a href="{{ route('moderation') }}" class="menu-item">
+      <a href="{{ route('admin.moderation') }}" class="menu-item">
         <span class="menu-icon">💬</span>
         <span>Feedback & Moderation</span>
       </a>
-        <a href="{{ url('/adminsettings') }}" class="menu-item {{ request()->is('adminsettings') ? 'active' : '' }}">
-    <span class="menu-icon">⚙️</span><span>Settings</span>
-      </a>
+        <a href="{{ route('admin.settings') }}" class="menu-item {{ request()->is('admin/settings') ? 'active' : '' }}">
+      <span class="menu-icon">⚙️</span><span>Settings</span>
+        </a>
     </div>
 
     <div class="main-content">
@@ -92,8 +115,15 @@
                     <td>{{ $submission->user->username ?? 'Unknown' }}</td>
                     <td>{{ $submission->challenge->title ?? 'N/A' }}</td>
                     <td>
-                      @if($submission->proof_path)
-                        <a href="{{ route('proofs.show', basename($submission->proof_path)) }}" target="_blank">📷 View Proof</a>
+                      @if ($submission->proof_path)
+                        <button
+                          type="button"
+                          class="btn btn-link p-0 view-proof"
+                          data-url="{{ route('admin.proofs.show', $submission->id) }}"
+                          aria-label="View proof image"
+                        >
+                          📷 View Proof
+                        </button>
                       @else
                         No proof
                       @endif
@@ -511,6 +541,43 @@ document.querySelectorAll('.rejectChallengeBtn').forEach(btn => {
 });
 
   });
+
+  document.addEventListener('DOMContentLoaded', () => {
+  const modal = document.getElementById('proofModal');
+  const imgEl = document.getElementById('proofModalImg');
+  const closeBtn = modal.querySelector('.proof-modal__close');
+
+  function openProof(url){
+    // Optional: show a temporary loading cursor
+    modal.style.display = 'flex';
+    imgEl.src = '';              // reset previous
+    imgEl.alt = 'Loading...';
+    // Set the image src (served by your admin.proofs.show route)
+    imgEl.src = url + '?_=' + Date.now(); // cache-bust while moderating
+  }
+
+  function closeProof(){
+    modal.style.display = 'none';
+    imgEl.src = '';
+  }
+
+  // Open (event delegation so it works after table refreshes)
+  document.body.addEventListener('click', (e) => {
+    const btn = e.target.closest('.view-proof');
+    if (!btn) return;
+    e.preventDefault();
+    openProof(btn.dataset.url);
+  });
+
+  // Close actions
+  closeBtn.addEventListener('click', closeProof);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeProof(); // click backdrop
+  });
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.style.display === 'flex') closeProof();
+  });
+});
   </script>
 </body>
 </html>

@@ -39,25 +39,34 @@ class AuthController extends Controller
     public function login(Request $request)
 {
     $request->validate([
-        'username' => 'required|string',
+        'username' => 'required|string', // can be username or email
         'password' => 'required|string',
     ]);
 
+    // Try username first
     $user = User::where('username', $request->username)->first();
+
+    // If the input looks like an email and username lookup failed, try email
+    if (!$user && filter_var($request->username, FILTER_VALIDATE_EMAIL)) {
+        $user = User::where('email', $request->username)->first();
+    }
 
     if ($user && Hash::check($request->password, $user->password)) {
         Auth::login($user);
+        $request->session()->regenerate(); // protect session fixation
 
-        // ✅ Store username and initialize navigation flow
+        // Keep your existing session values
         session(['username' => $user->username]);
-        session(['previous_route' => 'landing-page']); // 👈 Set this to allow first page access
+        session(['previous_route' => 'landing-page']);
 
+        // ✅ Redirect admins to the admin dashboard, others to landing page
+        if (!empty($user->is_admin)) {
+            return redirect()->route('admin.dashboard')->with('success', 'Welcome, Admin!');
+        }
         return redirect()->route('landing-page')->with('success', 'Login successful!');
     }
 
-    return back()->withErrors([
-        'loginError' => 'Invalid credentials.',
-    ])->withInput();
+    return back()->withErrors(['loginError' => 'Invalid credentials.'])->withInput();
 }
 
 }

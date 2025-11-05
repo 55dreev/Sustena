@@ -46,6 +46,12 @@ return [
             'throw' => false,
             'report' => false,
         ],
+        'proofs_public' => [
+        'driver'     => 'local',
+        'root'       => public_path('proofs'),          // physical folder
+        'url'        => env('APP_URL').'/proofs',       // public URL prefix
+        'visibility' => 'public',
+    ],
 
         's3' => [
             'driver' => 's3',

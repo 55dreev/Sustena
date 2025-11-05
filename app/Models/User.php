@@ -17,6 +17,7 @@ protected $keyType = 'int';
 
     public $timestamps = false;
 
+    protected $casts = ['is_admin' => 'boolean'];
      protected $fillable = [
         'username',
         'email',

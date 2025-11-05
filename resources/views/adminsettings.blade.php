@@ -23,17 +23,22 @@
 
   <div class="container">
     <div class="sidebar">
-  <a href="{{ url('/admin') }}" class="menu-item {{ request()->is('admin') ? 'active' : '' }}">
+  <a href="{{ route('admin.dashboard') }}"
+     class="menu-item {{ request()->is('admin') ? 'active' : '' }}">
     <span class="menu-icon">📊</span><span>Dashboard</span>
   </a>
-  <a href="{{ url('/moderation') }}" class="menu-item {{ request()->is('moderation') ? 'active' : '' }}">
+
+  <a href="{{ route('admin.moderation') }}"
+     class="menu-item {{ request()->is('admin/moderation') ? 'active' : '' }}">
     <span class="menu-icon">💬</span><span>Feedback & Moderation</span>
   </a>
 
-  <a href="{{ url('/adminsettings') }}" class="menu-item {{ request()->is('adminsettings') ? 'active' : '' }}">
+  <a href="{{ route('admin.settings') }}"
+     class="menu-item {{ request()->is('admin/settings') ? 'active' : '' }}">
     <span class="menu-icon">⚙️</span><span>Settings</span>
   </a>
 </div>
+
 
 
     <div class="main-content">

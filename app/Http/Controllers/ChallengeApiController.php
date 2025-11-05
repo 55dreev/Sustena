@@ -20,10 +20,10 @@ class ChallengeApiController extends Controller
         $user   = $request->user();
         $userId = $user->getAuthIdentifier();
 
-        $tz        = $user->timezone ?? config('app.timezone', 'Asia/Manila');
-        $now       = Carbon::now($tz);
-        $todayDate = $now->toDateString();
-        $refreshAt = Carbon::tomorrow($tz)->startOfDay();
+        $tz          = $user->timezone ?? config('app.timezone', 'Asia/Manila');
+        $now         = Carbon::now($tz);
+        $todayDate   = $now->toDateString();
+        $refreshAt   = Carbon::tomorrow($tz)->startOfDay();
         $secondsLeft = max(0, $now->diffInSeconds($refreshAt, false));
 
         $assignments = UserDailyChallenge::with('challenge')
@@ -33,6 +33,7 @@ class ChallengeApiController extends Controller
 
         if ($assignments->count() < 4) {
             $existingIds = $assignments->pluck('challenge_id')->all();
+
             $toAssign = Challenge::query()
                 ->where('is_active', true)
                 ->whereNotIn('id', $existingIds)
@@ -68,22 +69,24 @@ class ChallengeApiController extends Controller
                 'points'        => '+' . (int) $a->challenge->points_xp . ' XP',
                 'icon'          => $a->challenge->icon,
                 'status'        => $a->status,
+                // Private streaming via assignment id; no filename URLs.
                 'proof_url'     => $a->proof_path ? route('proofs.show', $a->id) : null,
             ]),
         ]);
     }
 
     /**
-     * Submit a proof for a challenge.
+     * Submit a proof for a challenge (stores on local disk, private).
      */
     public function submitProof(Request $request, UserDailyChallenge $assignment)
     {
         $this->authorizeAssignment($request, $assignment);
 
         $request->validate([
-            'proof' => ['required','image','max:4096'],
+            'proof' => ['required', 'image', 'max:4096'],
         ]);
 
+        // Store to storage/app/proofs (local disk)
         $path = $request->file('proof')->store('proofs', 'local');
 
         $assignment->update([
@@ -96,7 +99,7 @@ class ChallengeApiController extends Controller
     }
 
     /**
-     * Show proof file for authorized user.
+     * Show proof file for the owner (private streaming from local).
      */
     public function showProof(Request $request, UserDailyChallenge $assignment)
     {
@@ -109,6 +112,25 @@ class ChallengeApiController extends Controller
 
         $mime = Storage::disk('local')->mimeType($path) ?? 'application/octet-stream';
         $contents = Storage::disk('local')->get($path);
+
+        return response($contents, 200)->header('Content-Type', $mime);
+    }
+
+    /**
+     * Show proof file for authorized admin (private streaming from local).
+     * Route middleware should enforce 'can:manage-challenges'.
+     */
+    public function showProofAdmin(Request $request, UserDailyChallenge $assignment)
+    {
+        $path = $assignment->proof_path;
+
+        if (!$path || !Storage::disk('local')->exists($path)) {
+            abort(404);
+        }
+
+        $mime = Storage::disk('local')->mimeType($path) ?? 'application/octet-stream';
+        $contents = Storage::disk('local')->get($path);
+
         return response($contents, 200)->header('Content-Type', $mime);
     }
 
@@ -124,7 +146,10 @@ class ChallengeApiController extends Controller
         }
 
         [$payload, $alreadyCompleted] = DB::transaction(function () use ($request, $assignment) {
-            $fresh = UserDailyChallenge::query()->whereKey($assignment->id)->lockForUpdate()->first();
+            $fresh = UserDailyChallenge::query()
+                ->whereKey($assignment->id)
+                ->lockForUpdate()
+                ->first();
 
             if ($fresh->status === 'completed') {
                 return [['ok' => true, 'status' => 'completed'], true];
@@ -139,14 +164,12 @@ class ChallengeApiController extends Controller
 
             $award = ['awarded_xp' => 0, 'xp_total' => null, 'level' => null];
             if ($xpAward > 0) {
-                $user = $request->user();
+                $user   = $request->user();
                 $userId = $user->getAuthIdentifier();
                 $source = 'challenge:' . $fresh->id;
 
-                // Award XP properly to existing columns
+                // Assumes XpService::awardFixedXp handles counters (xp_total, xp_today, xp_this_week).
                 $award = XpService::awardFixedXp($userId, $source, $xpAward, Carbon::now());
-
-                // Make sure your XpService updates xp_total, xp_today, xp_this_week
             }
 
             return [[
@@ -165,22 +188,26 @@ class ChallengeApiController extends Controller
 
     /**
      * Approve a user-submitted challenge proof.
+     * Awards XP if it was not already completed before approval.
      */
     public function approveChallenge(UserDailyChallenge $assignment)
     {
+        // Capture previous status to avoid double-award
+        $wasCompleted = ($assignment->status === 'completed');
+
         if ($assignment->status === 'approved') {
             return response()->json(['ok' => true, 'status' => 'approved']);
         }
 
         $assignment->update([
             'status'       => 'approved',
-            'completed_at' => now(),
+            'completed_at' => $assignment->completed_at ?? now(),
         ]);
 
-        // Award XP when approved (if not already completed)
-        if ($assignment->status !== 'completed') {
-            $userId = $assignment->user_id;
-            $source = 'challenge:' . $assignment->id;
+        // If it wasn't completed earlier, award now.
+        if (!$wasCompleted) {
+            $userId  = $assignment->user_id;
+            $source  = 'challenge:' . $assignment->id;
             $xpAward = (int) optional($assignment->challenge)->points_xp ?? 0;
 
             if ($xpAward > 0) {
