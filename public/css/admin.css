@@ -435,3 +435,11 @@
 .menu-icon {
   font-size: 18px;
 }
+
+.status-badge { padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+.status-approved { background: #10b98120; color: #065f46; }
+.status-pending  { background: #facc1520; color: #92400e; }
+.status-flagged  { background: #ef444420; color: #7f1d1d; }
+
+.action-btn { background: #10b981; border: 0; color: #fff; padding: 6px 10px; border-radius: 8px; cursor: pointer; }
+.remove-btn { background: #ef4444; border: 0; color: #fff; padding: 6px 10px; border-radius: 8px; cursor: pointer; }

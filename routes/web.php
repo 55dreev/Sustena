@@ -15,6 +15,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\BadgesController;
 use App\Http\Controllers\ForumController;
+use App\Http\Controllers\ModerationController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ChallengeApiController;
 use App\Http\Controllers\Admin\ChallengeAdminController;
@@ -157,6 +158,34 @@ Route::middleware('auth')->group(function () {
     Route::post('/forum/{post}/like', [ForumController::class, 'toggleLike'])->name('forum.like');
     Route::delete('/forum/{post}', [ForumController::class, 'destroyPost'])->name('forum.post.destroy');
 });
+
+/*
+|--------------------------------------------------------------------------
+| Moderation
+|--------------------------------------------------------------------------
+*/
+Route::middleware('auth')->group(function () {
+    Route::get('/moderation', [ModerationController::class, 'index'])->name('moderation.index');
+
+    // Data feeds
+    Route::get('/moderation/api/comments', [ModerationController::class, 'comments'])->name('moderation.comments');
+    Route::get('/moderation/api/stats',    [ModerationController::class, 'stats'])->name('moderation.stats');
+    Route::get('/moderation/api/live',     [ModerationController::class, 'live'])->name('moderation.live');
+
+    // Actions
+    Route::post('/moderation/api/approve', [ModerationController::class, 'approve'])->name('moderation.approve');
+    Route::post('/moderation/api/delete',  [ModerationController::class, 'delete'])->name('moderation.delete');
+    Route::post('/moderation/api/bulk',    [ModerationController::class, 'bulk'])->name('moderation.bulk');
+
+    Route::prefix('moderation/api')->group(function () {
+        // POSTS
+        Route::get('/posts',              [ModerationController::class, 'posts'])->name('moderation.posts');
+        Route::post('/post/approve',      [ModerationController::class, 'postApprove'])->name('moderation.postApprove');
+        Route::post('/post/delete',       [ModerationController::class, 'postDelete'])->name('moderation.postDelete');
+        Route::post('/post/bulk',         [ModerationController::class, 'postBulk'])->name('moderation.postBulk');
+    });
+});
+
 
 Route::get('/forum/active-users', [ForumController::class, 'activeUsers'])->name('forum.activeUsers');
 

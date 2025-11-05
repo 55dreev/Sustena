@@ -11,25 +11,25 @@ class Post extends Model
 
     public function user(): BelongsTo
     {
+        // FK posts.user_id -> users.user_id
         return $this->belongsTo(User::class, 'user_id', 'user_id');
     }
 
     public function comments(): HasMany
     {
-        return $this->hasMany(Comment::class)->latest();
+        // FK comments.post_id -> posts.id
+        return $this->hasMany(Comment::class, 'post_id', 'id')->latest();
     }
 
     public function likes(): HasMany
     {
-        return $this->hasMany(Like::class);
+        // FK likes.post_id -> posts.id
+        return $this->hasMany(Like::class, 'post_id', 'id');
     }
 
     public function isLikedBy(?User $user): bool
     {
         if (!$user) return false;
-
         return $this->likes()->where('user_id', $user->user_id)->exists();
     }
 }
-
-

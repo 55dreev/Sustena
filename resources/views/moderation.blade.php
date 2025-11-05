@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sustena - Feedback & Moderation</title>
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+
   <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
@@ -106,6 +108,9 @@
       padding: 15px;
       font-style: italic;
     }
+
+    /* --- added: posts section visuals reuse same styles --- */
+    .section-divider { height: 1px; background:#e5e7eb; margin: 28px 0; }
   </style>
 </head>
 <body>
@@ -123,16 +128,16 @@
   </div>
 
   <div class="container">
-      <div class="sidebar">
-     <div class="menu-item" onclick="window.location='{{ route('admin.dashboard') }}'">
+    <div class="sidebar">
+      <div class="menu-item" onclick="window.location='{{ route('admin.dashboard') }}'">
         <span class="menu-icon">📊</span>
         <span>Dashboard</span>
-     </div>
-       <a href="{{ url('/moderation') }}" class="menu-item {{ request()->is('moderation') ? 'active' : '' }}">
-    <span class="menu-icon">💬</span><span>Feedback & Moderation</span>
+      </div>
+      <a href="{{ route('moderation.index') }}" class="menu-item {{ request()->routeIs('moderation.index') ? 'active' : '' }}">
+        <span class="menu-icon">💬</span><span>Feedback & Moderation</span>
       </a>
-       <a href="{{ url('/adminsettings') }}" class="menu-item {{ request()->is('adminsettings') ? 'active' : '' }}">
-    <span class="menu-icon">⚙️</span><span>Settings</span>
+      <a href="{{ url('/adminsettings') }}" class="menu-item {{ request()->is('adminsettings') ? 'active' : '' }}">
+        <span class="menu-icon">⚙️</span><span>Settings</span>
       </a>
     </div>
 
@@ -141,10 +146,10 @@
 
       <!-- STATS CARDS -->
       <div class="stats-grid">
-        <div class="stat-card"><h3>1,245</h3><p>Total Comments</p></div>
-        <div class="stat-card"><h3>56</h3><p>Pending</p></div>
-        <div class="stat-card"><h3>8</h3><p>Flagged</p></div>
-        <div class="stat-card"><h3>1,181</h3><p>Approved</p></div>
+        <div class="stat-card"><h3 id="cardTotal">0</h3><p>Total Comments</p></div>
+        <div class="stat-card"><h3 id="cardPending">0</h3><p>Pending</p></div>
+        <div class="stat-card"><h3 id="cardFlagged">0</h3><p>Flagged</p></div>
+        <div class="stat-card"><h3 id="cardApproved">0</h3><p>Approved</p></div>
       </div>
 
       <!-- CHARTS + LIVE COMMENTS -->
@@ -166,7 +171,7 @@
         </div>
       </div>
 
-      <!-- FILTER TOOLS -->
+      <!-- FILTER TOOLS (COMMENTS) -->
       <div class="tools-bar">
         <input type="text" id="searchInput" placeholder="Search comments...">
         <div class="filter-tabs">
@@ -200,110 +205,355 @@
           <button class="bulk-btn">Delete Selected</button>
         </div>
       </div>
+
+      <!-- ========================================================= -->
+      <!-- ===================== ADDED: POSTS UI =================== -->
+      <!-- ========================================================= -->
+
+      <div class="section-divider"></div>
+
+      <h2 class="section-title">Posts Moderation</h2>
+
+      <!-- FILTER TOOLS (POSTS) -->
+      <div class="tools-bar">
+        <input type="text" id="postSearchInput" placeholder="Search posts...">
+        <div class="filter-tabs" id="postFilterTabs">
+          <button class="filter-tab active" data-post-filter="All">All</button>
+          <button class="filter-tab" data-post-filter="Pending">Pending</button>
+          <button class="filter-tab" data-post-filter="Flagged">Flagged</button>
+          <button class="filter-tab" data-post-filter="Approved">Approved</button>
+        </div>
+      </div>
+
+      <!-- POSTS TABLE -->
+      <div class="card">
+        <h3 class="section-title">User Posts</h3>
+        <table class="activity-table">
+          <thead>
+            <tr>
+              <th><input type="checkbox" id="postSelectAll"></th>
+              <th>User</th>
+              <th>Title</th>
+              <th>Status</th>
+              <th>Actions</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody id="postsTable"></tbody>
+        </table>
+        <div class="no-results" id="postNoResults" style="display:none;">No results found</div>
+
+        <div class="bulk-actions">
+          <button class="bulk-btn post-bulk-btn" data-post-action="approve">Approve Selected</button>
+          <button class="bulk-btn post-bulk-btn" data-post-action="delete">Delete Selected</button>
+        </div>
+      </div>
+      <!-- =================== END ADDED: POSTS UI ================= -->
     </div>
   </div>
 
   <script>
-    const commentsData = [
-      { user: "Maria Santos", comment: "Loved the new recycling feature!", status: "Approved", time: "5 mins ago" },
-      { user: "Juan Dela Cruz", comment: "App keeps lagging when submitting missions.", status: "Pending", time: "12 mins ago" },
-      { user: "Carlos Lopez", comment: "This is a scam app!", status: "Flagged", time: "20 mins ago" },
-      { user: "Anna Cruz", comment: "Nice work on the update!", status: "Approved", time: "30 mins ago" },
-      { user: "Rico Tan", comment: "My report button doesn’t work.", status: "Pending", time: "45 mins ago" }
-    ];
+  // Helpers
+  const qs  = s => document.querySelector(s);
+  const qsa = s => Array.from(document.querySelectorAll(s));
+  const csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-    const tableBody = document.getElementById("commentsTable");
-    const filterButtons = document.querySelectorAll(".filter-tab");
-    const searchInput = document.getElementById("searchInput");
-    const noResults = document.getElementById("noResults");
-
-    let currentFilter = "All";
-    let searchQuery = "";
-
-    function renderTable() {
-      tableBody.innerHTML = "";
-      const filtered = commentsData.filter(item => {
-        const matchesFilter = currentFilter === "All" || item.status === currentFilter;
-        const matchesSearch =
-          item.user.toLowerCase().includes(searchQuery) ||
-          item.comment.toLowerCase().includes(searchQuery);
-        return matchesFilter && matchesSearch;
-      });
-
-      if (filtered.length === 0) {
-        noResults.style.display = "block";
-        return;
-      } else {
-        noResults.style.display = "none";
-      }
-
-      filtered.forEach(item => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td><input type="checkbox" class="rowCheck"></td>
-          <td>${item.user}</td>
-          <td>"${item.comment}"</td>
-          <td><span class="status-badge status-${item.status.toLowerCase()}">${item.status}</span></td>
-          <td>
-            <button class="action-btn">Review</button>
-            <button class="remove-btn">Delete</button>
-          </td>
-          <td>${item.time}</td>
-        `;
-        tableBody.appendChild(row);
-      });
-    }
-
-    // Filter click
-    filterButtons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        filterButtons.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        currentFilter = btn.dataset.filter;
-        renderTable();
-      });
+  async function fetchJSON(url, opts = {}) {
+    const res = await fetch(url, {
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-CSRF-TOKEN': csrf,
+        ...(opts.headers || {})
+      },
+      credentials: 'same-origin',
+      ...opts
     });
+    return res.json();
+  }
 
-    // Search input
-    searchInput.addEventListener("input", e => {
-      searchQuery = e.target.value.toLowerCase();
-      renderTable();
-    });
+  // ======== COMMENTS STATE & LOGIC (unchanged) ========
+  let currentFilter = 'All';
+  let searchQuery   = '';
+  let page          = 1;
+  const per         = 10;
 
-    // Select all checkbox
-    document.getElementById("selectAll").addEventListener("change", e => {
-      document.querySelectorAll(".rowCheck").forEach(c => (c.checked = e.target.checked));
-    });
+  async function loadStats() {
+    const j = await fetchJSON('{{ route('moderation.stats') }}');
+    qs('#cardTotal').textContent    = j.cards.total;
+    qs('#cardPending').textContent  = j.cards.pending;
+    qs('#cardFlagged').textContent  = j.cards.flagged;
+    qs('#cardApproved').textContent = j.cards.approved;
+    renderCharts(j.trend, j.breakdown);
+  }
 
-    // Initial render
-    renderTable();
+  function renderCharts(trend, breakdown) {
+    if (window._trendChart) { window._trendChart.destroy(); }
+    if (window._statusChart) { window._statusChart.destroy(); }
 
-    // Charts
-    new Chart(document.getElementById("commentsTrend"), {
-      type: "line",
+    const trendCtx = document.getElementById('commentsTrend');
+    const statusCtx = document.getElementById('statusChart');
+
+    window._trendChart = new Chart(trendCtx, {
+      type: 'line',
       data: {
-        labels: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
+        labels: trend.labels,
         datasets: [{
-          label: "Comments per Day",
-          data: [120,190,150,220,300,280,320],
-          borderColor: "#10b981",
-          backgroundColor: "rgba(16,185,129,0.2)",
-          borderWidth: 2,
-          fill: true,
-          tension: 0.3
+          label: 'Comments per Day',
+          data: trend.data,
+          borderColor: '#10b981',
+          backgroundColor: 'rgba(16,185,129,0.2)',
+          borderWidth: 2, fill: true, tension: 0.3
         }]
       },
-      options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+      options: { plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true } } }
     });
 
-    new Chart(document.getElementById("statusChart"), {
-      type: "doughnut",
+    window._statusChart = new Chart(statusCtx, {
+      type: 'doughnut',
       data: {
-        labels: ["Approved","Pending","Flagged"],
-        datasets: [{ data: [1181, 56, 8], backgroundColor: ["#10b981","#facc15","#ef4444"] }]
+        labels: breakdown.labels,
+        datasets: [{ data: breakdown.data, backgroundColor: ['#10b981','#facc15','#ef4444'] }]
       },
-      options: { plugins: { legend: { position: "bottom" } } }
+      options: { plugins:{ legend:{ position:'bottom' } } }
     });
+  }
+
+  function escapeHtml(s) {
+    return s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  }
+
+  async function loadComments() {
+    const url = new URL('{{ route('moderation.comments') }}', window.location.origin);
+    url.searchParams.set('status', currentFilter);
+    url.searchParams.set('q', searchQuery);
+    url.searchParams.set('page', page);
+    url.searchParams.set('per', per);
+
+    const j = await fetchJSON(url.toString());
+    const tbody = qs('#commentsTable');
+    const noResults = qs('#noResults');
+    tbody.innerHTML = '';
+
+    if (!j.data || j.data.length === 0) {
+      noResults.style.display = 'block';
+      return;
+    }
+    noResults.style.display = 'none';
+
+    j.data.forEach(row => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input type="checkbox" class="rowCheck" data-id="${row.id}"></td>
+        <td>${row.user}</td>
+        <td>"${escapeHtml(row.comment)}"</td>
+        <td><span class="status-badge status-${row.status.toLowerCase()}">${row.status}</span></td>
+        <td>
+          <button class="action-btn" data-act="approve" data-id="${row.id}">Review</button>
+          <button class="remove-btn" data-act="delete" data-id="${row.id}">Delete</button>
+        </td>
+        <td>${row.time_ago}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  qsa('.filter-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      qsa('.filter-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilter = btn.dataset.filter;
+      page = 1;
+      loadComments();
+      loadStats();
+    });
+  });
+
+  const searchInput = qs('#searchInput');
+  searchInput.addEventListener('input', e => {
+    searchQuery = e.target.value.toLowerCase();
+    page = 1;
+    loadComments();
+  });
+
+  qs('#selectAll').addEventListener('change', e => {
+    qsa('.rowCheck').forEach(c => c.checked = e.target.checked);
+  });
+
+  qs('#commentsTable').addEventListener('click', async (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    const id  = btn.dataset.id;
+    const act = btn.dataset.act;
+
+    if (act === 'approve') {
+      await fetchJSON('{{ route('moderation.approve') }}', { method: 'POST', body: new URLSearchParams({ id }) });
+    } else if (act === 'delete') {
+      if (!confirm('Delete this comment?')) return;
+      await fetchJSON('{{ route('moderation.delete') }}', { method: 'POST', body: new URLSearchParams({ id }) });
+    }
+    await loadComments();
+    await loadStats();
+  });
+
+  function getCheckedIds() {
+    return qsa('.rowCheck:checked').map(c => c.dataset.id);
+  }
+  document.addEventListener('click', async (e) => {
+    if (e.target.matches('.bulk-btn') && !e.target.classList.contains('post-bulk-btn')) {
+      const label = e.target.textContent.trim().toLowerCase();
+      const action = label.includes('approve') ? 'approve' : 'delete';
+      const ids = getCheckedIds();
+      if (ids.length === 0) return alert('No rows selected');
+
+      if (action === 'delete' && !confirm('Delete selected comments?')) return;
+
+      await fetchJSON('{{ route('moderation.bulk') }}', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf },
+        body: JSON.stringify({ action, ids })
+      });
+      qs('#selectAll').checked = false;
+      await loadComments();
+      await loadStats();
+    }
+  });
+
+  async function loadLive() {
+    const j = await fetchJSON('{{ route('moderation.live') }}');
+    const wrap = document.querySelector('.live-comments');
+    const list = document.createElement('div');
+    list.id = 'liveList';
+    list.innerHTML = '';
+    const old = wrap.querySelector('#liveList');
+    if (old) old.remove();
+
+    j.items.forEach(o => {
+      const div = document.createElement('div');
+      div.className = 'live-comment';
+      div.innerHTML = `<strong>${o.user}:</strong> "${escapeHtml(o.text)}" <span>• ${o.ago}</span>`;
+      list.appendChild(div);
+    });
+    wrap.appendChild(list);
+  }
+  setInterval(loadLive, 10000);
+
+  // Initial load (comments)
+  loadStats();
+  loadComments();
+  loadLive();
+
+  // ============================================================
+  // ===================== ADDED: POSTS LOGIC ====================
+  // ============================================================
+
+  // Separate state for posts
+  let postCurrentFilter = 'All';
+  let postSearchQuery   = '';
+  let postPage          = 1;
+  const postPer         = 10;
+
+  async function loadPosts() {
+    const url = new URL('{{ route('moderation.posts') }}', window.location.origin);
+    url.searchParams.set('status', postCurrentFilter);
+    url.searchParams.set('q', postSearchQuery);
+    url.searchParams.set('page', postPage);
+    url.searchParams.set('per', postPer);
+
+    const j = await fetchJSON(url.toString());
+    const tbody = qs('#postsTable');
+    const noResults = qs('#postNoResults');
+    tbody.innerHTML = '';
+
+    if (!j.data || j.data.length === 0) {
+      noResults.style.display = 'block';
+      return;
+    }
+    noResults.style.display = 'none';
+
+    j.data.forEach(row => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input type="checkbox" class="postRowCheck" data-id="${row.id}"></td>
+        <td>${row.user}</td>
+        <td>${escapeHtml(row.title)}</td>
+        <td><span class="status-badge status-${row.status?.toLowerCase?.() || 'unknown'}">${row.status}</span></td>
+        <td>
+          <button class="action-btn" data-post-act="approve" data-id="${row.id}">Review</button>
+          <button class="remove-btn" data-post-act="delete" data-id="${row.id}">Delete</button>
+        </td>
+        <td>${row.time_ago || ''}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  // Posts filters
+  qsa('#postFilterTabs .filter-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      qsa('#postFilterTabs .filter-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      postCurrentFilter = btn.dataset.postFilter;
+      postPage = 1;
+      loadPosts();
+    });
+  });
+
+  // Posts search
+  const postSearchInput = qs('#postSearchInput');
+  postSearchInput.addEventListener('input', e => {
+    postSearchQuery = e.target.value.toLowerCase();
+    postPage = 1;
+    loadPosts();
+  });
+
+  // Posts select all
+  qs('#postSelectAll').addEventListener('change', e => {
+    qsa('.postRowCheck').forEach(c => c.checked = e.target.checked);
+  });
+
+  // Posts row actions
+  qs('#postsTable').addEventListener('click', async (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    const id  = btn.dataset.id;
+    const act = btn.dataset.postAct;
+
+    if (act === 'approve') {
+      await fetchJSON('{{ route('moderation.postApprove') }}', { method: 'POST', body: new URLSearchParams({ id }) });
+    } else if (act === 'delete') {
+      if (!confirm('Delete this post?')) return;
+      await fetchJSON('{{ route('moderation.postDelete') }}', { method: 'POST', body: new URLSearchParams({ id }) });
+    }
+    await loadPosts();
+  });
+
+  // Posts bulk helpers
+  function getPostCheckedIds() {
+    return qsa('.postRowCheck:checked').map(c => c.dataset.id);
+  }
+
+  document.addEventListener('click', async (e) => {
+    const btn = e.target.closest('.post-bulk-btn');
+    if (!btn) return;
+
+    const action = btn.dataset.postAction; // approve | delete
+    const ids = getPostCheckedIds();
+    if (ids.length === 0) return alert('No rows selected');
+
+    if (action === 'delete' && !confirm('Delete selected posts?')) return;
+
+    await fetchJSON('{{ route('moderation.postBulk') }}', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf },
+      body: JSON.stringify({ action, ids })
+    });
+    qs('#postSelectAll').checked = false;
+    await loadPosts();
+  });
+
+  // Initial load (posts)
+  loadPosts();
+  // =================== END ADDED: POSTS LOGIC ==================
   </script>
 </body>
 </html>

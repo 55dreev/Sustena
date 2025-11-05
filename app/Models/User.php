@@ -31,6 +31,11 @@ protected $keyType = 'int';
         'xp_today',
         'xp_this_week'
     ];
+    // Optional helper for a display label
+    public function getLabelAttribute(): string
+    {
+        return $this->username ?? $this->email ?? ('User #'.$this->user_id);
+    }
     public function getDisplayNameAttribute(): string
     {
         $full = trim(($this->first_name ?? '').' '.($this->last_name ?? ''));

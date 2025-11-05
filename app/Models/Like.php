@@ -11,14 +11,13 @@ class Like extends Model
 
     public function post(): BelongsTo
     {
-        return $this->belongsTo(Post::class, 'post_id', 'user_id');
+        // FK likes.post_id -> posts.id
+        return $this->belongsTo(Post::class, 'post_id', 'id');
     }
 
     public function user(): BelongsTo
     {
+        // FK likes.user_id -> users.user_id
         return $this->belongsTo(User::class, 'user_id', 'user_id');
     }
 }
-
-
-
