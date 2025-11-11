@@ -20,6 +20,7 @@
 
   <link rel="stylesheet" href="{{ asset('css/profile.css') }}">
   <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
+   <link rel="stylesheet" href="{{ asset('css/profileresponsive.css') }}">
   <style>
     .alert{margin:8px 0;padding:10px 12px;border-radius:8px;font-size:.9rem}
     .alert.ok{background:#eefdf3;border:1px solid #d6f5df}

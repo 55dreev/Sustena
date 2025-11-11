@@ -7,21 +7,7 @@
   <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
   <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
-<style>
-  .proof-modal__backdrop{
-    position:fixed; inset:0; background:rgba(0,0,0,.7);
-    display:none; align-items:center; justify-content:center; z-index:2000;
-  }
-  .proof-modal__dialog{
-    background:#111; border-radius:12px; max-width:90vw; max-height:90vh;
-    padding:12px; position:relative;
-  }
-  .proof-modal__img{ max-width:88vw; max-height:80vh; display:block; margin:auto; }
-  .proof-modal__close{
-    position:absolute; top:8px; right:10px; border:0; background:transparent;
-    color:#fff; font-size:28px; cursor:pointer; line-height:1;
-  }
-</style>
+
 
 <div id="proofModal" class="proof-modal__backdrop" role="dialog" aria-modal="true" aria-label="Proof viewer">
   <div class="proof-modal__dialog">

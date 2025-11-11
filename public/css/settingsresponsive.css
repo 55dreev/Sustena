@@ -1,0 +1,186 @@
+/* === Responsive Design for Sustena Settings Page === */
+
+/* Tablets (landscape & portrait) */
+@media (max-width: 1024px) {
+  .main-content {
+    padding: 15px;
+  }
+
+  .settings-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .settings-section, .bottom-section {
+    padding: 20px;
+  }
+
+  .section-title {
+    font-size: 18px;
+  }
+
+  .setting-label {
+    font-size: 15px;
+  }
+
+  .support-link {
+    font-size: 15px;
+    padding: 10px 14px;
+  }
+
+  .sidebar {
+    width: 160px;
+  }
+
+  .main-content {
+    margin-left: 160px;
+  }
+}
+
+/* Phones (portrait) */
+@media (max-width: 768px) {
+  body {
+    flex-direction: column;
+  }
+
+  /* Sidebar collapses into hamburger mode */
+  .sidebar {
+    width: 200px;
+    transform: translateX(-200px);
+    position: fixed;
+    z-index: 1000;
+  }
+
+  .sidebar.active {
+    transform: translateX(0);
+  }
+
+  .sidebar-toggle {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    background: #4a7c59;
+    color: white;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 22px;
+    z-index: 1200;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  }
+
+  .main-content {
+    margin: 0;
+    padding: 15px;
+    transition: filter 0.3s ease;
+  }
+
+  /* Dim main content when sidebar is open */
+  body.sidebar-open .main-content {
+    filter: blur(2px);
+    pointer-events: none;
+  }
+
+  .header {
+    padding: 15px;
+  }
+
+  .welcome-text {
+    font-size: 16px;
+  }
+
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-section, .bottom-section {
+    padding: 15px;
+  }
+
+  .section-title {
+    font-size: 16px;
+  }
+
+  .setting-label, .setting-sublabel {
+    font-size: 14px;
+  }
+
+  .toggle-container {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .support-links {
+    gap: 8px;
+  }
+
+  .support-link {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+
+  .floating-icons {
+    top: auto;
+    bottom: 20px;
+    right: 15px;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .floating-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+}
+
+/* Extra small phones */
+@media (max-width: 480px) {
+  .main-content {
+    padding: 10px;
+  }
+
+  .header {
+    padding: 10px;
+    margin-bottom: 15px;
+  }
+
+  .welcome-text {
+    font-size: 14px;
+  }
+
+  .settings-section, .bottom-section {
+    padding: 12px;
+  }
+
+  .section-title {
+    font-size: 15px;
+  }
+
+  .setting-label {
+    font-size: 13px;
+  }
+
+  .setting-sublabel {
+    font-size: 12px;
+  }
+
+  .toggle-switch {
+    width: 50px;
+    height: 25px;
+  }
+
+  .toggle-slider {
+    width: 20px;
+    height: 20px;
+  }
+
+  .support-link {
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+
+  .sidebar-toggle {
+    font-size: 20px;
+    padding: 6px 9px;
+  }
+}

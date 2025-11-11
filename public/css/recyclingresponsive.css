@@ -1,0 +1,269 @@
+/* === Page Layout === */
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #f6f8fa;
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+
+/* === Modals === */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 500px;
+  width: 90%;
+  text-align: center;
+  animation: fadeIn 0.3s ease-in-out;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* === Game Layout === */
+.game-area {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+  font-weight: bold;
+  gap: 10px;
+}
+
+.bins {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.bin {
+  width: 100px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.bin:hover {
+  transform: scale(1.05);
+}
+
+.items-area {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.draggable-item {
+  width: 80px;
+  cursor: grab;
+  transition: transform 0.3s ease;
+}
+
+.draggable-item:active {
+  transform: scale(0.9);
+}
+
+/* === Module Container === */
+.module-container {
+  max-width: 1000px;
+  margin: 20px auto;
+  background: #fff;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  padding: 30px;
+}
+
+/* === Header === */
+.module-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.module-header h1 {
+  font-size: 2.5rem;
+  color: #2e7d32;
+  margin-bottom: 10px;
+}
+
+.module-header p {
+  font-size: 1rem;
+  color: #555;
+}
+
+/* === Sections === */
+.module-section {
+  margin-bottom: 40px;
+}
+
+.module-section h2 {
+  font-size: 1.5rem;
+  color: #2e7d32;
+  margin-bottom: 10px;
+}
+
+.module-section p {
+  line-height: 1.8;
+  color: #444;
+  font-size: 1rem;
+}
+
+.module-section ul {
+  margin-left: 20px;
+  color: #444;
+  line-height: 1.8;
+}
+
+/* === Video === */
+.video-container {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.video-container iframe {
+  width: 100%;
+  max-width: 800px;
+  height: 450px;
+  border: none;
+  border-radius: 10px;
+}
+
+/* === Back Button === */
+.back-button {
+  display: inline-block;
+  background-color: #2e7d32;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.3s;
+  border: none;
+  cursor: pointer;
+}
+
+.back-button:hover {
+  background-color: #256528;
+}
+
+/* === Responsive Adjustments === */
+
+/* Tablets */
+@media (max-width: 992px) {
+  .module-container {
+    padding: 25px;
+    margin: 15px;
+  }
+
+  .module-header h1 {
+    font-size: 2.2rem;
+  }
+
+  .video-container iframe {
+    height: 350px;
+  }
+
+  .bins {
+    gap: 10px;
+  }
+}
+
+/* Phones */
+@media (max-width: 768px) {
+  .module-container {
+    padding: 20px;
+  }
+
+  .module-header h1 {
+    font-size: 2rem;
+  }
+
+  .module-section h2 {
+    font-size: 1.3rem;
+  }
+
+  .video-container iframe {
+    height: 250px;
+  }
+
+  .back-button {
+    width: 100%;
+    text-align: center;
+    padding: 12px 0;
+  }
+
+  .bins {
+    justify-content: center;
+  }
+
+  .bin {
+    width: 80px;
+  }
+
+  .draggable-item {
+    width: 60px;
+  }
+
+  .game-header {
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+}
+
+/* Small Phones */
+@media (max-width: 480px) {
+  .module-header h1 {
+    font-size: 1.7rem;
+  }
+
+  .module-header p,
+  .module-section p {
+    font-size: 0.9rem;
+  }
+
+  .video-container iframe {
+    height: 200px;
+  }
+
+  .module-container {
+    padding: 15px;
+    border-radius: 10px;
+  }
+
+  .bins {
+    gap: 8px;
+  }
+
+  .bin {
+    width: 70px;
+  }
+
+  .draggable-item {
+    width: 50px;
+  }
+}

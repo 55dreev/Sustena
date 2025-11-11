@@ -6,6 +6,7 @@
     <title>SUSTENA - MicroForum</title>
     <link rel="stylesheet" href="{{ asset('css/forum.css') }}">
     <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/forumresponsive.css') }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
       /* hide the legacy footer if you keep it */

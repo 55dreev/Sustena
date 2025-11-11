@@ -7,28 +7,9 @@
 
   <title>Energy Saving - SUSTENA</title>
   <link rel="stylesheet" href="{{ asset('css/learningmod.css') }}">
-  <style>
-    body { font-family: 'Poppins', sans-serif; background-color: #f6f8fa; margin:0; padding:0; color:#333; }
-    .module-container { max-width:1000px; margin:20px auto; background:#fff; border-radius:15px; box-shadow:0 4px 10px rgba(0,0,0,0.1); padding:30px; }
-    .module-header { text-align:center; margin-bottom:30px; }
-    .module-header h1 { font-size:2.5rem; color:#2e7d32; margin-bottom:10px; }
-    .module-header p { font-size:1rem; color:#555; }
-    .module-section { margin-bottom:40px; }
-    .module-section h2 { font-size:1.5rem; color:#2e7d32; margin-bottom:10px; }
-    .module-section p { line-height:1.8; color:#444; font-size:1rem; }
-    .video-container { text-align:center; margin:20px 0; }
-    .video-container iframe { width:100%; max-width:800px; height:450px; border:none; border-radius:10px; }
-    ul { padding-left:20px; }
-    ul li { margin-bottom:8px; }
-    .back-button { display:inline-block; background-color:#2e7d32; color:white; padding:10px 20px; border-radius:8px; text-decoration:none; font-weight:600; transition:background 0.3s; cursor:pointer; }
-    .back-button:hover { background-color:#256528; }
-    .game-section { text-align:center; }
-    .modal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.7); justify-content:center; align-items:center; }
-    .modal-content { background:#fff; padding:20px; border-radius:12px; text-align:center; position:relative; }
-    .modal-content canvas { display:block; margin:0 auto; background:#fffbe6; border-radius:10px; border:2px solid #2e7d32; }
-    .close { position:absolute; top:10px; right:20px; font-size:24px; font-weight:bold; color:#333; cursor:pointer; }
-    @media (max-width:768px) { .module-container { padding:20px; } .module-header h1 { font-size:2rem; } .video-container iframe { height:250px; } }
-  </style>
+  <link rel="stylesheet" href="{{ asset('css/learnmodules.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/learnmodresponsive.css') }}">
+ 
 </head>
 <body>
 

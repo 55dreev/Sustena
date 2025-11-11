@@ -1,0 +1,221 @@
+/* ============================= */
+/*      Responsive Styles        */
+/* ============================= */
+
+body {
+    font-family: 'Press Start 2P', cursive;
+    margin: 0;
+    padding: 0;
+    background-color: #000;
+    overflow-x: hidden;
+}
+
+/* ----------------------------- */
+/* Loader */
+.loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    color: #fff;
+    text-align: center;
+}
+
+.loader .words {
+    margin-top: 10px;
+}
+
+.loader .word {
+    display: block;
+    font-size: 1rem;
+}
+
+/* ----------------------------- */
+/* Circle Transition */
+.circle-transition {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 50px;
+    height: 50px;
+    background: #66bb6a;
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    transition: all 0.8s ease;
+    z-index: 999;
+}
+
+.circle-transition.active {
+    transform: translate(-50%, -50%) scale(30);
+    transition: all 0.8s ease;
+}
+
+.circle-transition.fade-out {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+/* ----------------------------- */
+/* Login / Signup / Forgot Containers */
+.login-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    max-width: 400px;      /* Desktop max width */
+    padding: 30px;
+    background: #1b1b1b;
+    color: #fff;
+    border-radius: 10px;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    display: none;
+    box-sizing: border-box;
+}
+
+.login-container h1,
+.login-container h2 {
+    text-align: center;
+    margin: 0 0 20px 0;
+}
+
+.login-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.login-container input {
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    font-family: inherit;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.login-container button {
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    background: #66bb6a;
+    color: #fff;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    transition: 0.3s;
+    width: 100%;
+}
+
+.login-container button:hover {
+    background: #4caf50;
+}
+
+.forgot-password {
+    color: #66bb6a;
+    text-decoration: none;
+    font-size: 12px;
+    text-align: center;
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+/* ----------------------------- */
+/* Tablets (<=768px) */
+@media screen and (max-width: 768px) {
+    .login-container {
+        max-width: 350px;
+        padding: 25px;
+    }
+
+    .loader .word {
+        font-size: 0.9rem;
+    }
+
+    .circle-transition {
+        width: 40px;
+        height: 40px;
+    }
+
+    .login-container input,
+    .login-container button {
+        font-size: 13px;
+        padding: 9px;
+    }
+
+    .login-container h1 {
+        font-size: 22px;
+    }
+
+    .login-container h2 {
+        font-size: 16px;
+    }
+}
+
+/* ----------------------------- */
+/* Mobile (<=480px) - make bigger in emulation */
+@media screen and (max-width: 480px) {
+    .login-container {
+        width: 98%;           /* fill almost full viewport */
+        max-width: none;      /* remove desktop max */
+        padding: 20px;        /* slightly bigger for comfort */
+    }
+
+    .loader .word {
+        font-size: 0.85rem;
+    }
+
+    .circle-transition {
+        width: 35px;
+        height: 35px;
+    }
+
+    .login-container h1 {
+        font-size: 20px;
+    }
+
+    .login-container h2 {
+        font-size: 16px;
+    }
+
+    .login-container input,
+    .login-container button {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .forgot-password {
+        font-size: 12px;
+    }
+}
+
+/* ----------------------------- */
+/* Very Small Devices (<=360px) */
+@media screen and (max-width: 360px) {
+    .login-container {
+        width: 97%;
+        padding: 15px;
+    }
+
+    .login-container h1 {
+        font-size: 18px;
+    }
+
+    .login-container h2 {
+        font-size: 14px;
+    }
+
+    .login-container input,
+    .login-container button {
+        font-size: 13px;
+        padding: 9px;
+    }
+
+    .forgot-password {
+        font-size: 11px;
+    }
+}

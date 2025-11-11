@@ -493,6 +493,19 @@
 .menu-icon {
   font-size: 18px;
 }
+ .proof-modal__backdrop{
+    position:fixed; inset:0; background:rgba(0,0,0,.7);
+    display:none; align-items:center; justify-content:center; z-index:2000;
+  }
+  .proof-modal__dialog{
+    background:#111; border-radius:12px; max-width:90vw; max-height:90vh;
+    padding:12px; position:relative;
+  }
+  .proof-modal__img{ max-width:88vw; max-height:80vh; display:block; margin:auto; }
+  .proof-modal__close{
+    position:absolute; top:8px; right:10px; border:0; background:transparent;
+    color:#fff; font-size:28px; cursor:pointer; line-height:1;
+  }
 
 .status-badge { padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
 .status-approved { background: #10b98120; color: #065f46; }
@@ -501,3 +514,182 @@
 
 .action-btn { background: #10b981; border: 0; color: #fff; padding: 6px 10px; border-radius: 8px; cursor: pointer; }
 .remove-btn { background: #ef4444; border: 0; color: #fff; padding: 6px 10px; border-radius: 8px; cursor: pointer; }
+/* ============================= */
+/* 📱 RESPONSIVE DESIGN          */
+/* ============================= */
+
+/* Medium screens (tablets, <1024px) */
+@media (max-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .legend {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    width: 180px;
+  }
+
+  .card {
+    padding: 15px;
+  }
+
+  .main-content {
+    padding: 20px;
+  }
+
+  .header {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+}
+
+/* Small screens (phones, <768px) */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+
+  /* Sidebar collapses into top bar / overlay */
+  .sidebar {
+    position: fixed;
+    top: 60px;
+    left: -100%;
+    width: 200px;
+    height: calc(100vh - 60px);
+    background-color: #e8e8d0;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+    transition: left 0.3s ease-in-out;
+    z-index: 1500;
+  }
+
+  .sidebar.active {
+    left: 0;
+  }
+
+  /* Hamburger menu setup */
+  .hamburger {
+    display: block;
+    font-size: 24px;
+    cursor: pointer;
+  }
+
+  .header {
+    justify-content: space-between;
+    padding: 10px 20px;
+  }
+
+  .logo {
+    font-size: 20px;
+  }
+
+  .main-content {
+    padding: 15px;
+    margin-top: 10px;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .card,
+  .recent-activity-section,
+  .line-chart {
+    padding: 15px;
+  }
+
+  .card-title {
+    font-size: 16px;
+  }
+
+  .card-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+
+  .donut {
+    width: 140px;
+    height: 140px;
+  }
+
+  .donut::before {
+    width: 80px;
+    height: 80px;
+  }
+
+  .legend {
+    grid-template-columns: 1fr;
+  }
+
+  .legend-item {
+    justify-content: center;
+  }
+
+  /* Table tweaks */
+  .activity-table th,
+  .activity-table td,
+  .top-users-table th,
+  .top-users-table td {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .status-badge {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+
+  .modal-content {
+    width: 90%;
+    max-width: 350px;
+    padding: 15px;
+  }
+
+  .modal-content h2 {
+    font-size: 1.1rem;
+  }
+}
+
+/* Extra small screens (phones <480px) */
+@media (max-width: 480px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .admin-profile {
+    font-size: 14px;
+  }
+
+  .logo {
+    font-size: 18px;
+  }
+
+  .card {
+    font-size: 14px;
+  }
+
+  .module-header h1 {
+    font-size: 1.6rem;
+  }
+
+  .back-button {
+    width: 100%;
+    text-align: center;
+  }
+
+  .donut {
+    width: 120px;
+    height: 120px;
+  }
+
+  .donut::before {
+    width: 70px;
+    height: 70px;
+  }
+}

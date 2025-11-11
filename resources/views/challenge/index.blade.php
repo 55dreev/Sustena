@@ -10,7 +10,7 @@
   {{-- Use a public CSS file. Place it at public/css/challenges.css --}}
   <link rel="stylesheet" href="{{ asset('css/challenges.css') }}"/>
    <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
-
+<link rel="stylesheet" href="{{ asset('css/challengesresponsive.css') }}"/>
   <style>
     /* inline page-specific styles (your original block) */
     .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);justify-content:center;align-items:center;z-index:1000;padding:20px}

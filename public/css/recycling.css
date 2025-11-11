@@ -1,0 +1,168 @@
+/* Page layout */
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f6f8fa;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+
+    /* Modals */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      animation: fadeIn 0.3s ease-in-out;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* Game Layout */
+    .game-area {
+      max-width: 800px;
+    }
+
+    .game-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+
+    .bins {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 20px;
+    }
+
+    .bin {
+      width: 100px;
+      cursor: pointer;
+    }
+
+    .items-area {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .draggable-item {
+      width: 80px;
+      cursor: grab;
+    }
+
+    .module-container {
+      max-width: 1000px;
+      margin: 20px auto;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 30px;
+    }
+
+    .module-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .module-header h1 {
+      font-size: 2.5rem;
+      color: #2e7d32;
+      margin-bottom: 10px;
+    }
+
+    .module-header p {
+      font-size: 1rem;
+      color: #555;
+    }
+
+    /* Section styling */
+    .module-section {
+      margin-bottom: 40px;
+    }
+
+    .module-section h2 {
+      font-size: 1.5rem;
+      color: #2e7d32;
+      margin-bottom: 10px;
+    }
+
+    .module-section p {
+      line-height: 1.8;
+      color: #444;
+      font-size: 1rem;
+    }
+
+    .module-section ul {
+      margin-left: 20px;
+      color: #444;
+      line-height: 1.8;
+    }
+
+    /* Video styling */
+    .video-container {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .video-container iframe {
+      width: 100%;
+      max-width: 800px;
+      height: 450px;
+      border: none;
+      border-radius: 10px;
+    }
+
+    /* Back button */
+    .back-button {
+      display: inline-block;
+      background-color: #2e7d32;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background 0.3s;
+      border: none;
+      cursor: pointer;
+    }
+
+    .back-button:hover {
+      background-color: #256528;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .module-container {
+        padding: 20px;
+      }
+
+      .module-header h1 {
+        font-size: 2rem;
+      }
+
+      .video-container iframe {
+        height: 250px;
+      }
+    }

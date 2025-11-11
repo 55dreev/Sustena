@@ -7,6 +7,8 @@
 <title>SUSTENA - Footprint Tracker</title>
 <link rel="stylesheet" href="{{ asset('css/footprintcalc.css') }}">
 <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
+<link rel="stylesheet" href="{{ asset('css/footprintcalcresponsive.css') }}">
+
 </head>
 
 <body>

@@ -1,0 +1,193 @@
+/* === Responsive Enhancements === */
+
+/* Large tablets and small laptops */
+@media (max-width: 1024px) {
+  .main-content {
+    padding: 15px;
+  }
+
+  .header {
+    padding: 15px;
+  }
+
+  .leaderboard-title {
+    font-size: 26px;
+  }
+
+  .podium-section {
+    gap: 15px;
+  }
+
+  .podium-entry {
+    padding: 20px;
+    min-width: 150px;
+  }
+}
+
+/* Tablets and mid-sized devices */
+@media (max-width: 768px) {
+  body {
+    flex-direction: column;
+  }
+
+  /* Collapsible sidebar */
+  .sidebar {
+    width: 200px;
+    transform: translateX(-200px);
+    transition: transform 0.3s ease;
+    position: fixed;
+    z-index: 1000;
+  }
+
+  .sidebar.active {
+    transform: translateX(0);
+  }
+
+  .sidebar-toggle {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    background: #4a7c59;
+    color: white;
+    border-radius: 8px;
+    font-size: 22px;
+    padding: 8px 12px;
+    z-index: 1100;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding: 15px;
+    transition: filter 0.3s ease;
+  }
+
+  body.sidebar-open .main-content {
+    filter: blur(2px);
+    pointer-events: none;
+  }
+
+  .logo-text, .nav-item span {
+    display: none;
+  }
+
+  .leaderboard-title {
+    font-size: 24px;
+  }
+
+  .leaderboard-container {
+    padding: 25px 20px;
+  }
+
+  .podium-section {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .podium-entry {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .rank-number {
+    width: 50px;
+    height: 50px;
+    font-size: 18px;
+  }
+
+  .user-name {
+    font-size: 16px;
+  }
+
+  .user-score {
+    font-size: 14px;
+    padding: 6px 12px;
+  }
+
+  .floating-icons {
+    flex-direction: column;
+    top: auto;
+    bottom: 20px;
+    right: 15px;
+    gap: 8px;
+  }
+
+  .floating-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+}
+
+/* Mobile phones */
+@media (max-width: 480px) {
+  .header {
+    padding: 12px;
+  }
+
+  .welcome-text {
+    font-size: 14px;
+  }
+
+  .leaderboard-title {
+    font-size: 20px;
+    margin: 20px 0;
+  }
+
+  .leaderboard-container {
+    padding: 20px 15px;
+  }
+
+  .leaderboard-entry {
+    flex-direction: column;
+    text-align: center;
+    padding: 15px;
+  }
+
+  .rank-number {
+    margin: 0 auto 10px;
+  }
+
+  .user-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+
+  .user-score {
+    font-size: 13px;
+  }
+
+  .podium-entry {
+    padding: 15px;
+    border-radius: 14px;
+  }
+
+  .floating-icon {
+    width: 34px;
+    height: 34px;
+    font-size: 16px;
+  }
+}
+
+/* Super small screens (folds, older phones) */
+@media (max-width: 360px) {
+  .leaderboard-title {
+    font-size: 18px;
+  }
+
+  .user-name {
+    font-size: 14px;
+  }
+
+  .user-score {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+
+  .rank-number {
+    width: 45px;
+    height: 45px;
+    font-size: 16px;
+  }
+}

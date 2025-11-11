@@ -6,6 +6,7 @@
   <title>SUSTENA - Environmental Learning App</title>
   <link rel="stylesheet" href="{{ asset('css/learningmod.css') }}">
   <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
+   <link rel="stylesheet" href="{{ asset('css/learningmodresponsive.css') }}">
 
 </head>
 <body>

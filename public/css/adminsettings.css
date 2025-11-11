@@ -83,3 +83,124 @@
   background-color: #166534;
   transform: translateY(0);
 }
+/* ============================= */
+/* 📱 RESPONSIVE DESIGN (ADMIN SETTINGS) */
+/* ============================= */
+
+/* Tablets (max-width: 1024px) */
+@media (max-width: 1024px) {
+  .settings-section {
+    padding: 18px;
+  }
+
+  .setting-row {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 10px;
+  }
+
+  .setting-label {
+    width: 100%;
+    font-size: 0.95rem;
+  }
+
+  .setting-control {
+    width: 100%;
+  }
+
+  .setting-control select,
+  .setting-control input[type="text"] {
+    width: 100%;
+    font-size: 0.95rem;
+  }
+
+  .save-btn {
+    float: none;
+    width: 100%;
+    text-align: center;
+    font-size: 1rem;
+  }
+}
+
+/* Phones (max-width: 768px) */
+@media (max-width: 768px) {
+  .settings-section {
+    padding: 15px;
+    border-radius: 10px;
+  }
+
+  .settings-section h3 {
+    font-size: 1.2rem;
+    text-align: center;
+  }
+
+  .setting-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .setting-label {
+    font-size: 0.9rem;
+  }
+
+  .setting-control select,
+  .setting-control input[type="text"] {
+    width: 100%;
+    font-size: 0.9rem;
+  }
+
+  .setting-control input[type="checkbox"] {
+    transform: scale(1.1);
+  }
+
+  .theme-options {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .theme-preview {
+    width: 28px;
+    height: 28px;
+  }
+
+  .save-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 0.95rem;
+    border-radius: 10px;
+  }
+
+  .bulk-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 0.95rem;
+    margin-top: 10px;
+  }
+}
+
+/* Small Phones (max-width: 480px) */
+@media (max-width: 480px) {
+  .settings-section h3 {
+    font-size: 1.1rem;
+  }
+
+  .setting-label {
+    font-size: 0.85rem;
+  }
+
+  .setting-control select,
+  .setting-control input[type="text"] {
+    font-size: 0.85rem;
+  }
+
+  .theme-preview {
+    width: 25px;
+    height: 25px;
+  }
+
+  .save-btn, .bulk-btn {
+    font-size: 0.9rem;
+    padding: 10px;
+  }
+}

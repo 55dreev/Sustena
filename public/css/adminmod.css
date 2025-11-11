@@ -96,3 +96,133 @@
       padding: 15px;
       font-style: italic;
     }
+    /* ============================= */
+/* 📱 RESPONSIVE DESIGN (ADMIN MOD) */
+/* ============================= */
+
+/* Medium screens (tablets <1024px) */
+@media (max-width: 1024px) {
+  .charts-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+  }
+
+  .tools-bar input {
+    width: 200px;
+  }
+
+  .filter-tabs {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .live-comments {
+    height: 220px;
+  }
+}
+
+/* Small screens (phones <768px) */
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+  }
+
+  .stat-card {
+    padding: 15px 8px;
+  }
+
+  .stat-card h3 {
+    font-size: 20px;
+  }
+
+  .stat-card p {
+    font-size: 13px;
+  }
+
+  .tools-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .tools-bar input {
+    width: 100%;
+  }
+
+  .filter-tabs {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .filter-tab {
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+
+  .charts-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .chart-card {
+    padding: 12px;
+  }
+
+  canvas {
+    max-height: 150px !important;
+  }
+
+  .live-comments {
+    height: 200px;
+    padding: 10px;
+  }
+
+  .live-comment strong {
+    font-size: 14px;
+  }
+
+  .live-comment span {
+    font-size: 12px;
+  }
+
+  .bulk-btn {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+
+  .bulk-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* Extra small screens (phones <480px) */
+@media (max-width: 480px) {
+  .stat-card h3 {
+    font-size: 18px;
+  }
+
+  .tools-bar {
+    gap: 8px;
+  }
+
+  .filter-tab {
+    padding: 6px 8px;
+    font-size: 13px;
+  }
+
+  .chart-card {
+    font-size: 14px;
+  }
+
+  .live-comments {
+    height: 180px;
+  }
+
+  .bulk-btn {
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+}

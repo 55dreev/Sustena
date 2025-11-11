@@ -1,0 +1,128 @@
+/* ============================= */
+/* Footprint Calculator Responsive */
+/* ============================= */
+
+/* ----------------------------- */
+/* Tablets (<=1024px) */
+@media screen and (max-width: 1024px) {
+    .sidebar {
+        width: 160px;
+    }
+
+    .main-content {
+        margin-left: 160px;
+        padding: 15px;
+    }
+
+    .calculator-container {
+        padding: 30px;
+        padding-bottom: 120px;
+        max-width: 1000px;
+    }
+
+    .calculator-title { font-size: 28px; }
+    .calculator-subtitle { font-size: 14px; }
+    .section-title { font-size: 24px; }
+    .question-text { font-size: 16px; margin-bottom: 80px; }
+    .input-field { font-size: 14px; padding: 12px 18px; }
+    .submit-btn { font-size: 16px; padding: 12px 30px; }
+    .category-label { font-size: 28px; }
+    .slider-label { font-size: 0.8rem; }
+
+    /* Farm decorations scaling */
+    .farm-decor { font-size: 3rem; top: 450px; }
+    .farm-decor.cow { left: 8%; }
+    .farm-decor.chicken { left: 25%; }
+    .farm-decor.tree { left: 55%; }
+    .farm-decor.barn { left: 78%; }
+}
+
+/* ----------------------------- */
+/* Mobile (<=768px) */
+@media screen and (max-width: 768px) {
+    .sidebar { width: 60px; }
+    .sidebar.collapsed { transform: translateX(-50px); }
+    .main-content { margin-left: 60px; padding: 12px; }
+    .calculator-container { padding: 20px; padding-bottom: 100px; max-width: 95%; }
+
+    .calculator-title { font-size: 24px; }
+    .calculator-subtitle { font-size: 12px; }
+    .section-title { font-size: 20px; }
+    .question-text { font-size: 14px; margin-bottom: 60px; }
+    .input-field { font-size: 14px; padding: 12px 15px; }
+    .submit-btn { font-size: 14px; padding: 10px 25px; }
+    .category-label { font-size: 24px; }
+    .slider-label { font-size: 0.75rem; }
+
+    /* Farm decorations dynamic positioning */
+    .farm-decor { font-size: 2.5rem; top: 400px; }
+    .farm-decor.cow { left: 5%; }
+    .farm-decor.chicken { left: 20%; }
+    .farm-decor.tree { left: 50%; }
+    .farm-decor.barn { left: 75%; }
+
+    /* Slightly slower animations on smaller screens */
+    @keyframes cowWalk {
+        0%,100% { transform: translateX(0) scaleX(1); }
+        25% { transform: translateX(10%) scaleX(1); }
+        50% { transform: translateX(10%) scaleX(-1); }
+        75% { transform: translateX(0) scaleX(-1); }
+    }
+
+    @keyframes chickenWalk {
+        0%,100% { transform: translateX(0) translateY(0) scaleX(1); }
+        25% { transform: translateX(10%) translateY(-1.5px) scaleX(1); }
+        50% { transform: translateX(10%) translateY(0) scaleX(-1); }
+        75% { transform: translateX(0) translateY(-1.5px) scaleX(-1); }
+    }
+
+    @keyframes floaty {
+        0%,100% { transform: translateY(0px); }
+        50% { transform: translateY(-4px); }
+    }
+}
+
+/* ----------------------------- */
+/* Small Mobile (<=480px) */
+@media screen and (max-width: 480px) {
+    .sidebar { width: 50px; }
+    .sidebar.collapsed { transform: translateX(-40px); }
+    .main-content { margin-left: 50px; padding: 10px; }
+    .calculator-container { padding: 15px; padding-bottom: 80px; max-width: 100%; }
+
+    .calculator-title { font-size: 20px; }
+    .calculator-subtitle { font-size: 12px; }
+    .section-title { font-size: 18px; }
+    .question-text { font-size: 12px; margin-bottom: 50px; }
+    .input-field { font-size: 12px; padding: 10px 12px; }
+    .submit-btn { font-size: 12px; padding: 8px 20px; }
+    .category-label { font-size: 20px; }
+    .slider-label { font-size: 0.7rem; }
+
+    /* Farm decorations dynamic positioning for small phones */
+    .farm-decor { font-size: 2rem; top: 350px; }
+    .farm-decor.cow { left: 3%; }
+    .farm-decor.chicken { left: 15%; }
+    .farm-decor.tree { left: 45%; }
+    .farm-decor.barn { left: 70%; }
+
+    /* Even slower animations for small screens */
+    @keyframes cowWalk {
+        0%,100% { transform: translateX(0) scaleX(1); }
+        25% { transform: translateX(8%) scaleX(1); }
+        50% { transform: translateX(8%) scaleX(-1); }
+        75% { transform: translateX(0) scaleX(-1); }
+    }
+
+    @keyframes chickenWalk {
+        0%,100% { transform: translateX(0) translateY(0) scaleX(1); }
+        25% { transform: translateX(8%) translateY(-1px) scaleX(1); }
+        50% { transform: translateX(8%) translateY(0) scaleX(-1); }
+        75% { transform: translateX(0) translateY(-1px) scaleX(-1); }
+    }
+
+    @keyframes floaty {
+        0%,100% { transform: translateY(0px); }
+        50% { transform: translateY(-3px); }
+    }
+}

@@ -1,0 +1,136 @@
+/* ==== Responsive Adjustments ==== */
+
+/* Medium screens: tablets/laptops */
+@media (max-width: 1200px) {
+    .content-layout {
+        flex-direction: column; /* stack main + right side */
+        gap: 20px;
+    }
+    .hero-panel {
+        position: static;       /* stop sticky */
+        max-width: 100%;
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    .main-content {
+        margin-left: 200px;    /* keep sidebar offset if visible */
+        flex-direction: column;
+        padding: 15px;
+    }
+    .sidebar-right {
+        position: static;
+        max-height: none;
+        overflow: visible;
+        margin-top: 0;
+    }
+}
+
+/* Small screens: phones, narrow tablets */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 60px;
+        padding: 10px 5px;
+    }
+    .main-content {
+        margin-left: 60px; /* sidebar width */
+        padding: 10px;
+    }
+    .logo-text, .nav-item span {
+        display: none; /* hide text to save space */
+    }
+    .header-title {
+        font-size: 32px;
+    }
+    .content-layout {
+        gap: 15px;
+    }
+    .hero-panel {
+        width: 100%;
+    }
+    .composer-body input,
+    .composer-body textarea {
+        font-size: 14px;
+    }
+}
+
+/* Extra small screens: phones in portrait */
+@media (max-width: 480px) {
+    .header-title {
+        font-size: 28px;
+    }
+    .post-card, .user-item, .hero-card {
+        padding: 12px;
+    }
+    .author-avatar {
+        width: 35px;
+        height: 35px;
+    }
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+    }
+    .new-post-btn {
+        font-size: 14px;
+        padding: 12px 20px;
+    }
+    .hero-title {
+        font-size: 24px;
+    }
+    .hero-sub {
+        font-size: 14px;
+    }
+}
+
+/* Pagination responsive */
+@media (max-width: 640px) {
+    .list-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+}
+
+/* Right sidebar responsive */
+@media (max-width: 1024px) {
+    .sidebar-right {
+        position: static;
+        max-height: none;
+    }
+    .sidebar-right .user-list {
+        max-height: none;
+        overflow: visible;
+    }
+}
+
+/* Composer / expandable post editor responsive */
+@media (max-width: 768px){
+    .composer[open] .composer-summary { 
+        border-bottom:1px solid #e6f2ea; 
+    }
+    .composer-body input,
+    .composer-body textarea {
+        font-size: 14px;
+    }
+}
+
+/* Hero panel tweaks */
+@media (max-width: 900px) {
+    .hero-stats {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .hero-cta {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+/* Ensure sidebar toggle works on small screens */
+@media (max-width: 768px){
+    .sidebar.collapsed {
+        transform: translateX(-50px); /* partially visible toggle */
+    }
+    .main-content.expanded {
+        margin-left: 60px;
+    }
+}

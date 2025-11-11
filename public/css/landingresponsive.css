@@ -1,0 +1,146 @@
+/* ============================= */
+/*    Landing Page Responsive    */
+/* ============================= */
+
+/* ----------------------------- */
+/* Tablets (<=768px) */
+@media screen and (max-width: 768px) {
+    /* Sidebar */
+    .sidebar {
+        width: 80px;
+    }
+
+    .sidebar .logo-text,
+    .sidebar .nav-item span {
+        display: none;
+    }
+
+    .sidebar .nav-item {
+        justify-content: center;
+        padding: 10px;
+    }
+
+    .main-content {
+        margin-left: 80px;
+        padding: 15px;
+    }
+
+    /* Cards Grid */
+    .cards-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    /* Header Text */
+    .welcome-text {
+        font-size: 16px;
+    }
+
+    .mission-title, .card-title {
+        font-size: 18px;
+    }
+
+    .card-subtitle {
+        font-size: 20px;
+    }
+
+    .card-text {
+        font-size: 14px;
+    }
+
+    /* Floating Icons */
+    .floating-icons {
+        top: 15px;
+        right: 15px;
+    }
+
+    .floating-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+    }
+}
+
+/* ----------------------------- */
+/* Mobile (<=480px) */
+@media screen and (max-width: 480px) {
+    .sidebar {
+        width: 60px;
+    }
+
+    .main-content {
+        margin-left: 60px;
+        padding: 12px;
+    }
+
+    .welcome-text {
+        font-size: 14px;
+    }
+
+    .mission-title, .card-title {
+        font-size: 16px;
+    }
+
+    .card-subtitle {
+        font-size: 18px;
+    }
+
+    .card-text {
+        font-size: 12px;
+    }
+
+    .cards-grid {
+        gap: 12px;
+    }
+
+    .floating-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+    }
+}
+
+/* ----------------------------- */
+/* Very Small Devices (<=360px) */
+@media screen and (max-width: 360px) {
+    .sidebar {
+        width: 50px;
+    }
+
+    .main-content {
+        margin-left: 50px;
+        padding: 10px;
+    }
+
+    .welcome-text {
+        font-size: 12px;
+    }
+
+    .mission-title, .card-title {
+        font-size: 14px;
+    }
+
+    .card-subtitle {
+        font-size: 16px;
+    }
+
+    .card-text {
+        font-size: 11px;
+    }
+
+    .floating-icon {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
+
+    .cards-grid {
+        gap: 8px;
+    }
+}
+
+/* Optional: make sure images/icons scale nicely */
+img, .card-icon, .nav-icon {
+    max-width: 100%;
+    height: auto;
+}
