@@ -56,10 +56,7 @@
 
 </form>
 
-
-
     </div>  
-
 
     <!-- Forgot Password Form -->
     <div class="login-container" id="forgot" style="display: none;">
@@ -74,24 +71,44 @@
     </div>
 
     <script>
+   
     // Loader transition
-    setTimeout(() => {
-        const loader = document.querySelector('.loader');
-        const login = document.getElementById('login');
+// Loader transition
+setTimeout(() => {
+    const loader = document.querySelector('.loader');
+    const login = document.getElementById('login');
+    const circle = document.querySelector('.circle-transition');
 
-        loader.classList.add('fade-out');
+    loader.classList.add('fade-out');
+
+    setTimeout(() => {
+        loader.style.display = 'none';
+
+        // Start circle transition
+        circle.classList.add('active');
 
         setTimeout(() => {
-            loader.style.display = 'none';
+            // Fade out circle at the same time as login fades in
+            circle.classList.add('fade-out');
+
             document.body.classList.add('fade-in-bg');
             login.style.display = 'block';
             login.style.opacity = 0;
             login.style.transition = 'opacity 1s ease';
+            
             setTimeout(() => {
                 login.style.opacity = 1;
-            }, 100);
-        }, 1000);
-    }, 4000);
+            }, 50);
+
+            // Remove circle from DOM after fade
+            setTimeout(() => {
+                circle.style.display = 'none';
+            }, 500); // matches fade-out duration
+        }, 800); // slightly before full circle expansion
+    }, 1000);
+}, 4000);
+
+
 
     // Toggle logic
     document.getElementById('showSignup').addEventListener('click', () => {
