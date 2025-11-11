@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SUSTENA – Home</title>
     <link rel="stylesheet" href="{{ asset('css/landing.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
+    
 </head>
 <body>
 @php
@@ -77,7 +79,8 @@
 
 <!-- Sidebar -->
 <div class="sidebar" id="sidebar">
-    <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div>
+    <div class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">☰</div>
+
     <div class="logo">
         <div class="logo-icon">🌱</div>
         <div class="logo-text">SUSTENA</div>

@@ -159,6 +159,8 @@
             image-rendering: -moz-crisp-edges;
             image-rendering: crisp-edges;
             filter: contrast(1.2) brightness(1.1);
+               text-decoration: none;  /* removes underline */
+    color: inherit;         /* optional: inherit text color */
         }
 
         .floating-icon:hover {
@@ -616,3 +618,29 @@
                 font-size: 32px;
             }
         }
+        .get-score-btn {
+     position: relative; /* or absolute if needed */
+    top: 20px;  /* moves it 50px lower from original position */
+    background-color: #667fbb; /* green, matches your theme */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+
+.get-score-btn:hover {
+    background-color: #225373; /* slightly darker on hover */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.25);
+}
+
+.get-score-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}

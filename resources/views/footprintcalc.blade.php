@@ -6,6 +6,7 @@
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <title>SUSTENA - Footprint Tracker</title>
 <link rel="stylesheet" href="{{ asset('css/footprintcalc.css') }}">
+<link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
 </head>
 
 <body>

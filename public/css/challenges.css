@@ -147,6 +147,7 @@
             display: flex;
             gap: 10px;
             z-index: 1000;
+            
         }
 
         .floating-icon {
@@ -167,6 +168,8 @@
             image-rendering: -moz-crisp-edges;
             image-rendering: crisp-edges;
             filter: contrast(1.2) brightness(1.1);
+            text-decoration: none;  /* removes underline */
+    color: inherit;         /* optional: inherit text color */
         }
 
         .floating-icon:hover {

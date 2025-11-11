@@ -112,6 +112,7 @@
         box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         width: 85%;
     }
+    
 
 
     .nav-icon {
@@ -143,6 +144,12 @@
       gap: 15px;
       margin-bottom: 30px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+   
+    text-decoration: none;  /* removes underline */
+    color: inherit;         /* optional: inherit text color */
+
+
+      
     }
 
     .nav-icon-top {
@@ -156,6 +163,11 @@
       cursor: pointer;
       transition: all 0.3s ease;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      
+    text-decoration: none;  /* removes underline */
+    color: inherit;         /* optional: inherit text color */
+
+
     }
 
     .nav-icon-top:hover {

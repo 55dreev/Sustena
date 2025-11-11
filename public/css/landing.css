@@ -416,6 +416,8 @@
             font-weight: 600;
             transition: all 0.3s ease;
             margin-top: 16px;
+             text-decoration: none;  /* removes underline */
+    color: inherit;         /* optional: inherit text color */
         }
 
         .view-all-btn:hover {
@@ -510,6 +512,8 @@
             image-rendering: -moz-crisp-edges;
             image-rendering: crisp-edges;
             filter: contrast(1.2) brightness(1.1);
+             text-decoration: none;  /* removes underline */
+    color: inherit;         /* optional: inherit text color */
         }
 
         .floating-icon:hover {

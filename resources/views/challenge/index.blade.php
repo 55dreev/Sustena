@@ -9,6 +9,7 @@
 
   {{-- Use a public CSS file. Place it at public/css/challenges.css --}}
   <link rel="stylesheet" href="{{ asset('css/challenges.css') }}"/>
+   <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
 
   <style>
     /* inline page-specific styles (your original block) */

@@ -7,6 +7,7 @@
 
   <title>SUSTENA - Challenges</title>
   <link rel="stylesheet" href="{{ asset('css/challenges.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
   <style>
     /* Modal Overlay */
     .modal {
@@ -46,6 +47,7 @@
       color: #444;
       font-weight: bold;
     }
+    
 
     .upload-box {
       margin-top: 20px;

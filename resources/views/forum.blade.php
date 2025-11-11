@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SUSTENA - MicroForum</title>
     <link rel="stylesheet" href="{{ asset('css/forum.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
       /* hide the legacy footer if you keep it */
@@ -24,30 +25,31 @@
         <div class="logo-icon">🌱</div>
         <div class="logo-text">SUSTENA</div>
     </div>
-  <a href="{{ url('/landing-page') }}" class="nav-item">
-    <div class="nav-icon">🏠</div>
-    <span>Home</span>
-  </a>
-  <a href="{{ url('/footprint-calculator') }}" class="nav-item">
-    <div class="nav-icon">👣</div>
-    <span>Footprint Tracker</span>
-  </a>
-  <a href="{{ url('/learning-modules') }}" class="nav-item">
-    <div class="nav-icon">📚</div>
-    <span>Learn</span>
-  </a>
-  <a href="{{ url('/challenge') }}" class="nav-item">
-    <div class="nav-icon">🏆</div>
-    <span>Challenges</span>
-  </a>
-  <a href="{{ url('/forum') }}" class="nav-item active">
-    <div class="nav-icon">💬</div>
-    <span>MicroForum</span>
-  </a>
-  <a href="{{ url('/profile') }}" class="nav-item">
-    <div class="nav-icon">👤</div>
-    <span>Profile</span>
-  </a>
+
+    <a href="{{ url('/landing-page') }}" class="nav-item">
+        <div class="nav-icon">🏠</div>
+        <span>Home</span>
+    </a>
+    <a href="{{ url('/footprint-calculator') }}" class="nav-item">
+        <div class="nav-icon">👣</div>
+        <span>Footprint Tracker</span>
+    </a>
+    <a href="{{ url('/learning-modules') }}" class="nav-item">
+        <div class="nav-icon">📚</div>
+        <span>Learn</span>
+    </a>
+    <a href="{{ url('/challenge') }}" class="nav-item">
+        <div class="nav-icon">🏆</div>
+        <span>Challenges</span>
+    </a>
+    <a href="{{ url('/forum') }}" class="nav-item active">
+        <div class="nav-icon">💬</div>
+        <span>MicroForum</span>
+    </a>
+    <a href="{{ url('/profile') }}" class="nav-item">
+        <div class="nav-icon">👤</div>
+        <span>Profile</span>
+    </a>
 </div>
 
 <div class="floating-icons">
