@@ -501,6 +501,11 @@ if (empty($badges)) {
         sidebar.classList.toggle('collapsed');
         mainContent.classList.toggle('expanded');
     }
+     document.addEventListener('DOMContentLoaded', () => {
+    if (localStorage.getItem('darkMode') === 'enabled') {
+        document.body.classList.add('dark-mode');
+    }
+});
 </script>
 </body>
 </html>

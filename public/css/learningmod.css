@@ -331,3 +331,67 @@
       text-decoration: none; /* Prevent underline */
       color: inherit; /* Prevent default link color */
     }
+    /* === Bluish Dark Mode Learning Modules === */
+body.dark-mode {
+    background: #0e1217; /* deep bluish background */
+    color: #ffffff;      /* default text white */
+}
+
+body.dark-mode .sidebar {
+    background: linear-gradient(180deg, #1b3b2f 0%, #0e2a1f 100%); /* greenish like profile */
+}
+
+body.dark-mode .logo-text,
+body.dark-mode .nav-item,
+body.dark-mode .nav-icon {
+    color: rgba(255,255,255,0.85);
+}
+
+body.dark-mode .nav-item.active {
+    background: #388e3c;
+    color: white;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+body.dark-mode .nav-item:hover {
+    background: rgba(255,255,255,0.05);
+    color: #4dd0e1;
+}
+
+body.dark-mode .main-content {
+    background: #12181f;
+}
+
+body.dark-mode .header-section {
+    background: linear-gradient(135deg, #16202a 0%, #0b121a 100%);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.7);
+}
+
+body.dark-mode .header-title,
+
+body.dark-mode .card-title {
+    color: #ffffff;
+}
+
+body.dark-mode .learning-card {
+    background: #1b222b;
+    color: #ffffff;
+    border: 1px solid #2a3a4a;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+body.dark-mode .learning-card:hover {
+    background: #26c6da;
+    color: #0e1217;
+    border-color: #26c6da;
+}
+
+body.dark-mode .nav-icon-top {
+    background: rgba(20,30,40,0.9);
+    color: #ffffff;
+}
+
+body.dark-mode .nav-icon-top:hover {
+    background: #000000; /* black hover */
+    color: #ffffff;
+}

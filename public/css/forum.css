@@ -769,3 +769,146 @@
 .content-layout { align-items: flex-start; overflow: visible; }
 .main-content   { overflow: visible; }
 IF WANT THE ACTIVE USERS TO BE INFINITE SCROLL TOO */
+
+/* === Bluish Dark Mode Forum === */
+body.dark-mode {
+    background: #0e1217;
+    color: #cfd8dc;
+}
+/* Dark mode background for recent posts */
+body.dark-mode .recent-posts {
+    background: #0e1217; /* dark background */
+    color: #ffffff;      /* text white */
+}
+
+body.dark-mode .sidebar {
+    background: linear-gradient(180deg, #1b3b2f 0%, #0e2a1f 100%);
+}
+
+body.dark-mode .logo-text,
+body.dark-mode .nav-item {
+    color: rgba(255,255,255,0.8);
+}
+
+body.dark-mode .nav-item:hover {
+    background: rgba(255,255,255,0.05);
+    color: #4dd0e1;
+}
+
+body.dark-mode .page-btn.active {
+    background: #26c6da;
+    color: #0f2027;
+    border-color: #26c6da;
+}
+body.dark-mode .main-content {
+    background: #12181f;
+}
+
+body.dark-mode .header-section {
+    background: linear-gradient(135deg, #16202a 0%, #0b121a 100%);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.7);
+}
+body.dark-mode .new-post-btn {
+    background: linear-gradient(135deg, #26c6da, #0097a7) !important;
+    color: #ffffff !important;
+    text-shadow: 2px 2px 6px rgba(0,0,0,0.8);
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    cursor: pointer;
+}
+/* Dark mode floating icons */
+body.dark-mode .floating-icons .floating-icon {
+    background-color: #000 !important; /* black background */
+    color: #ffffff !important;         /* white icon text/emoji */
+  
+    padding:4px;
+    margin: 5px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+/* Hover effect */
+body.dark-mode .floating-icons .floating-icon:hover {
+    background-color: #1a1a1a; /* slightly lighter black */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.7);
+}
+
+
+
+body.dark-mode .header-title {
+    color: #4dd0e1;
+    text-shadow: 2px 2px 6px rgba(0,0,0,0.8);
+}
+/* Hero panel titles & subtitles */
+body.dark-mode .hero-card .hero-title,
+body.dark-mode .hero-card .hero-sub,
+body.dark-mode .hero-card .chip-title,
+
+body.dark-mode .cta-title,
+body.dark-mode .cta-sub,
+body.dark-mode .section-title,
+body.dark-mode .rules-title,
+body.dark-mode .rules-list li,
+body.dark-mode .composer-summary,
+body.dark-mode .stat-row .stat-num,
+body.dark-mode .stat-row .stat-label {
+    color: #ffffff !important;
+}
+body.dark-mode .chip{
+  color: black;
+}
+/* Comments and message bubbles */
+body.dark-mode .message-bubble .message-text {
+    color: #ffffff !important;
+}
+
+/* Posts content */
+body.dark-mode .post-card .post-content,
+body.dark-mode .post-card .post-meta,
+body.dark-mode .post-card .author-name,
+body.dark-mode .post-card .post-topic,
+body.dark-mode .post-card .post-time {
+    color: #ffffff !important;
+}
+
+/* Comments count / like count inside post-stats */
+body.dark-mode .post-stats .stat-item span {
+    color: #ffffff !important;
+}
+
+
+/* Post cards, user items, messages, etc. */
+body.dark-mode .post-card,
+body.dark-mode .user-item,
+body.dark-mode .message-bubble,
+body.dark-mode .hero-card,
+body.dark-mode .composer {
+    background: #1b222b;
+    color: #cfd8dc;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    border: 1px solid #2a3a4a;
+}
+
+/* Inputs */
+body.dark-mode .composer-body input,
+body.dark-mode .composer-body textarea,
+body.dark-mode .hero-input {
+    background: #1b222b;
+    color: #cfd8dc;
+    border: 1px solid #2a3a4a;
+}
+
+/* Buttons */
+body.dark-mode .composer-submit,
+body.dark-mode .composer-open-btn,
+body.dark-mode .hero-btn,
+body.dark-mode .cta-btn {
+    background: linear-gradient(135deg,#26c6da,#0097a7);
+    color: #0e1217;
+}

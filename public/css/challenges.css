@@ -451,3 +451,113 @@
                 font-size: 18px;
             }
         }
+        /* === DARK MODE THEME === */
+body.dark-mode {
+    background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+    color: #e0e0e0; /* default text color outside main content */
+}
+
+/* Sidebar */
+body.dark-mode .sidebar {
+    background: linear-gradient(180deg, #1b3b2f 0%, #0e2a1f 100%);
+}
+
+body.dark-mode .logo-text,
+body.dark-mode .nav-item,
+body.dark-mode .nav-icon {
+    color: rgba(255,255,255,0.85);
+}
+
+body.dark-mode .nav-item.active {
+    background: #388e3c;
+    color: white;
+}
+
+/* Header Section */
+body.dark-mode .header-section {
+    background: linear-gradient(135deg, #1c313a 0%, #102027 100%);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+
+body.dark-mode .header-title {
+    color: #a5d6a7;
+}
+
+body.dark-mode .header-subtitle {
+    background: rgba(255,255,255,0.15);
+    color: #e0e0e0;
+}
+
+/* Challenge Cards */
+body.dark-mode .challenge-card {
+    background: rgba(255,255,255,0.1);
+    border: 3px solid rgba(255,255,255,0.15);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+}
+
+body.dark-mode .challenge-card:hover {
+    border-color: #66bb6a;
+    box-shadow: 0 15px 45px rgba(0,0,0,0.5);
+}
+
+body.dark-mode .challenge-title {
+    color: #a5d6a7;
+}
+
+body.dark-mode .challenge-subtitle,
+body.dark-mode .challenge-description {
+    color: #e0e0e0;
+}
+
+body.dark-mode .challenge-button {
+    background: linear-gradient(135deg, #66bb6a, #4caf50);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(102,187,106,0.6);
+}
+
+body.dark-mode .challenge-button:hover {
+    box-shadow: 0 6px 20px rgba(102,187,106,0.8);
+}
+
+body.dark-mode .challenge-points {
+    background: linear-gradient(135deg, #ffd54f, #ffb300);
+    color: #000;
+}
+
+/* Difficulty dots */
+body.dark-mode .difficulty-dot {
+    background: #555;
+}
+
+body.dark-mode .difficulty-dot.active {
+    background: #66bb6a;
+}
+
+/* Chips / Labels (e.g., challenge tags, XP, badges) */
+body.dark-mode .chip,
+body.dark-mode .chip.good,
+body.dark-mode .chip.bad {
+    color: #000 !important;
+    background-color: rgba(255,255,255,0.85);
+    border-color: rgba(0,0,0,0.2);
+}
+
+/* Muted text */
+body.dark-mode .muted {
+    color: #000 !important;
+    opacity: 0.7;
+}
+
+/* Floating icons */
+body.dark-mode .floating-icon {
+    background: rgba(40,40,40,0.9);
+    color: #e0e0e0;
+}
+
+/* Make all generic labels readable in dark mode */
+body.dark-mode label,
+body.dark-mode .profile-label,
+body.dark-mode .card-title,
+body.dark-mode .chip strong {
+    color: #000 !important;
+}

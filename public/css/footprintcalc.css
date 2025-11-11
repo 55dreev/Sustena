@@ -659,3 +659,24 @@ input[type=range]::-moz-range-thumb {
             transform: scale(1.1);
             box-shadow: 0 6px 20px rgba(0,0,0,0.2);
         }
+        body.dark-mode .sidebar {
+    background: linear-gradient(180deg, #1b3b2f 0%, #0e2a1f 100%);
+}
+body.dark-mode {
+    background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+    color: #e0e0e0;
+}
+
+.sidebar {
+    background: linear-gradient(180deg, #1c2733 0%, #101820 100%);
+    box-shadow: 2px 0 10px rgba(0,0,0,0.7);
+}
+body.dark-mode .nav-icon-top {
+    background: rgba(20,30,40,0.9);
+    color: #ffffff;
+}
+
+body.dark-mode .nav-icon-top:hover {
+    background: #000000; /* black hover */
+    color: #ffffff;
+}

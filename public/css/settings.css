@@ -389,3 +389,60 @@
 .sidebar-toggle:hover {
     background: #1a252f;
 }
+/* === DARK MODE THEME === */
+body.dark-mode {
+    background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+    color: #e0e0e0;
+}
+
+body.dark-mode::before {
+    opacity: 0.1;
+}
+
+/* Sidebar */
+body.dark-mode .sidebar {
+    background: linear-gradient(180deg, #1b3b2f 0%, #0e2a1f 100%);
+}
+
+body.dark-mode .logo-text,
+body.dark-mode .nav-item,
+body.dark-mode .nav-icon {
+    color: rgba(255,255,255,0.85);
+}
+
+body.dark-mode .nav-item.active {
+    background: #388e3c;
+    color: white;
+}
+
+/* Header */
+body.dark-mode .header {
+    background: linear-gradient(135deg, #1c313a 0%, #102027 100%);
+}
+
+body.dark-mode .welcome-text {
+    color: #a5d6a7;
+}
+
+/* Settings Section */
+body.dark-mode .settings-section,
+body.dark-mode .bottom-section {
+    background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+    box-shadow: 0 10px 40px rgba(56, 142, 60, 0.3);
+}
+
+/* Support Links */
+body.dark-mode .support-link {
+    background: rgba(255,255,255,0.05);
+    color: #e0e0e0;
+}
+
+body.dark-mode .support-link:hover {
+    background: rgba(255,255,255,0.15);
+}
+
+/* Floating icons */
+body.dark-mode .floating-icon {
+    background: rgba(40, 40, 40, 0.9);
+    color: #e0e0e0;
+}

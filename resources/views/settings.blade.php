@@ -192,15 +192,41 @@
         });
 
         // Toggle switch functionality
-        function toggleSwitch(element) {
-            element.classList.toggle('active');
-            
-            // Add a smooth animation effect
-            element.style.transform = 'scale(0.95)';
-            setTimeout(() => {
-                element.style.transform = 'scale(1)';
-            }, 150);
-        }
+        // Toggle switch functionality
+function toggleSwitch(element) {
+    element.classList.toggle('active');
+
+    // Animate press
+    element.style.transform = 'scale(0.95)';
+    setTimeout(() => {
+        element.style.transform = 'scale(1)';
+    }, 150);
+
+    // If it's the Dark Mode toggle
+    const label = element.previousElementSibling?.querySelector('.setting-sublabel');
+    if (label && label.textContent.includes('Dark mode')) {
+        const isActive = element.classList.contains('active');
+        document.body.classList.toggle('dark-mode', isActive);
+        localStorage.setItem('darkMode', isActive ? 'enabled' : 'disabled');
+    }
+}
+
+// On page load, apply saved dark mode preference
+document.addEventListener('DOMContentLoaded', () => {
+    const darkMode = localStorage.getItem('darkMode');
+    const darkModeSwitch = Array.from(document.querySelectorAll('.toggle-container'))
+        .find(container => container.textContent.includes('Dark mode'))
+        ?.querySelector('.toggle-switch');
+
+    if (darkMode === 'enabled') {
+        document.body.classList.add('dark-mode');
+        if (darkModeSwitch) darkModeSwitch.classList.add('active');
+    } else {
+        document.body.classList.remove('dark-mode');
+        if (darkModeSwitch) darkModeSwitch.classList.remove('active');
+    }
+});
+
 
         // Floating icons animation
         document.querySelectorAll('.floating-icon').forEach((icon, index) => {

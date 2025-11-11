@@ -21,41 +21,9 @@
   <link rel="stylesheet" href="{{ asset('css/profile.css') }}">
   <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
    <link rel="stylesheet" href="{{ asset('css/profileresponsive.css') }}">
+   <link rel="stylesheet" href="{{ asset('css/settings.css') }}">
   <style>
-    .alert{margin:8px 0;padding:10px 12px;border-radius:8px;font-size:.9rem}
-    .alert.ok{background:#eefdf3;border:1px solid #d6f5df}
-    .alert.err{background:#fff0f0;border:1px solid #ffd6d6}
-
-    .modal{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;overflow:auto;background:rgba(0,0,0,.5);justify-content:center;align-items:center}
-    .modal-content{background:#fff;padding:20px;width:420px;max-width:92%;border-radius:12px;animation:fadeIn .25s ease}
-    @keyframes fadeIn{from{opacity:0;transform:scale(.98)}to{opacity:1;transform:scale(1)}}
-    .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-    .close-btn{background:none;border:0;font-size:1.5rem;cursor:pointer}
-    .modal form{display:flex;flex-direction:column;gap:10px}
-    .modal label{font-weight:600;font-size:.92rem}
-    .modal input,.modal select{padding:8px;border:1px solid #d9d9d9;border-radius:8px}
-    .modal .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .modal .actions{display:flex;gap:8px;margin-top:4px}
-    .modal button{border:0;border-radius:8px;padding:10px 12px;cursor:pointer}
-    .save-btn{background:#2ecc71;color:#fff}
-    .ghost-btn{background:#eef2f6}
-    .primary-btn{background:#3498db;color:#fff}
-
-    .progress-bar{width:100%;height:8px;background:#f1f5d0;border-radius:999px;overflow:hidden;margin:10px 0}
-    .progress-fill{height:100%;background:linear-gradient(90deg,#fffacd,#ffeb3b);width:0%}
-    .xp-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-    .xp-pill{background:#eef6ee;padding:4px 8px;border-radius:999px;font-size:.85rem}
-    .muted{opacity:.7;font-size:.9rem}
-
-    .quick-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:14px 0}
-    .qstat{background:#f6fff6;border:1px solid #e3f3e3;border-radius:12px;padding:10px 12px}
-    .qtitle{font-size:.85rem;opacity:.8}
-    .qvalue{font-weight:700;font-size:1.1rem}
-
-    .status-icon{margin-left:6px}
-    .chip{display:inline-block;background:#f0f3ff;border:1px solid #e3e7ff;border-radius:999px;padding:4px 8px;font-size:.82rem;margin:4px 6px 0 0}
-    .chip.bad{background:#fff0f0;border-color:#ffd6d6}
-    .chip.good{background:#eefdf3;border-color:#d6f5df}
+    
   </style>
 </head>
 <body>
@@ -460,6 +428,11 @@
 
   loadFootprint();
   loadQuickStats();
+  document.addEventListener('DOMContentLoaded', () => {
+    if (localStorage.getItem('darkMode') === 'enabled') {
+        document.body.classList.add('dark-mode');
+    }
+});
 </script>
 </body>
 </html>
