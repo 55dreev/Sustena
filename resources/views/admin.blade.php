@@ -54,6 +54,27 @@
         <a href="{{ route('admin.settings') }}" class="menu-item {{ request()->is('admin/settings') ? 'active' : '' }}">
       <span class="menu-icon">⚙️</span><span>Settings</span>
         </a>
+       <a href="#" class="menu-item" onclick="openLogoutModal()">
+    <span class="menu-icon">🚪</span>
+    <span>Logout</span>
+</a>
+
+<form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+    @csrf
+</form>
+
+<div id="logoutModal" class="modal">
+    <div class="modal-content">
+        <h3>Logout</h3>
+        <p>Are you sure you want to logout?</p>
+        <div class="modal-buttons">
+            <button class="btn btn-cancel" onclick="closeLogoutModal()">Cancel</button>
+            <button class="btn btn-logout" onclick="confirmLogout()">Logout</button>
+        </div>
+    </div>
+</div>
+
+
     </div>
 
     <div class="main-content">
@@ -578,6 +599,18 @@ document.querySelectorAll('.rejectChallengeBtn').forEach(btn => {
     if (e.key === 'Escape' && modal.style.display === 'flex') closeProof();
   });
 });
+function openLogoutModal() {
+    document.getElementById('logoutModal').style.display = 'flex';
+}
+
+function closeLogoutModal() {
+    document.getElementById('logoutModal').style.display = 'none';
+}
+
+function confirmLogout() {
+    document.getElementById('logout-form').submit();
+}
+
   </script>
 </body>
 </html>

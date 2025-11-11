@@ -408,6 +408,64 @@
   padding: 15px;
   background: #d0f0c0;
 }
+.modal {
+    display: none; /* hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: white(255, 255, 255, 0.6); /* semi-transparent green */
+    backdrop-filter: blur(10px);          /* glassy blur effect */
+    -webkit-backdrop-filter: blur(10px);  /* Safari support */
+    color: rgb(0, 0, 0);                         /* text color */
+    padding: 20px;
+    border-radius: 12px;
+    width: 300px;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3); /* soft shadow for depth */
+}
+
+
+.modal-buttons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.btn-cancel {
+    background: #555;
+    color: white;
+}
+
+.btn-cancel:hover {
+    background: #777;
+}
+
+.btn-logout {
+    background: #e74c3c !important;
+    color: white;
+}
+
+.btn-logout:hover {
+       background-color: #c0392b !important;
+}
+
 
 .menu-item {
   display: flex;
