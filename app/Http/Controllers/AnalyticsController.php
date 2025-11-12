@@ -14,6 +14,11 @@ class AnalyticsController extends Controller
         // --- Resolve user ---
         $u = Auth::guard('web')->user();
         $userId = $u?->user_id ?? $u?->id;
+        // ADD: if an admin passes ?user=, honor it even when logged in
+if ($request->has('user') && $u && method_exists($u, 'can') && $u->can('manage-challenges')) {
+    $userId = (int) $request->query('user');
+}
+
         if (!$userId && $request->has('user')) {
             $userId = (int) $request->query('user');
         }
@@ -30,59 +35,69 @@ class AnalyticsController extends Controller
 
         $limit             = max(1, min(20, (int) $request->query('limit', 5)));
         $includePracticeRq = (bool) $request->boolean('include_practice', true);
+        // ADD: optional date filters
+$fromDate = $request->filled('date_from') ? Carbon::parse($request->query('date_from'))->startOfDay() : null;
+$toDate   = $request->filled('date_to')   ? Carbon::parse($request->query('date_to'))->endOfDay()   : null;
 
         /**
          * Helper to load attempts + category rows + overall scores.
          * We try to use kg_per_week if your schema has it; otherwise we fall back to total_score
          * (assuming your total_score is already weekly-normalized).
          */
-        $load = function (bool $includePractice) use ($userId, $limit) {
-            // Pull latest N attempt_ids from the category table (it has one row per category per attempt)
-            $attemptsQ = DB::table('footprint_category_totals')
-                ->select('attempt_id', DB::raw('MAX(created_at) as completed_at'))
-                ->where('user_id', $userId);
+        $load = function (bool $includePractice) use ($userId, $limit, $fromDate, $toDate) {
+    // Pull latest N attempt_ids from the category table (it has one row per category per attempt)
+    $attemptsQ = DB::table('footprint_category_totals')
+        ->select('attempt_id', DB::raw('MAX(created_at) as completed_at'))
+        ->where('user_id', $userId);
 
-            if (!$includePractice) {
-                $attemptsQ->where('is_official', true);
-            }
+    if (!$includePractice) {
+        $attemptsQ->where('is_official', true);
+    }
 
-            $attempts = $attemptsQ
-                ->groupBy('attempt_id')
-                ->orderByDesc(DB::raw('MAX(created_at)'))
-                ->limit($limit)
-                ->get();
+    // ADD: apply optional date range on category rows' created_at (attempt completion proxy)
+    if ($fromDate && $toDate) {
+        $attemptsQ->whereBetween('created_at', [$fromDate, $toDate]);
+    } elseif ($fromDate) {
+        $attemptsQ->where('created_at', '>=', $fromDate);
+    } elseif ($toDate) {
+        $attemptsQ->where('created_at', '<=', $toDate);
+    }
 
-            $attemptIds = $attempts->pluck('attempt_id')->all();
+    $attempts = $attemptsQ
+        ->groupBy('attempt_id')
+        ->orderByDesc(DB::raw('MAX(created_at)'))
+        ->limit($limit)
+        ->get();
 
-            // Category rows for those attempts
-            $catsQ = DB::table('footprint_category_totals')
-                ->where('user_id', $userId)
-                ->whereIn('attempt_id', $attemptIds);
-            if (!$includePractice) {
-                $catsQ->where('is_official', true);
-            }
-            $cats = $catsQ->get()->groupBy('attempt_id');
+    $attemptIds = $attempts->pluck('attempt_id')->all();
 
-            // Overall scores for those attempts
-            // Prefer kg_per_week if present; fall back to total_score
-            $scoresRows = DB::table('footprint_scores')
-                ->where('user_id', $userId)
-                ->whereIn('attempt_id', $attemptIds)
-                ->get();
+    // Category rows for those attempts
+    $catsQ = DB::table('footprint_category_totals')
+        ->where('user_id', $userId)
+        ->whereIn('attempt_id', $attemptIds);
+    if (!$includePractice) {
+        $catsQ->where('is_official', true);
+    }
+    $cats = $catsQ->get()->groupBy('attempt_id');
 
-            $weeklyByAttempt = [];
-            foreach ($scoresRows as $r) {
-                // If you created the kg_per_week column (recommended), use it first
-                if (property_exists($r, 'kg_per_week') && !is_null($r->kg_per_week)) {
-                    $weeklyByAttempt[$r->attempt_id] = (float) $r->kg_per_week;
-                } else {
-                    // Fallback: treat total_score as kg/week
-                    $weeklyByAttempt[$r->attempt_id] = (float) $r->total_score;
-                }
-            }
+    // Overall scores for those attempts
+    $scoresRows = DB::table('footprint_scores')
+        ->where('user_id', $userId)
+        ->whereIn('attempt_id', $attemptIds)
+        ->get();
 
-            return [$attempts, $cats, $weeklyByAttempt, $includePractice];
-        };
+    $weeklyByAttempt = [];
+    foreach ($scoresRows as $r) {
+        if (property_exists($r, 'kg_per_week') && !is_null($r->kg_per_week)) {
+            $weeklyByAttempt[$r->attempt_id] = (float) $r->kg_per_week;
+        } else {
+            $weeklyByAttempt[$r->attempt_id] = (float) $r->total_score;
+        }
+    }
+
+    return [$attempts, $cats, $weeklyByAttempt, $includePractice];
+};
+
 
         // 1) official-only (unless the caller already asked to include practice)
         [$attempts, $cats, $weeklyByAttempt, $modeIncl] = $load($includePracticeRq);

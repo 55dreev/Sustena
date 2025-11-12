@@ -2,7 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-<link rel="stylesheet" href="{{ asset('css/responsive.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/welcomeresponsive.css') }}">
 
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
@@ -26,18 +26,24 @@
     <div class="login-container" id="login">
         <h1>Sustena</h1>
         <h2>Login</h2>
+
         <form action="{{ route('login') }}" method="POST">
-    @csrf
-    <input type="text" name="username" placeholder="Username" required><br>
-    <input type="password" name="password" placeholder="Password" required><br>
-    <button type="submit">Login</button>
-    <button type="button" id="showSignup">Sign Up</button>
-    <button type="button">Sign in with Gmail</button>
-</form>
+            @csrf
+            <input type="text" name="username" placeholder="Username" required><br>
+            <input type="password" name="password" placeholder="Password" required><br>
+
+            <button type="submit">Login</button>
+            <button type="button" id="showSignup">Sign Up</button>
+
+            {{-- Google login: redirect to Socialite route --}}
+            <button type="button"
+                    onclick="window.location.href='{{ route('auth.google') }}'">
+                Sign in with Gmail
+            </button>
+        </form>
 
         <p style="margin-top: 15px;">
-        <a href="#" class="forgot-password">Forgot password?</a>
-
+            <a href="#" class="forgot-password">Forgot password?</a>
         </p>
     </div>
 
@@ -45,26 +51,26 @@
     <div class="login-container" id="signup" style="display: none;">
         <h1>Sustena</h1>
         <h2>Sign Up</h2>
+
         <form action="{{ route('register') }}" method="POST">
-    @csrf
-    <input type="text" name="username" placeholder="Username" required>
-<input type="email" name="email" placeholder="Email" required>
-<input type="password" name="password" placeholder="Password" required>
-<input type="password" name="password_confirmation" placeholder="Confirm Password" required>
-<!-- Fix button id -->
-<button type="button" id="showLoginFromSignup">Back to Login</button>
+            @csrf
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <input type="password" name="password_confirmation" placeholder="Confirm Password" required>
 
-    <button type="submit" name="register">Register</button>
-
-</form>
-
-    </div>  
+            <button type="button" id="showLoginFromSignup">Back to Login</button>
+            <button type="submit" name="register">Register</button>
+        </form>
+    </div>
 
     <!-- Forgot Password Form -->
     <div class="login-container" id="forgot" style="display: none;">
         <h1>Sustena</h1>
         <h2>Forgot Password</h2>
-        <form method="POST" action="/forgot-password">
+
+        {{-- Uses POST /forgot-password with name("password.email") --}}
+        <form method="POST" action="{{ route('password.email') }}">
             @csrf
             <input type="email" name="email" placeholder="Enter your email" required><br>
             <button type="submit">Send Reset Link</button>
@@ -73,84 +79,78 @@
     </div>
 
     <script>
-   
-    // Loader transition
-// Loader transition
-setTimeout(() => {
-    const loader = document.querySelector('.loader');
-    const login = document.getElementById('login');
-    const circle = document.querySelector('.circle-transition');
-
-    loader.classList.add('fade-out');
-
-    setTimeout(() => {
-        loader.style.display = 'none';
-
-        // Start circle transition
-        circle.classList.add('active');
-
+        // Loader transition
         setTimeout(() => {
-            // Fade out circle at the same time as login fades in
-            circle.classList.add('fade-out');
+            const loader = document.querySelector('.loader');
+            const login = document.getElementById('login');
+            const circle = document.querySelector('.circle-transition');
 
-            document.body.classList.add('fade-in-bg');
-            login.style.display = 'block';
-            login.style.opacity = 0;
-            login.style.transition = 'opacity 1s ease';
-            
+            loader.classList.add('fade-out');
+
             setTimeout(() => {
-                login.style.opacity = 1;
-            }, 50);
+                loader.style.display = 'none';
 
-            // Remove circle from DOM after fade
-            setTimeout(() => {
-                circle.style.display = 'none';
-            }, 500); // matches fade-out duration
-        }, 800); // slightly before full circle expansion
-    }, 1000);
-}, 4000);
+                // Start circle transition
+                circle.classList.add('active');
 
+                setTimeout(() => {
+                    // Fade out circle at the same time as login fades in
+                    circle.classList.add('fade-out');
 
+                    document.body.classList.add('fade-in-bg');
+                    login.style.display = 'block';
+                    login.style.opacity = 0;
+                    login.style.transition = 'opacity 1s ease';
 
-    // Toggle logic
-    document.getElementById('showSignup').addEventListener('click', () => {
-        document.getElementById('login').style.display = 'none';
-        document.getElementById('signup').style.display = 'block';
-    });
+                    setTimeout(() => {
+                        login.style.opacity = 1;
+                    }, 50);
 
-    document.getElementById('showLoginFromSignup').addEventListener('click', () => {
-        document.getElementById('signup').style.display = 'none';
-        document.getElementById('login').style.display = 'block';
-    });
+                    // Remove circle from DOM after fade
+                    setTimeout(() => {
+                        circle.style.display = 'none';
+                    }, 500); // matches fade-out duration
+                }, 800); // slightly before full circle expansion
+            }, 1000);
+        }, 4000);
 
-    document.querySelector('.forgot-password').addEventListener('click', (e) => {
-        e.preventDefault();
-        document.getElementById('login').style.display = 'none';
-        document.getElementById('forgot').style.display = 'block';
-    });
+        // Toggle logic
+        document.getElementById('showSignup').addEventListener('click', () => {
+            document.getElementById('login').style.display = 'none';
+            document.getElementById('signup').style.display = 'block';
+        });
 
-    document.getElementById('showLoginFromForgot').addEventListener('click', () => {
-        document.getElementById('forgot').style.display = 'none';
-        document.getElementById('login').style.display = 'block';
-    });
-
-    const hasSuccessMessage = @json(session('success') !== null);
-
-    if (hasSuccessMessage) {
-        document.getElementById('login').style.display = 'none';
-        document.getElementById('signup').style.display = 'block';
-
-        // ✅ Show success alert
-        alert("Registration successful! ✅");
-
-        // ⏳ Optional: Auto switch back to login after 2 seconds
-        setTimeout(() => {
+        document.getElementById('showLoginFromSignup').addEventListener('click', () => {
             document.getElementById('signup').style.display = 'none';
             document.getElementById('login').style.display = 'block';
-        }, 2000);
-    }
-</script>
+        });
 
+        document.querySelector('.forgot-password').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('login').style.display = 'none';
+            document.getElementById('forgot').style.display = 'block';
+        });
 
+        document.getElementById('showLoginFromForgot').addEventListener('click', () => {
+            document.getElementById('forgot').style.display = 'none';
+            document.getElementById('login').style.display = 'block';
+        });
+
+        const hasSuccessMessage = @json(session('success') !== null);
+
+        if (hasSuccessMessage) {
+            document.getElementById('login').style.display = 'none';
+            document.getElementById('signup').style.display = 'block';
+
+            // Show success alert
+            alert("Registration successful! ✅");
+
+            // Optional: Auto switch back to login after 2 seconds
+            setTimeout(() => {
+                document.getElementById('signup').style.display = 'none';
+                document.getElementById('login').style.display = 'block';
+            }, 2000);
+        }
+    </script>
 </body>
 </html>

@@ -8,6 +8,8 @@ use App\Models\Challenge;
 use App\Models\User;
 use App\Models\UserDailyChallenge;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class AdminController extends Controller
 {
@@ -231,6 +233,153 @@ public function rejectChallenge($id)
     $submission->save();
 
     return response()->json(['success' => true, 'message' => '❌ Challenge rejected successfully.']);
+}
+
+public function researchSummary(Request $request)
+{
+    // (Optional) protect this: only admins who can moderate
+    $u = $request->user();
+    if (!$u || (method_exists($u, 'can') && !$u->can('manage-challenges'))) {
+        return response()->json([
+            'has_data' => false,
+            'reason'   => 'forbidden',
+        ], 403);
+    }
+
+    $includePractice = (bool) $request->boolean('include_practice', true);
+    $basis           = $request->query('basis', 'weekly');
+    $scope           = 'admin_research';
+    $anon            = (bool) $request->boolean('anon', true);
+
+    // date_from / date_to coming from query string (we send date_to from the picker)
+    $fromDate = $request->filled('date_from')
+        ? Carbon::parse($request->query('date_from'))->startOfDay()
+        : null;
+
+    $toDate = $request->filled('date_to')
+        ? Carbon::parse($request->query('date_to'))->endOfDay()
+        : null;
+
+    // --------- load ALL category rows (no user_id filter) ----------
+    $catsQ = DB::table('footprint_category_totals');
+
+    if (!$includePractice) {
+        $catsQ->where('is_official', true);
+    }
+
+    if ($fromDate && $toDate) {
+        $catsQ->whereBetween('created_at', [$fromDate, $toDate]);
+    } elseif ($fromDate) {
+        $catsQ->where('created_at', '>=', $fromDate);
+    } elseif ($toDate) {
+        $catsQ->where('created_at', '<=', $toDate);
+    }
+
+    $cats = $catsQ->get();
+
+    if ($cats->isEmpty()) {
+        return response()->json([
+            'has_data'    => false,
+            'reason'      => 'no_rows',
+            'cards'       => [],
+            'timeseries'  => [],
+            'trend'       => [],
+            'headline'    => null,
+            'export_meta' => [
+                'scope'      => $scope,
+                'basis'      => $basis,
+                'date_from'  => $fromDate?->toDateString(),
+                'date_to'    => $toDate?->toDateString(),
+                'anonymized' => $anon,
+            ],
+        ]);
+    }
+
+    // prefer kg_per_week per row; fall back to total_score
+    $cats = $cats->map(function ($r) {
+        if (property_exists($r, 'kg_per_week') && !is_null($r->kg_per_week)) {
+            $r->val_weekly = (float) $r->kg_per_week;
+        } else {
+            $r->val_weekly = (float) $r->total_score;
+        }
+        return $r;
+    });
+
+    // --------- aggregate by category across all users ----------
+    $byCategory = [];
+    $grandTotal = 0.0;
+
+    foreach ($cats->groupBy('category') as $category => $rows) {
+        $sum = $rows->sum('val_weekly');
+        $byCategory[$category] = $sum;
+        $grandTotal += $sum;
+    }
+
+    $cards = [];
+    foreach ($byCategory as $category => $sum) {
+        $percent = $grandTotal > 0 ? round(($sum / $grandTotal) * 100, 1) : 0.0;
+        $cards[] = [
+            'title'       => $category,
+            'kg_per_week' => round($sum, 2),
+            'percent'     => $percent,
+            'delta'       => null,   // no previous window for global research
+        ];
+    }
+
+    // --------- build daily time series (all users combined) ----------
+    $tsMap = [];  // key = date string
+    foreach ($cats as $r) {
+        $date = Carbon::parse($r->created_at)->toDateString();
+
+        if (!isset($tsMap[$date])) {
+            $tsMap[$date] = [
+                'date'         => $date,
+                'total_weekly' => 0.0,
+                'categories'   => [],
+            ];
+        }
+
+        $tsMap[$date]['total_weekly'] += $r->val_weekly;
+        $tsMap[$date]['categories'][$r->category] =
+            ($tsMap[$date]['categories'][$r->category] ?? 0.0) + $r->val_weekly;
+    }
+
+    ksort($tsMap);                    // oldest → newest
+    $timeseries = array_values($tsMap);
+
+    // simple trend: just total per day
+    $trend = [];
+    foreach ($timeseries as $row) {
+        $trend[] = [
+            'date'  => $row['date'],
+            'total' => round($row['total_weekly'], 2),
+        ];
+    }
+
+    // global headline
+    $headline = [
+        'kg_per_week'        => round($grandTotal, 2),
+        'delta_pct'          => null,
+        'target_abs_weekly'  => null,
+        'mode'               => $includePractice ? 'official+practice' : 'official',
+    ];
+
+    $exportMeta = [
+        'scope'      => $scope,
+        'basis'      => $basis,
+        'date_from'  => $fromDate?->toDateString(),
+        'date_to'    => $toDate?->toDateString(),
+        'anonymized' => $anon,
+    ];
+
+    return response()->json([
+        'has_data'    => true,
+        'headline'    => $headline,
+        'cards'       => $cards,
+        'timeseries'  => $timeseries,
+        'trend'       => $trend,
+        'export_meta' => $exportMeta,
+    ]);
 }
 
 

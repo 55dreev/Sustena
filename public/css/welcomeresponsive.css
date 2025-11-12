@@ -6,7 +6,7 @@ body {
     font-family: 'Press Start 2P', cursive;
     margin: 0;
     padding: 0;
-    background-color: #000;
+    background-color: #ffffff;
     overflow-x: hidden;
 }
 
@@ -18,7 +18,7 @@ body {
     align-items: center;
     justify-content: center;
     height: 100vh;
-    color: #fff;
+    color: #66bb6a;
     text-align: center;
 }
 
@@ -65,11 +65,11 @@ body {
     width: 100%;
     max-width: 400px;      /* Desktop max width */
     padding: 30px;
-    background: #1b1b1b;
+    background: #66bb6a00;
     color: #fff;
     border-radius: 10px;
     transform: translate(-50%, -50%);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
     display: none;
     box-sizing: border-box;
 }
@@ -101,7 +101,7 @@ body {
     border-radius: 5px;
     border: none;
     background: #66bb6a;
-    color: #fff;
+    color: #ffffff;
     cursor: pointer;
     font-family: inherit;
     font-size: 14px;

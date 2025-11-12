@@ -65,6 +65,7 @@
 
     <div class="main-content">
       <div class="dashboard-grid">
+        
         <div class="card">
           <div class="card-header">
             <div class="card-icon">👥</div>
@@ -98,7 +99,7 @@
         </div>
         <button class="action-btn" onclick="openModal('challengeModal')">Manage Challenges</button>
       </div>
-
+<br>
       <div class="card mt-5 shadow-sm border-0">
         <div class="card-header bg-primary text-white">
           <h5 class="mb-0 fw-bold">Challenge Moderation</h5>
@@ -151,7 +152,47 @@
           </div>
         </div>
       </div>
+      <br>
+ <!-- Research Export Toolbar -->
+<div class="card" id="researchExportCard" style="margin-bottom: 16px;">
+  <div class="card-header" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+    <div class="card-icon">⬇️</div>
+    <div>
+      <div class="card-title">Research Export</div>
+      <div class="card-subtitle">
+        Choose a date range, then export a full research bundle (CSV / PDF / ZIP)
+      </div>
+    </div>
+  </div>
 
+  <div class="card-body" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+    <label for="expDateFrom" style="font-size:12px;opacity:.8;">Date range</label>
+    <input id="expDateFrom" type="date"
+           style="padding:6px 8px;border:1px solid #e5e7eb;border-radius:8px;">
+    <span style="font-size:12px;opacity:.8;">to</span>
+    <input id="expDateTo" type="date"
+           style="padding:6px 8px;border:1px solid #e5e7eb;border-radius:8px;">
+
+    <label style="font-size:12px;opacity:.8;display:flex;align-items:center;gap:6px;margin-left:8px;">
+      <input id="expAnon" type="checkbox" checked>
+      Anonymize user IDs
+    </label>
+
+    <div style="margin-left:auto;display:flex;flex-wrap:wrap;gap:6px;">
+      <button id="expBtnCSV" class="btn btn-secondary">CSV</button>
+      <button id="expBtnPDF" class="btn btn-secondary">PDF</button>
+      <button id="expBtnZIP" class="btn btn-secondary">ZIP</button>
+    </div>
+  </div>
+
+  <div style="padding:8px 16px;font-size:12px;opacity:.7;">
+    Exports include category breakdowns, trend and full timeseries plus metadata
+    and methodology notes to support research analysis.
+  </div>
+</div>
+
+
+<br>
       <div class="recent-activity-section">
         <h2 class="section-title">Recent User Activity</h2>
         <table class="activity-table">
@@ -172,6 +213,8 @@
       </div>
     </div>
   </div>
+
+  
 
   <!-- USER MODAL -->
   <div class="modal fade" id="userModal">
@@ -283,6 +326,7 @@
       </div>
     </div>
   </div>
+  
 
   <!-- CHALLENGE MODAL -->
   <div class="modal fade" id="challengeModal">
@@ -339,8 +383,10 @@
     </div>
   </div>
 
+  
+
   <!-- JS -->
-  <script>
+<script>
   document.addEventListener('DOMContentLoaded', () => {
     const token = document.querySelector('meta[name="csrf-token"]').content;
 
@@ -474,129 +520,400 @@
         .catch(err=>alert(err.message));
       });
     }
-const deleteChallengeBtn = document.getElementById('deleteChallengeBtn');
-if (deleteChallengeBtn) {
-  deleteChallengeBtn.addEventListener('click', () => {
-    const select = document.getElementById('deleteChallengeSelect');
-    if (!select.value) return alert('Select a challenge.');
-    if (!confirm('Delete this challenge?')) return;
 
-    fetch('/admin/challenges/delete', {   // changed to POST route
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-TOKEN': token,
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify({ id: select.value })  // send ID in body
-    })
-    .then(res => res.json())
-    .then(d => {
-      if (!d.success) throw new Error(d.message || 'Failed');
-      alert('🗑️ Challenge deleted');
-      select.querySelector(`option[value="${select.value}"]`)?.remove();
-    })
-    .catch(err => alert(err.message));
-  });
-}
+    const deleteChallengeBtn = document.getElementById('deleteChallengeBtn');
+    if (deleteChallengeBtn) {
+      deleteChallengeBtn.addEventListener('click', () => {
+        const select = document.getElementById('deleteChallengeSelect');
+        if (!select.value) return alert('Select a challenge.');
+        if (!confirm('Delete this challenge?')) return;
 
-// ---------- CHALLENGE MODERATION ----------
-document.querySelectorAll('.approveChallengeBtn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const id = btn.dataset.id;
-    if(!confirm('Approve this submission?')) return;
+        fetch('/admin/challenges/delete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': token,
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ id: select.value })
+        })
+        .then(res => res.json())
+        .then(d => {
+          if (!d.success) throw new Error(d.message || 'Failed');
+          alert('🗑️ Challenge deleted');
+          select.querySelector(`option[value="${select.value}"]`)?.remove();
+        })
+        .catch(err => alert(err.message));
+      });
+    }
 
-    fetch(`/admin/challengemoderation/${id}/approve`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-TOKEN': token,
-        'Accept': 'application/json'
-      }
-    })
-    .then(res => res.json())
-    .then(d => {
-      if(!d.success) throw new Error(d.message || 'Failed to approve');
-      alert('✅ Submission approved');
-      btn.closest('tr')?.remove();
-    })
-    .catch(err => alert(err.message));
-  });
-});
+    // ---------- CHALLENGE MODERATION ----------
+    document.querySelectorAll('.approveChallengeBtn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        if(!confirm('Approve this submission?')) return;
 
-document.querySelectorAll('.rejectChallengeBtn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const id = btn.dataset.id;
-    if(!confirm('Reject this submission?')) return;
+        fetch(`/admin/challengemoderation/${id}/approve`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': token,
+            'Accept': 'application/json'
+          }
+        })
+        .then(res => res.json())
+        .then(d => {
+          if(!d.success) throw new Error(d.message || 'Failed to approve');
+          alert('✅ Submission approved');
+          btn.closest('tr')?.remove();
+        })
+        .catch(err => alert(err.message));
+      });
+    });
 
-    fetch(`/admin/challengemoderation/${id}/reject`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-TOKEN': token,
-        'Accept': 'application/json'
-      }
-    })
-    .then(res => res.json())
-    .then(d => {
-      if(!d.success) throw new Error(d.message || 'Failed to reject');
-      alert('❌ Submission rejected');
-      btn.closest('tr')?.remove();
-    })
-    .catch(err => alert(err.message));
-  });
-});
+    document.querySelectorAll('.rejectChallengeBtn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        if(!confirm('Reject this submission?')) return;
+
+        fetch(`/admin/challengemoderation/${id}/reject`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': token,
+            'Accept': 'application/json'
+          }
+        })
+        .then(res => res.json())
+        .then(d => {
+          if(!d.success) throw new Error(d.message || 'Failed to reject');
+          alert('❌ Submission rejected');
+          btn.closest('tr')?.remove();
+        })
+        .catch(err => alert(err.message));
+      });
+    });
 
   });
 
   document.addEventListener('DOMContentLoaded', () => {
-  const modal = document.getElementById('proofModal');
-  const imgEl = document.getElementById('proofModalImg');
-  const closeBtn = modal.querySelector('.proof-modal__close');
+    const modal = document.getElementById('proofModal');
+    const imgEl = document.getElementById('proofModalImg');
+    const closeBtn = modal.querySelector('.proof-modal__close');
 
-  function openProof(url){
-    // Optional: show a temporary loading cursor
-    modal.style.display = 'flex';
-    imgEl.src = '';              // reset previous
-    imgEl.alt = 'Loading...';
-    // Set the image src (served by your admin.proofs.show route)
-    imgEl.src = url + '?_=' + Date.now(); // cache-bust while moderating
-  }
+    function openProof(url){
+      modal.style.display = 'flex';
+      imgEl.src = '';
+      imgEl.alt = 'Loading...';
+      imgEl.src = url + '?_=' + Date.now();
+    }
 
-  function closeProof(){
-    modal.style.display = 'none';
-    imgEl.src = '';
-  }
+    function closeProof(){
+      modal.style.display = 'none';
+      imgEl.src = '';
+    }
 
-  // Open (event delegation so it works after table refreshes)
-  document.body.addEventListener('click', (e) => {
-    const btn = e.target.closest('.view-proof');
-    if (!btn) return;
-    e.preventDefault();
-    openProof(btn.dataset.url);
+    document.body.addEventListener('click', (e) => {
+      const btn = e.target.closest('.view-proof');
+      if (!btn) return;
+      e.preventDefault();
+      openProof(btn.dataset.url);
+    });
+
+    closeBtn.addEventListener('click', closeProof);
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeProof();
+    });
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal.style.display === 'flex') closeProof();
+    });
   });
 
-  // Close actions
-  closeBtn.addEventListener('click', closeProof);
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) closeProof(); // click backdrop
-  });
-  window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modal.style.display === 'flex') closeProof();
-  });
-});
-function openLogoutModal() {
+  function openLogoutModal() {
     document.getElementById('logoutModal').style.display = 'flex';
-}
+  }
 
-function closeLogoutModal() {
+  function closeLogoutModal() {
     document.getElementById('logoutModal').style.display = 'none';
-}
+  }
 
-function confirmLogout() {
+  function confirmLogout() {
     document.getElementById('logout-form').submit();
-}
+  }
 
-  </script>
+  /* ====== Research Export (self-contained) ====== */
+  (function () {
+    const TZ = 'Asia/Manila';
+
+    function $(id) {
+      return document.getElementById(id);
+    }
+
+    // Read options from the small toolbar
+    function getOptsFromUI() {
+      const from = $('expDateFrom')?.value || '';
+      const to   = $('expDateTo')?.value || '';
+
+      return {
+        date_from: from,
+        date_to: to,
+        basis: 'weekly',
+        scope: 'research_full',
+        anon: !!$('expAnon')?.checked,
+        limit: 5000,
+        include_practice: true
+      };
+    }
+
+    // Call the admin research summary endpoint
+    async function fetchAnalyticsPayload(opts) {
+      const qs = new URLSearchParams({
+        basis: opts.basis,
+        scope: opts.scope,
+        anon: String(opts.anon),
+        include_practice: String(opts.include_practice),
+        limit: String(opts.limit)
+      });
+
+      if (opts.date_from) qs.set('date_from', opts.date_from);
+      if (opts.date_to)   qs.set('date_to', opts.date_to);
+
+      const res = await fetch(`/admin/research-summary?${qs.toString()}`, {
+        headers: { 'Accept': 'application/json' }
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to load analytics');
+      }
+
+      return await res.json();
+    }
+
+    // Convert the analytics summary JSON → research payload shared by CSV/PDF/ZIP
+    function toResearchPayload(summary) {
+      const byCategory = (summary.cards || []).map(c => ({
+        category: c.title,
+        share_pct: c.percent ?? 0,
+        amount: c.kg_per_week ?? 0,
+        unit: 'kg CO₂ / wk'
+      }));
+
+      // ✅ use "total" so Blade sees it as $row['total']
+      const trend = (summary.trend || []).map(t => ({
+        date: t.date,
+        total: t.total
+      }));
+
+      return {
+        summary: {
+          total: Number(summary.headline?.kg_per_week ?? 0),
+          delta_pct: summary.headline?.delta_pct ?? null
+        },
+
+        by_category: byCategory,
+        trend,
+        timeseries: summary.timeseries || [],
+
+        meta: {
+          generated_at_iso: new Date().toISOString(),
+          timezone: TZ,
+          app_version: window.__SUSTENA_VERSION__ || 'unknown',
+          environment: window.__APP_ENV__ || 'production',
+          user_role: window.__AUTH_ROLE__ || 'admin',
+          export: summary.export_meta || {},
+          units: { amount: 'kg CO₂ / wk' },
+
+          methodology: {
+            scaling:
+              'Values normalized to the selected basis (client display); raw server values are stored weekly.',
+            emission_factors_source:
+              'Document the reference used for emission factors (e.g., IPCC/DEFRA/local factors).',
+            aggregation:
+              'UI categories are mapped and summed from raw DB categories (e.g., footprint_category_totals).',
+            data_quality_notes:
+              'Self-reported activities; may include practice attempts if enabled.'
+          },
+
+          data_dictionary: {
+            category: 'Footprint category (UI bucket)',
+            share_pct: 'Percent share of total footprint (%)',
+            amount: 'CO₂ amount for the row (kg CO₂ / week)',
+            date: 'ISO date for time-series points',
+            value: 'Footprint value at date (weekly normalized)'
+          }
+        }
+      };
+    }
+
+    function csvEsc(s) {
+      return typeof s === 'string' && s.includes(',')
+        ? '"' + s.replaceAll('"', '""') + '"'
+        : s;
+    }
+
+    // CSV with explicit sections: by_category, trend, summary
+    function makeCSV(p) {
+      const L = [];
+      const m = p.meta || {};
+
+      L.push('# SUSTENA Research Export');
+      L.push('# generated_at=' + (m.generated_at_iso || ''));
+      L.push('# timezone=' + (m.timezone || ''));
+      L.push('# app_version=' + (m.app_version || ''));
+      L.push('# scope=' + ((m.export || {}).scope || ''));
+      L.push('# basis=' + ((m.export || {}).basis || ''));
+      L.push('# date_from=' + ((m.export || {}).date_from || ''));
+      L.push('# date_to=' + ((m.export || {}).date_to || ''));
+      L.push('# anonymized=' + (((m.export || {}).anonymized) ? 'true' : 'false'));
+      L.push('# units.amount=' + (m.units?.amount || 'kg CO₂ / wk'));
+      L.push('');
+      L.push('SECTION,category,share_pct,amount,unit,date,value');
+
+      (p.by_category || []).forEach(r => {
+        L.push([
+          'by_category',
+          csvEsc(r.category || ''),
+          r.share_pct ?? '',
+          r.amount ?? '',
+          csvEsc(r.unit || 'kg CO₂ / wk'),
+          '',
+          ''
+        ].join(','));
+      });
+
+      // ✅ write trend value from t.total
+      (p.trend || []).forEach(t => {
+        L.push([
+          'trend',
+          '',
+          '',
+          '',
+          '',
+          t.date || '',
+          t.total ?? ''
+        ].join(','));
+      });
+
+      (p.timeseries || []).forEach(row => {
+        L.push([
+          'timeseries',
+          csvEsc(row.category || ''),
+          row.share_pct ?? '',
+          row.amount ?? row.kg_per_week ?? '',
+          csvEsc(m.units?.amount || 'kg CO₂ / wk'),
+          row.date || row.period_start || '',
+          row.value ?? row.total ?? ''
+        ].join(','));
+      });
+
+      L.push(
+        'summary_total,,,' +
+          (p.summary?.total ?? 0) +
+          ',' +
+          (m.units?.amount || '') +
+          ',,'
+      );
+      L.push(
+        'summary_delta_pct,,,' +
+          (p.summary?.delta_pct ?? 0) +
+          ',pct,,'
+      );
+
+      return L.join('\n');
+    }
+
+    function saveBlob(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      URL.revokeObjectURL(url);
+      a.remove();
+    }
+
+    async function doCSV() {
+      const opts = getOptsFromUI();
+      if (!opts.date_from || !opts.date_to) {
+        alert('Please choose a start and end date.');
+        return;
+      }
+      const summary = await fetchAnalyticsPayload(opts);
+      const payload = toResearchPayload(summary);
+      const csv = makeCSV(payload);
+      saveBlob(
+        new Blob([csv], { type: 'text/csv;charset=utf-8' }),
+        `sustena_export_${Date.now()}.csv`
+      );
+    }
+
+    async function doPDF() {
+      const opts = getOptsFromUI();
+      if (!opts.date_from || !opts.date_to) {
+        alert('Please choose a start and end date.');
+        return;
+      }
+      const summary = await fetchAnalyticsPayload(opts);
+      const payload = toResearchPayload(summary);
+
+      const token = document.querySelector('meta[name="csrf-token"]').content;
+      const res = await fetch('/admin/exports/research-pdf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': token
+        },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) {
+        alert('PDF generation failed');
+        return;
+      }
+      const blob = await res.blob();
+      saveBlob(blob, `sustena_report_${Date.now()}.pdf`);
+    }
+
+    async function doZIP() {
+      const opts = getOptsFromUI();
+      if (!opts.date_from || !opts.date_to) {
+        alert('Please choose a start and end date.');
+        return;
+      }
+      const summary = await fetchAnalyticsPayload(opts);
+      const payload = toResearchPayload(summary);
+
+      const token = document.querySelector('meta[name="csrf-token"]').content;
+      const res = await fetch('/admin/exports/research-zip', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': token
+        },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) {
+        alert('ZIP generation failed');
+        return;
+      }
+      const blob = await res.blob();
+      saveBlob(blob, `sustena_research_${Date.now()}.zip`);
+    }
+
+    // Wire up buttons
+    document.addEventListener('DOMContentLoaded', () => {
+      $('expBtnCSV')?.addEventListener('click', () => {
+        doCSV().catch(err => alert(err.message));
+      });
+      $('expBtnPDF')?.addEventListener('click', () => {
+        doPDF().catch(err => alert(err.message));
+      });
+      $('expBtnZIP')?.addEventListener('click', () => {
+        doZIP().catch(err => alert(err.message));
+      });
+    });
+  })();
+</script>
+
 </body>
 </html>

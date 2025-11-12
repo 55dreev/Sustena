@@ -22,6 +22,7 @@ protected $keyType = 'int';
         'username',
         'email',
         'password',
+        'google_id',
         'xp_total',
         'points_total',
         'level',

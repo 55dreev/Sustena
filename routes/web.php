@@ -21,6 +21,35 @@ use App\Http\Controllers\ChallengeApiController;
 use App\Http\Controllers\Admin\ChallengeAdminController;
 use App\Http\Controllers\ProfileController;
 use Carbon\Carbon;
+use App\Http\Controllers\Admin\ResearchExportController;
+
+use Illuminate\Support\Facades\Mail;
+use App\Http\Controllers\Auth\GoogleController;
+use Laravel\Socialite\Facades\Socialite;
+
+// Only for guests (same middleware you use for login/register)
+Route::middleware(\App\Http\Middleware\RedirectIfAuthenticatedCustom::class)->group(function () {
+    // existing welcome / login / register routes...
+
+    Route::get('/auth/google', [GoogleController::class, 'redirect'])
+        ->name('auth.google');
+
+    Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
+});
+
+Route::get('/test-mail', function () {
+    Mail::raw('This is a Brevo test email from SUSTENA.', function ($message) {
+        $message->to('your@email.com')
+                ->subject('SUSTENA Brevo Test');
+    });
+
+    return 'Test email sent (if config is correct).';
+});
+
+
+
+Route::get('/admin/research-summary', [AdminController::class, 'researchSummary'])
+    ->name('admin.research-summary');
 
 Route::get('/debug/streak', function () {
     $uid = auth()->id();
@@ -136,6 +165,10 @@ Route::prefix('admin')->middleware(['auth','can:manage-challenges'])->group(func
     Route::get('/challenges/manage', [AdminController::class, 'challengeManagement'])->name('admin.challenges.manage');
     Route::post('/challengemoderation/{id}/approve', [AdminController::class, 'approveChallenge'])->name('admin.challengemoderation.approve');
     Route::post('/challengemoderation/{id}/reject', [AdminController::class, 'rejectChallenge'])->name('admin.challengemoderation.reject');
+
+    // NEW: research-grade exports (consumed by the toolbar buttons)
+        Route::post('/exports/research-pdf', [ResearchExportController::class, 'pdf'])->name('admin.exports.pdf');
+Route::post('/exports/research-zip', [ResearchExportController::class, 'zip'])->name('admin.exports.zip');
 
     // Proof preview for admins (already present)
     Route::get('/proofs/{assignment}', [ChallengeApiController::class, 'showProofAdmin'])
@@ -328,6 +361,20 @@ Route::middleware(\App\Http\Middleware\RedirectIfAuthenticatedCustom::class)->gr
 
     Route::post('/register', [AuthController::class, 'register'])->name('register');
     Route::post('/login', [AuthController::class, 'login'])->name('login'); // <- unified login
+
+       // ========= PASSWORD RESET ROUTES =========
+    Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])
+        ->name('password.request');              // show "forgot password" form
+
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])
+        ->name('password.email');               // send email with reset link
+
+    Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])
+        ->name('password.reset');               // show "new password" form
+
+    Route::post('/reset-password', [ResetPasswordController::class, 'reset'])
+        ->name('password.update');              // actually change the password
+    // =========================================
 });
 
 /*
