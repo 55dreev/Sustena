@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/welcomeresponsive.css') }}">
+   <link rel="stylesheet" href="{{ asset('css/welcomeresponsive.css') }}">
+<link rel="stylesheet" href="{{ asset('css/style.css') }}">
+
 
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
@@ -32,14 +33,18 @@
             <input type="text" name="username" placeholder="Username" required><br>
             <input type="password" name="password" placeholder="Password" required><br>
 
-            <button type="submit">Login</button>
-            <button type="button" id="showSignup">Sign Up</button>
+           <div class="button-group">
+    <button type="submit" class="login-btn">Login</button>
+    <button type="button" id="showSignup" class="signup-btn">Sign Up</button>
+</div>
 
-            {{-- Google login: redirect to Socialite route --}}
-            <button type="button"
-                    onclick="window.location.href='{{ route('auth.google') }}'">
-                Sign in with Gmail
-            </button>
+{{-- Google login --}}
+<button type="button"
+        class="gmail-btn"
+        onclick="window.location.href='{{ route('auth.google') }}'">
+    Sign in with Gmail
+</button>
+
         </form>
 
         <p style="margin-top: 15px;">

@@ -1,7 +1,10 @@
 /* public/css/style.css */
+
+/* === Headings === */
 h1 {
     color: hsl(131, 100%, 50%);
 }
+
 body {
     background-color: #ffffff;
     font-family: 'Press Start 2P', monospace;
@@ -9,13 +12,15 @@ body {
     padding: 0;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start; /* Move container slightly upward */
     height: 100vh;
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
     transition: background-image 2s ease-in-out, background-color 2s ease-in-out;
+    padding-top: 60px; /* fine-tune upward positioning */
 }
+
 
 @keyframes bgShift {
     0% { background-position: 0% 50%; }
@@ -29,137 +34,102 @@ body.fade-in-bg {
     background-position: center;
 }
 
-
-.card {
-    background-color: #111;
-    padding: 2rem 3rem;
-    border-radius: 1.25rem;
-    box-shadow: 0 0 20px rgba(0,0,0,0.5);
-}
-
-/* Loader Alignment Fix */
+/* === Loader === */
+/* === Loader (centered & animated properly) === */
+/* === Loader (centered & animated properly) === */
 .loader {
-    color: rgb(44, 43, 43);
-    font-family: 'Press Start 2P', monospace;
-    font-weight: 500;
-    font-size: 25px;
-    height: 40px;
-    padding: 10px;
-    display: flex;
-    align-items: baseline; /* Align "loading" and animated words */
-    gap: 10px; /* space between loading and words */
-    border-radius: 8px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 22px;
+  color: rgb(44, 43, 43);
+  z-index: 9999;
+  /* Removed: background, padding, border-radius, and box-shadow */
 }
 
 .loader p {
-    margin: 0;
-    padding: 0;
-    line-height: 1;
+  margin: 0;
+  text-transform: lowercase;
+  color: #222;
 }
-.fade-out {
-    opacity: 0;
-    transition: opacity 1s ease;
-    pointer-events: none;
-  }
 
+/* Keeps the word list cropped to a single line height */
 .words {
-    height: 40px; /* Only show one word's height */
-    overflow: hidden;
-    position: relative;
-    line-height: 1;
-    display: block;
-  }
-
-.words::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-        var(--bg-color) 10%,
-        transparent 30%,
-        transparent 70%,
-        var(--bg-color) 90%
-    );
-    z-index: 20;
+  height: 28px;
+  overflow: hidden;
+  position: relative;
+  display: inline-block;
 }
 
 .word {
-    display: block;
-    color: hsl(131, 100%, 50%);
-    animation: spin_4991 4s infinite;
-    white-space: nowrap;
-    line-height: 40px; /* Match the container height */
-    animation-delay: 0.6s; /* Optional fix */
-  }
-
-@keyframes spin_4991 {
-    10% {
-        transform: translateY(-102%);
-    }
-    25% {
-        transform: translateY(-100%);
-    }
-    35% {
-        transform: translateY(-202%);
-    }
-    50% {
-        transform: translateY(-200%);
-    }
-    60% {
-        transform: translateY(-302%);
-    }
-    75% {
-        transform: translateY(-300%);
-    }
-    85% {
-        transform: translateY(-402%);
-    }
-    100% {
-        transform: translateY(-400%);
-    }
+  display: block;
+  color: hsl(131, 100%, 50%);
+  text-shadow: 0 0 10px rgba(50, 255, 100, 0.7);
+  animation: spinWords 4s infinite;
+  white-space: nowrap;
+  line-height: 28px;
 }
+
+@keyframes spinWords {
+  0%, 10% { transform: translateY(0%); }
+  20%, 30% { transform: translateY(-100%); }
+  40%, 50% { transform: translateY(-200%); }
+  60%, 70% { transform: translateY(-300%); }
+  80%, 90% { transform: translateY(-400%); }
+  100% { transform: translateY(0%); }
+}
+
 .fade-out {
-    opacity: 0;
-    transition: opacity 1s ease;
-    pointer-events: none;
-  }
-  
-  .login-container {
+  opacity: 0;
+  transition: opacity 1s ease;
+  pointer-events: none;
+}
+
+/* === Login Container === */
+.login-container {
     display: none;
     text-align: center;
     color: #ffffff;
     animation: fadeIn 1s ease forwards;
-    background: rgba(255, 255, 255, 0.1); /* light see-through */
-    backdrop-filter: blur(12px); /* frosted glass blur */
-    -webkit-backdrop-filter: blur(12px); /* for Safari */
-    padding: 2rem;
-    border: 2px solid rgba(255, 255, 255, 0.2); /* subtle border */
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 2rem 2.5rem 1.5rem; /* slightly reduced bottom padding */
+    border: 2px solid rgba(255, 255, 255, 0.2);
     border-radius: 16px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
     font-family: 'Press Start 2P', monospace;
     max-width: 400px;
     width: 100%;
-  }
-  .login-container h1 {
+}
+
+.login-container h1 {
     margin-bottom: 1.5rem;
-    color: hsl(0, 0%, 100%);
-    font-size: 34;
-  }
-  .login-container h2 {
-    margin-bottom: 1.5rem;
-    color: hsl(0, 0%, 100%);
+    color: #fff;
+    font-size: 34px;
+}
+
+.login-container h2 {
+    margin-bottom: 1.2rem;
+    color: #fff;
     font-size: 14px;
-  }
-  
-  @keyframes fadeIn {
+}
+
+@keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
-  }
-  
-  input {
+}
+
+/* === Input Fields === */
+input {
     width: 80%;
-    padding: 12px;
-    margin: 10px 0;
+    padding: 10px;
+    margin: 2px 0 0 0; /* tighter vertical spacing */
     font-size: 12px;
     font-family: 'Press Start 2P', monospace;
     background-color: #f0f0f0;
@@ -167,42 +137,81 @@ body.fade-in-bg {
     border-radius: 8px;
     outline: none;
     color: #111;
-  }
-  
+}
 
-  button {
-    padding: 12px 20px;
-    margin: 10px 5px;
-    background-color: hsl(131, 41%, 54%);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 10px;
-    transition: background-color 0.3s ease;
-  }
-  button:hover {
-    background-color: hwb(131 43% 13%);
-  }  
-  a.forgot-password {
+/* === Form Layout === */
+.login-container form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+/* === Unified Button Styles === */
+.login-container button[onclick*='auth.google'],
+.button-group .login-btn,
+.button-group .signup-btn,
+.gmail-btn {
+ background: linear-gradient(90deg, #10b981, #4ade80);
+ color: white;
+ border: none;
+ border-radius: 8px;
+ cursor: pointer;
+ font-family: 'Press Start 2P', monospace;
+ transition: background 0.3s ease, transform 0.2s ease;
+}
+
+/* Unified Hover for All Buttons */
+/* Unified Hover for All Buttons */
+.login-container button[onclick*='auth.google']:hover,
+.button-group .login-btn:hover,
+.button-group .signup-btn:hover,
+.gmail-btn:hover { 
+  background: linear-gradient(90deg, #059669, #16a34a);
+  transform: translateY(-2px);
+}
+
+/* === Button Group === */
+.button-group {
+ display: flex;
+ justify-content: center;
+ gap: 8px; /* tighter gap between Login & Sign Up */
+ flex-wrap: wrap;
+ margin-top: 10px; /* moved closer to inputs */
+}
+
+.button-group .login-btn,
+.button-group .signup-btn {
+ flex: 1;
+ min-width: 120px;
+ padding: 10px 0;
+ font-size: 10px;
+}
+
+/* === Gmail Button === */
+.gmail-btn {
+  width: calc(240px + 10px);
+  display: block;
+  margin: 10px auto 0; /* smaller gap between Gmail and button group */
+  font-size: 10px;
+  padding: 10px 0;
+}
+
+/* === Forgot Password Link === */
+a.forgot-password {
+    display: inline-block;
+    margin-top: 8px; /* reduced spacing */
     color: hwb(131 43% 13%) !important;
     text-decoration: none;
     font-size: 12px;
     font-family: 'Press Start 2P', monospace;
 }
 
-a.forgot-password:visited,
-a.forgot-password:focus,
-a.forgot-password:active {
-    color: hwb(131 43% 13%) !important;
-    text-decoration: none;
-}
-
 a.forgot-password:hover {
-    color: hwb(131 43% 13%) !important;
     text-decoration: underline;
 }
+
+/* === Circle Transition === */
 .circle-transition {
     position: fixed;
     top: 50%;
@@ -225,3 +234,57 @@ a.forgot-password:hover {
     opacity: 0;
 }
 
+/* === Responsive Fixes === */
+@media (max-width: 768px) {
+    .login-container {
+        width: 90%;
+        padding: 1.5rem;
+    }
+
+    input {
+        width: 90%;
+        font-size: 10px;
+    }
+
+    .button-group .login-btn,
+    .button-group .signup-btn,
+    .gmail-btn {
+        width: 80%;
+        font-size: 9px;
+        padding: 10px 0;
+        margin: 6px 0;
+    }
+
+    .login-container h1 {
+        font-size: 24px;
+    }
+
+    .login-container h2 {
+        font-size: 12px;
+    }
+
+    a.forgot-password {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+        padding: 20px 0;
+    }
+
+    .login-container {
+        max-width: 320px;
+    }
+
+    .button-group {
+        flex-direction: column;
+    }
+
+    .gmail-btn {
+        width: 100%;
+    }
+}
