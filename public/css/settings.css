@@ -95,7 +95,7 @@
             font-size: 18px;
         }
 
-        .floating-icons {
+     .floating-icons {
             position: fixed;
             top: 20px;
             right: 20px;
@@ -108,23 +108,28 @@
             width: 40px;
             height: 40px;
             background: rgba(255,255,255,0.9);
-            border-radius: 8px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 
+                inset 2px 2px 0px rgba(255,255,255,0.8),
+                inset -2px -2px 0px rgba(0,0,0,0.3),
+                0px 4px 12px rgba(0,0,0,0.15);
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 20px;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+            filter: contrast(1.2) brightness(1.1);
+             text-decoration: none;  /* removes underline */
+    color: inherit;         /* optional: inherit text color */
         }
 
         .floating-icon:hover {
             transform: scale(1.1);
             box-shadow: 0 6px 20px rgba(0,0,0,0.2);
         }
-        .floating-icons a {
-    text-decoration: none;
-}
 
         .main-content {
             margin-left: 200px;

@@ -46,31 +46,12 @@
 
 <!-- Main Content -->
 <div class="main-content">
- <div class="top-nav">
-    <!-- Analytics -->
-    <a href="{{ route('analytics') }}" class="nav-icon-top" title="Analytics">
-        🔥
-    </a>
-
-    <!-- Learning Modules -->
-    <a href="{{ route('learning-modules') }}" class="nav-icon-top" title="Learning Modules">
-        🌱
-    </a>
-
-    <!-- Leaderboard -->
-    <a href="{{ route('leaderboard') }}" class="nav-icon-top" title="Leaderboard">
-        🏆
-    </a>
-
-    <!-- Badges / Achievements -->
-    <a href="{{ route('badges') }}" class="nav-icon-top" title="Badges">
-        🥇
-    </a>
-
-    <!-- Settings -->
-    <a href="{{ route('settings') }}" class="nav-icon-top" title="Settings">
-        ⚙️
-    </a>
+ <div class="floating-icons">
+    <a href="{{ route('analytics') }}" class="floating-icon" title="Analytics">🔥</a>
+    <a href="{{ route('learning-modules') }}" class="floating-icon" title="Learning Modules">🌱</a>
+    <a href="{{ route('leaderboard') }}" class="floating-icon" title="Leaderboard">🏆</a>
+    <a href="{{ route('badges') }}" class="floating-icon" title="Badges">🥇</a>
+    <a href="{{ route('settings') }}" class="floating-icon" title="Settings">⚙️</a>
 </div>
 
 

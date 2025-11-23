@@ -10,7 +10,7 @@
   {{-- Use a public CSS file. Place it at public/css/challenges.css --}}
   <link rel="stylesheet" href="{{ asset('css/challenges.css') }}"/>
    <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
-<link rel="stylesheet" href="{{ asset('css/challengesresponsive.css') }}"/>
+
   <style>
     /* inline page-specific styles (your original block) */
     .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);justify-content:center;align-items:center;z-index:1000;padding:20px}
@@ -26,10 +26,41 @@
     .difficulty.filled.easy{background:#4caf50;border-color:#4caf50}
     .difficulty.filled.medium{background:#ffeb3b;border-color:#ffeb3b}
     .difficulty.filled.hard{background:#f44336;border-color:#f44336}
-    .floating-icons{position:fixed;top:20px;right:20px;display:flex;gap:10px;z-index:1000}
-    .floating-icon{width:40px;height:40px;background:rgba(255,255,255,.9);border-radius:8px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.15);cursor:pointer;transition:.3s;font-size:20px}
-    .floating-icon:hover{transform:scale(1.1);box-shadow:0 6px 20px rgba(0,0,0,.2)}
-    .floating-icons a{text-decoration:none;color:inherit}
+    .floating-icons {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .floating-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                inset 2px 2px 0px rgba(255,255,255,0.8),
+                inset -2px -2px 0px rgba(0,0,0,0.3),
+                0px 4px 12px rgba(0,0,0,0.15);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+            filter: contrast(1.2) brightness(1.1);
+             text-decoration: none;  /* removes underline */
+    color: inherit;         /* optional: inherit text color */
+        }
+
+        .floating-icon:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
     @keyframes fadeInUp{from{transform:translateY(50px);opacity:0}to{transform:translateY(0);opacity:1}}
   </style>
 </head>

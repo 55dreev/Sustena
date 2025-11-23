@@ -140,21 +140,20 @@
             gap: 20px;
         }
 
-        /* Top Navigation - Based on uploaded code */
         .floating-icons {
             position: fixed;
-            top: 0%;
-            right:2%;
+            top: 20px;
+            right: 20px;
             display: flex;
             gap: 10px;
             z-index: 1000;
         }
 
         .floating-icon {
-            width: 30px;
-            height: 30px;
+            width: 40px;
+            height: 40px;
             background: rgba(255,255,255,0.9);
-            border-radius: 8px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -168,7 +167,7 @@
             image-rendering: -moz-crisp-edges;
             image-rendering: crisp-edges;
             filter: contrast(1.2) brightness(1.1);
-            text-decoration: none;  /* removes underline */
+             text-decoration: none;  /* removes underline */
     color: inherit;         /* optional: inherit text color */
         }
 
@@ -176,7 +175,6 @@
             transform: scale(1.1);
             box-shadow: 0 6px 20px rgba(0,0,0,0.2);
         }
-
         /* Header Section */
         .header-section {
             background: linear-gradient(135deg, #87ceeb 0%, #b0e0e6 100%);

@@ -148,27 +148,26 @@ input {
 
 
 /* === Unified Button Styles === */
-.login-container button[onclick*='auth.google'],
 .button-group .login-btn,
 .button-group .signup-btn,
-.gmail-btn {
- background: linear-gradient(90deg, #10b981, #4ade80);
- color: white;
- border: none;
- border-radius: 8px;
- cursor: pointer;
- font-family: 'Press Start 2P', monospace;
- transition: background 0.3s ease, transform 0.2s ease;
+.gmail-btn { 
+    /* Use the same background for the default state */
+    background-color: #5BA84C;
+    color: white; /* Make sure the text is visible */
+    border: none;
+    border-radius: 4px; /* Example: Add some rounded corners */
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s; /* Smooth transition */
 }
 
-/* Unified Hover for All Buttons */
-/* Unified Hover for All Buttons */
+/* Unified Hover for All Buttons (Your existing hover style) */
 .login-container button[onclick*='auth.google']:hover,
 .button-group .login-btn:hover,
 .button-group .signup-btn:hover,
 .gmail-btn:hover { 
+    /* Apply the gradient only on hover */
   background: linear-gradient(90deg, #059669, #16a34a);
-  transform: translateY(-2px);
+   transform: translateY(-2px);
 }
 
 /* === Button Group === */
@@ -190,6 +189,7 @@ input {
 
 /* === Gmail Button === */
 .gmail-btn {
+ background-color: #5BA84C !important;
   width: calc(240px + 10px);
   display: block;
   margin: 10px auto 0; /* smaller gap between Gmail and button group */
@@ -234,57 +234,3 @@ a.forgot-password:hover {
     opacity: 0;
 }
 
-/* === Responsive Fixes === */
-@media (max-width: 768px) {
-    .login-container {
-        width: 90%;
-        padding: 1.5rem;
-    }
-
-    input {
-        width: 90%;
-        font-size: 10px;
-    }
-
-    .button-group .login-btn,
-    .button-group .signup-btn,
-    .gmail-btn {
-        width: 80%;
-        font-size: 9px;
-        padding: 10px 0;
-        margin: 6px 0;
-    }
-
-    .login-container h1 {
-        font-size: 24px;
-    }
-
-    .login-container h2 {
-        font-size: 12px;
-    }
-
-    a.forgot-password {
-        font-size: 10px;
-    }
-}
-
-@media (max-width: 480px) {
-    body {
-        flex-direction: column;
-        height: auto;
-        min-height: 100vh;
-        padding: 20px 0;
-    }
-
-    .login-container {
-        max-width: 320px;
-    }
-
-    .button-group {
-        flex-direction: column;
-    }
-
-    .gmail-btn {
-        width: 100%;
-    }
-}
