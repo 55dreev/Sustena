@@ -6,7 +6,7 @@
     <title>SUSTENA – Home</title>
     <link rel="stylesheet" href="{{ asset('css/landing.css') }}">
     <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/landingresponsive.css') }}">
+
     
 </head>
 <body>
@@ -79,8 +79,10 @@
 @endphp
 
 <!-- Sidebar -->
+ <div class="mobile-hamburger" onclick="toggleMobileSidebar()">☰</div>
+
 <div class="sidebar" id="sidebar">
-    <div class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">☰</div>
+    
 
     <div class="logo">
         <div class="logo-icon">🌱</div>
@@ -506,6 +508,9 @@ if (empty($badges)) {
         document.body.classList.add('dark-mode');
     }
 });
+function toggleMobileSidebar() {
+    document.querySelector('.sidebar').classList.toggle('open');
+}
 </script>
 </body>
 </html>

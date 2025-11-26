@@ -26,9 +26,9 @@
   </style>
 </head>
 <body>
+  <div class="mobile-hamburger" onclick="toggleMobileSidebar()">☰</div>
 
 <div class="sidebar" id="sidebar">
-  <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div>
   <div class="logo"><div class="logo-icon">🌱</div><div class="logo-text">SUSTENA</div></div>
   <a href="{{ url('/landing-page') }}" class="nav-item"><div class="nav-icon">🏠</div><span>Home</span></a>
   <a href="{{ url('/footprint-calculator') }}" class="nav-item"><div class="nav-icon">👣</div><span>Footprint Tracker</span></a>
@@ -432,6 +432,10 @@
         document.body.classList.add('dark-mode');
     }
 });
+function toggleMobileSidebar() {
+    document.querySelector('.sidebar').classList.toggle('open');
+}
+
 </script>
 </body>
 </html>

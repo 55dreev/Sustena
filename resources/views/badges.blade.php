@@ -6,12 +6,14 @@
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>SUSTENA - Achievements & Badges</title>
   <link rel="stylesheet" href="{{ asset('css/badges.css') }}">
-  <link rel="stylesheet" href="{{ asset('css/badgesresponsive.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
 
 </head>
-<body>
+<body class="badges-page">
+    <div class="mobile-hamburger" onclick="toggleMobileSidebar()">☰</div>
+
 <div class="sidebar" id="sidebar">
-    <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div>
+   
     <div class="logo">
         <div class="logo-icon">🌱</div>
         <div class="logo-text">SUSTENA</div>
@@ -20,7 +22,7 @@
         <div class="nav-icon">🏠</div>
         <span>Home</span>
     </a>
-    <a href="{{ url('/footprint-calculator') }}" class="nav-item active">
+    <a href="{{ url('/footprint-calculator') }}" class="nav-item">
         <div class="nav-icon">👣</div>
         <span>Footprint Tracker</span>
     </a>
@@ -156,7 +158,7 @@
         </div>
       </div>
     </div>
-
+<br>
     <!-- Achievements Section -->
     <div class="achievements-section">
       <h2 class="section-header">Environmental Achievements</h2>
@@ -261,6 +263,9 @@
         }
       });
     });
+    function toggleMobileSidebar() {
+    document.querySelector('.sidebar').classList.toggle('open');
+}
   </script>
 </body>
 </html>

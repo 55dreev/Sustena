@@ -7,13 +7,17 @@
 <title>SUSTENA - Footprint Tracker</title>
 <link rel="stylesheet" href="{{ asset('css/footprintcalc.css') }}">
 <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
-<link rel="stylesheet" href="{{ asset('css/footprintcalcresponsive.css') }}">
+
 
 </head>
 
-<body>
+<body class="footprint-calc-page">
+
+  <div class="mobile-hamburger" onclick="toggleMobileSidebar()">☰</div>
+
 <div class="sidebar" id="sidebar">
-    <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div>
+   
+
     <div class="logo">
         <div class="logo-icon">🌱</div>
         <div class="logo-text">SUSTENA</div>
@@ -68,11 +72,13 @@
 
             <div id="quizContainer" class="form-section"></div>
 
-            <div class="farm-decor cow">🐄</div>
-            <div class="farm-decor chicken">🐓</div>
-            <div class="farm-decor barn">🏠</div>
-            <div class="farm-decor tree">🌳</div>
-            
+         <div class="farm-row">
+    <div class="farm-decor cow">🐄</div>
+    <div class="farm-decor chicken">🐓</div>
+    <div class="farm-decor tree">🌳</div>
+    <div class="farm-decor barn">🏠</div>
+</div>
+
             <div class="result-display" id="resultDisplay">
                 <div class="result-text">Your estimated weekly carbon footprint:</div>
                 <div class="carbon-value" id="carbonValue">0.0</div>
@@ -725,6 +731,9 @@ updateProgress();
         document.body.classList.add('dark-mode');
     }
 });
+function toggleMobileSidebar() {
+    document.querySelector('.sidebar').classList.toggle('open');
+}
 </script>
 </body>
 </html>

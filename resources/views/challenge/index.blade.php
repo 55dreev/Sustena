@@ -65,9 +65,10 @@
   </style>
 </head>
 <body>
+    <div class="mobile-hamburger" onclick="toggleMobileSidebar()">☰</div>
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
-    <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div>
+    
     <div class="logo">
       <div class="logo-icon">🌱</div>
       <div class="logo-text">SUSTENA</div>
@@ -306,6 +307,9 @@
         document.body.classList.add('dark-mode');
     }
 });
+function toggleMobileSidebar() {
+    document.querySelector('.sidebar').classList.toggle('open');
+}
 </script>
 
 

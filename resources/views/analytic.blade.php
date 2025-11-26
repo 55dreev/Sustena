@@ -7,15 +7,16 @@
 
     <title>SUSTENA - Carbon Footprint Tracker</title>
     <link rel="stylesheet" href="{{ asset('css/analytics.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/analyticsresponsive.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
   
     <!-- Chart.js + Annotation plugin -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
 </head>
 <body>
+    <div class="mobile-hamburger" onclick="toggleMobileSidebar()">☰</div>
+
     <div class="sidebar" id="sidebar">
-    <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div>
     <div class="logo">
         <div class="logo-icon">🌱</div>
         <div class="logo-text">SUSTENA</div>
@@ -631,6 +632,9 @@
           this.classList.add('active');
         });
       });
+      function toggleMobileSidebar() {
+    document.querySelector('.sidebar').classList.toggle('open');
+}
     </script>
 </body>
 </html>

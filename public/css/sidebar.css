@@ -1,179 +1,120 @@
-/* === Sidebar Base Styles === */
+/* =======================================
+   SIDEBAR BASE
+======================================= */
 .sidebar {
-  width: 200px;
+  width: 220px;
   background: linear-gradient(180deg, #4a7c59 0%, #2d5a3d 100%);
   padding: 20px;
-  box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+  box-shadow: 2px 0 10px rgba(0,0,0,0.25);
   position: fixed;
   top: 0;
   left: 0;
-  height: 100vh;
+  height: 100vh !important;
   overflow-y: auto;
-  transition: transform 0.3s ease;
-  z-index: 1000;
-   overflow-x: hidden; /* hide horizontal scroll */
+  overflow-x: hidden;
+  transition: transform 0.3s ease, width 0.3s ease;
+  z-index: 4000 !important;
 }
 
-/* Collapsed sidebar */
-.sidebar.collapsed {
-  transform: translateX(-160px); /* leave ~20px visible for button */
-}
-
-/* Sidebar toggle (hamburger icon) */
-.sidebar-toggle {
-  position: absolute;
-  top: 20px;
-  right: 0px;
-  font-size: 24px;
-  color: white;
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  z-index: 1101;
-  transition: background 0.2s ease, right 0.3s ease;
-}
-
-.sidebar-toggle:hover {
-  background: #1a252f;
-}
-
-/* === Logo Section === */
-.sidebar .logo {
-  display: flex;
-  align-items: center;
-  margin-bottom: 30px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid rgba(255,255,255,0.2);
-  padding-left: 10px;
-}
-
-.sidebar .logo-icon {
-  width: 40px;
-  height: 40px;
-  background: #66bb6a;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 10px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  font-size: 20px;
-}
-
-.sidebar .logo-text {
-  color: white;
-  font-weight: bold;
-  font-size: 16px;
-}
-
-/* === Navigation Items === */
-.sidebar .nav-item {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  margin-bottom: 8px;
-  color: rgba(255,255,255,0.8);
-  text-decoration: none;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.sidebar .nav-item:hover {
-  background: rgba(255,255,255,0.1);
-  color: white;
-  transform: translateX(5px);
-}
-
-.sidebar .nav-item.active {
-  background: #66bb6a;
-  color: white;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  width: 100%;
-}
-
-.sidebar .nav-icon {
-  width: 24px;
-  height: 24px;
-  margin-right: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-}
-
-/* === Responsive Sidebar === */
-@media (max-width: 768px) {
+/* =======================================
+   DESKTOP — COLLAPSED BY DEFAULT
+======================================= */
+@media (min-width: 1025px) {
   .sidebar {
-    width: 80px;
+      transform: translateX(-220px); /* match actual width */
   }
 
-  .sidebar .logo-text,
-  .sidebar .nav-item span {
-    display: none;
-  }
-
-  .sidebar .nav-item {
-    justify-content: center;
+  .sidebar.open {
+      transform: translateX(0) !important;
   }
 }
-.nav-icon img {
-  outline: none;
-  border: none;
-  background: none;
-  box-shadow: none;
+
+/* =======================================
+   MOBILE/TABLET — OVERLAY MODE
+======================================= */
+@media (max-width: 1024px) {
+  .sidebar {
+      transform: translateX(-100%); /* fully hidden off-screen */
+  }
+
+  .sidebar.open {
+      transform: translateX(0) !important;
+  }
 }
 
-.nav-item:focus,
-.nav-icon:focus {
-  outline: none;
+/* =======================================
+   HAMBURGER BUTTON
+======================================= */
+.mobile-hamburger {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  font-size: 26px;
+  background: rgba(0,0,0,0.8);
+  color: white;
+  padding: 10px 14px;
+  border-radius: 10px;
+  z-index: 5000 !important; /* always above sidebar */
+  cursor: pointer;
+  display: block !important;
 }
 
-.nav-item img {
-  display: block; /* removes extra inline gap */
-}
-/* Remove unwanted boxes but preserve hover/active */
-.nav-icon {
-  background: none !important;
-  box-shadow: none !important;
-}
-
-/* Make the whole item fill the sidebar */
+/* =======================================
+   NAV ITEMS
+======================================= */
 .nav-item {
-  display: block;           /* ensures it takes full width */
-  width: 100%;              /* fill parent container */
-  padding: 10px 20px;       /* add some space around text */
-  box-sizing: border-box;   /* include padding in width */
-  color: #fff;
-  text-decoration: none;    /* if it's a link */
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 20px;
+  margin-bottom: 10px;
+  color: rgba(255,255,255,0.92);
+  border-radius: 8px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: 0.2s ease;
 }
 
-/* Hover state */
+.nav-item span {
+  font-size: 15px;
+  white-space: nowrap;
+}
+
 .nav-item:hover {
-  background: rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.15);
   transform: translateX(5px);
 }
 
-/* Active state */
 .nav-item.active {
-  background: #66bb6a;      /* full width green highlight */
+  background: #66bb6a;
   color: white;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
   transform: none;
 }
-.sidebar-toggle {
-    position: absolute;
-    top: 13px;
-    right: -5px;  /* width of the hamburger button */
-    font-size: 24px;
-    color: white;
-    padding: 8px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    z-index: 1101;
-    transition: background 0.2s ease, right 0.3s ease;
+
+/* =======================================
+   MOBILE — REDUCE WIDTH & PADDING
+======================================= */
+@media (max-width: 480px) {
+  .sidebar {
+      width: 170px !important;
+      padding: 12px !important;
+  }
+
+  .nav-item {
+      padding: 10px 14px !important;
+      gap: 8px !important;
+  }
+
+  .nav-item span {
+      font-size: 14px;
+  }
+}
+/* Prevent mid-word breaks */
+.sidebar .nav-item span {
+    white-space: normal !important;
+    word-break: keep-all !important;  /* ONLY break between words */
+    overflow-wrap: break-word !important; /* fallback */
 }
 
-.sidebar-toggle:hover {
-    background: #1a252f;
-}

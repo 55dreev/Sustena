@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SUSTENA - Settings</title>
  <link rel="stylesheet" href="{{ asset('css/settings.css') }}">
- <link rel="stylesheet" href="{{ asset('css/settingsresponsive.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
 </head>
 <body>
+      <div class="mobile-hamburger" onclick="toggleMobileSidebar()">☰</div>
+
     <div class="sidebar" id="sidebar">
-    <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div>
     <div class="logo">
         <div class="logo-icon">🌱</div>
         <div class="logo-text">SUSTENA</div>
@@ -18,7 +19,7 @@
         <div class="nav-icon">🏠</div>
         <span>Home</span>
     </a>
-    <a href="{{ url('/footprint-calculator') }}" class="nav-item active">
+    <a href="{{ url('/footprint-calculator') }}" class="nav-item">
         <div class="nav-icon">👣</div>
         <span>Footprint Tracker</span>
     </a>
@@ -262,6 +263,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.style.boxShadow = '0 10px 40px rgba(76, 175, 80, 0.2)';
             });
         });
+        function toggleMobileSidebar() {
+    document.querySelector('.sidebar').classList.toggle('open');
+}
     </script>
 </body>
 </html>

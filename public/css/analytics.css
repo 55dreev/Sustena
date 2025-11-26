@@ -10,11 +10,7 @@
             background: url('sustena2.jpg') center/cover no-repeat;
             opacity: 0.25; z-index: -1; pointer-events: none;
         }
-        .sidebar {
-            width: 200px; background: linear-gradient(180deg, #4a7c59 0%, #2d5a3d 100%);
-            padding: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-            position: fixed; height: 100vh; overflow-y: auto;
-        }
+        
         .logo { display: flex; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.2); }
         .logo-icon {
             width: 40px; height: 40px; background: #66bb6a; border-radius: 8px;
@@ -158,47 +154,34 @@
         #detailsClose { border:none;background:#f3f4f6;padding:6px 10px;border-radius:8px;cursor:pointer; }
         .sheet-actions { display:flex; gap:8px; align-items:center; }
         .sheet-actions button { border:none; background:#eef2f7; padding:6px 10px; border-radius:8px; cursor:pointer; }
-           /* Sidebar */
-.sidebar {
-    width: 200px;
-    background: linear-gradient(180deg, #4a7c59 0%, #2d5a3d 100%);
-    padding: 20px;
-    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    overflow-y: auto;
-    transition: transform 0.3s ease;
-    z-index: 1000;
+          
+/* ============================================
+   FIX MAIN CONTENT POSITIONING (DESKTOP ONLY)
+   ============================================ */
+@media (min-width: 1024px) {
+    .main-content {
+        margin-left: 80px !important;   /* shift MORE left */
+        margin-right: auto !important;   /* avoid pushing right */
+        max-width: 1400px;               /* keeps layout from drifting */
+        padding-left: 10px !important;   /* optional slight nudge */
+    }
 }
 
-/* Collapsed sidebar */
-.sidebar.collapsed {
-    transform: translateX(-160px); /* leave ~20px visible for button */
+/* Tablet (Centered) */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .main-content {
+        margin-left: 100px !important;
+        margin-right: 20px !important;
+    }
 }
 
-/* Sidebar toggle (hamburger) */
-.sidebar-toggle {
-    position: absolute;
-    top: 20px;
-    right: 0px;  /* width of the hamburger button */
-    font-size: 24px;
-    color: white;
-    padding: 8px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    z-index: 1101;
-    transition: background 0.2s ease, right 0.3s ease;
+/* Mobile (perfect centered) */
+@media (max-width: 767px) {
+    .main-content {
+        margin-left: -20px !important; /* matches collapsed sidebar */
+        margin-right: 0px !important;
+    }
 }
 
-.sidebar-toggle:hover {
-    background: #1a252f;
-}
-        @media (max-width: 768px) {
-            .sidebar { width: 60px; }
-            .main-content { margin-left: 60px; }
-            .logo-text, .nav-item span { display: none; }
-            .footprint-display { flex-direction: column; gap: 20px; }
-            .stats-grid, .category-grid { grid-template-columns: 1fr; }
-        }
+
+

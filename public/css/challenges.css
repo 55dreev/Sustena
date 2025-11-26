@@ -14,53 +14,9 @@
         }
 
         /* Sidebar */
-.sidebar {
-    width: 200px;
-    background: linear-gradient(180deg, #4a7c59 0%, #2d5a3d 100%);
-    padding: 20px;
-    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    overflow-y: auto;
-    transition: transform 0.3s ease;
-    z-index: 1000;
-}
 
-/* Collapsed sidebar */
-.sidebar.collapsed {
-    transform: translateX(-160px); /* leave ~20px visible for button */
-}
 
-/* Sidebar toggle (hamburger) */
-.sidebar-toggle {
-    position: absolute;
-    top: 20px;
-    right: 0px;  /* width of the hamburger button */
-    font-size: 24px;
-    color: white;
-    padding: 8px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    z-index: 1101;
-    transition: background 0.2s ease, right 0.3s ease;
-}
 
-.sidebar-toggle:hover {
-    background: #1a252f;
-}
-
-/* Main content */
-.main-content {
-    margin-left: 200px;
-    transition: margin-left 0.3s ease;
-    padding: 20px;
-}
-
-.main-content.expanded {
-    margin-left: 40px; /* leave space for the fully visible hamburger */
-}
 
         .logo {
             display: flex;
@@ -88,30 +44,7 @@
             font-size: 16px;
         }
 
-        .nav-item {
-            display: flex;
-            align-items: center;
-            padding: 12px 16px;
-            margin-bottom: 8px;
-            color: rgba(255,255,255,0.8);
-            text-decoration: none;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .nav-item:hover {
-            background: rgba(255,255,255,0.1);
-            color: white;
-            transform: translateX(5px);
-        }
-
-        .nav-item.active {
-        background: #66bb6a;
-        color: white;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        width: 85%;
-    }
+     
 
 
         .nav-icon {
@@ -558,4 +491,55 @@ body.dark-mode .profile-label,
 body.dark-mode .card-title,
 body.dark-mode .chip strong {
     color: #000 !important;
+}
+/* FIX: Do NOT hide sidebar text */
+.nav-item span {
+    display: inline !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* Also fix logo text visibility */
+.logo-text {
+    display: block !important;
+}
+/* === CENTER MAIN CONTENT LIKE LANDING & FOOTPRINT === */
+body {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: flex-start;
+}
+
+.main-content {
+    max-width: 480px;          /* match your mobile app center layout */
+    width: 100%;
+    padding: 20px;
+    margin: 0 auto !important; /* center it ALWAYS */
+    transform: none !important;
+}
+
+/* When sidebar opens, do NOT push content on mobile */
+@media (max-width: 1024px) {
+    .sidebar.open ~ .main-content {
+        transform: none !important;
+    }
+}
+
+/* Desktop only — shift main-content right when sidebar opens */
+@media (min-width: 1025px) {
+    .sidebar.open ~ .main-content {
+        transform: translateX(220px) !important;
+    }
+}
+/* DESKTOP ONLY: make content much wider */
+@media (min-width: 1024px) {
+    .main-content {
+        max-width: 1200px !important; /* adjust this to your preferred width */
+        padding: 20px 60px !important; /* optional nice spacing */
+    }
+}
+@media (min-width: 1025px) {
+    .sidebar.open ~ .main-content {
+        transform: none !important;
+    }
 }

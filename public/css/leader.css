@@ -6,7 +6,7 @@
         }
         body::before { content: ""; position: fixed; inset: 0; background: url('sustena2.jpg') center/cover no-repeat; opacity: 0.25; z-index: -1; pointer-events: none; }
 
-        .sidebar { width: 200px; background: linear-gradient(180deg, #4a7c59 0%, #2d5a3d 100%); padding: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.1); position: fixed; height: 100vh; overflow-y: auto; }
+       
         .logo { display: flex; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.2); }
         .logo-icon { width: 40px; height: 40px; background: #66bb6a; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
         .logo-text { color: white; font-weight: bold; font-size: 16px; }
@@ -104,3 +104,125 @@
             .user-name { font-size: 16px; }
             .podium-section { flex-direction: column; align-items: center; }
         }
+        /* FIX: Do NOT hide sidebar text */
+.nav-item span {
+    display: inline !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* Also fix logo text visibility */
+.logo-text {
+    display: block !important;
+}
+/* ===============================
+   GLOBAL RESET FOR THIS PAGE ONLY
+   Fix layout being pushed on mobile
+   =============================== */
+body.leaderboard-page,
+body {
+    display: block !important;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+/* ===============================
+   MAIN CONTENT — CENTERED ALL DEVICES
+   =============================== */
+.main-content {
+    width: 100%;
+    max-width: 1200px;         /* center container */
+    margin: 0 auto !important; /* center horizontally */
+    padding: 20px;
+    position: relative;
+    z-index: 5;
+}
+
+/* ===============================
+   LEADERBOARD WRAPPER
+   =============================== */
+.leaderboard-container {
+    width: 100%;
+    max-width: 1100px;  /* widen on desktop */
+    margin: 0 auto;     /* center */
+    padding: 30px 20px;
+    border-radius: 20px;
+}
+
+/* ===============================
+   PODIUM SECTION (CENTER PROPERLY)
+   =============================== */
+.podium-section {
+    justify-content: center !important;
+    align-items: flex-end !important;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+/* ===============================
+   MOBILE FIXES
+   =============================== */
+@media (max-width: 768px) {
+
+    .main-content {
+        margin-left: 0 !important;   /* remove sidebar offset */
+        padding: 15px !important;
+        max-width: 100%;
+    }
+
+    .leaderboard-container {
+        padding: 20px 10px !important;
+        border-radius: 16px;
+        width: 95%;
+        margin: 0 auto !important;
+    }
+
+    .podium-section {
+        flex-direction: column !important;
+        gap: 15px;
+    }
+
+    .podium-entry {
+        width: 90% !important;
+        margin: 0 auto;
+    }
+}
+
+/* ===============================
+   TABLET FIXES
+   =============================== */
+@media (min-width: 769px) and (max-width: 1024px) {
+
+    .main-content {
+        margin-left: 80px !important; /* small sidebar space */
+    }
+
+    .leaderboard-container {
+        max-width: 900px;
+    }
+
+    .podium-entry {
+        min-width: 170px;
+    }
+}
+
+/* ===============================
+   DESKTOP WIDE CENTERING
+   =============================== */
+@media (min-width: 1025px) {
+
+    .main-content {
+        margin-left: 220px !important;  /* matches sidebar width */
+    }
+
+    .leaderboard-container {
+        max-width: 1150px !important;   /* wider white box */
+    }
+
+    .podium-section {
+        gap: 40px !important;
+    }
+}

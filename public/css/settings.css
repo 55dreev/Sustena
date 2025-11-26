@@ -451,3 +451,55 @@ body.dark-mode .floating-icon {
     background: rgba(40, 40, 40, 0.9);
     color: #e0e0e0;
 }
+/* === CENTER MAIN CONTENT LIKE LANDING & FOOTPRINT === */
+body {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: flex-start;
+}
+
+.main-content {
+    max-width: 480px;          /* match your mobile app center layout */
+    width: 100%;
+    padding: 20px;
+    margin: 0 auto !important; /* center it ALWAYS */
+    transform: none !important;
+}
+
+/* When sidebar opens, do NOT push content on mobile */
+@media (max-width: 1024px) {
+    .sidebar.open ~ .main-content {
+        transform: none !important;
+    }
+}
+
+/* Desktop only — shift main-content right when sidebar opens */
+@media (min-width: 1025px) {
+    .sidebar.open ~ .main-content {
+        transform: translateX(220px) !important;
+    }
+}
+/* DESKTOP ONLY: make content much wider */
+@media (min-width: 1024px) {
+    .main-content {
+        max-width: 1200px !important; /* adjust this to your preferred width */
+        padding: 20px 60px !important; /* optional nice spacing */
+    }
+}
+@media (min-width: 1025px) {
+    .sidebar.open ~ .main-content {
+        transform: none !important;
+    }
+}
+/* FIX: Do NOT hide sidebar text */
+.nav-item span {
+    display: inline !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* Also fix logo text visibility */
+.logo-text {
+    display: block !important;
+}
+
