@@ -17,7 +17,6 @@
 
 <div class="sidebar" id="sidebar">
    
-
     <div class="logo">
         <div class="logo-icon">🌱</div>
         <div class="logo-text">SUSTENA</div>

@@ -503,12 +503,13 @@ body.dark-mode .chip strong {
 .logo-text {
     display: block !important;
 }
-/* === CENTER MAIN CONTENT LIKE LANDING & FOOTPRINT === */
-body {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: flex-start;
+/* Center main content without breaking mobile layout */
+.main-content {
+    max-width: 480px;
+    width: 100%;
+    margin: 0 auto;
 }
+
 
 .main-content {
     max-width: 480px;          /* match your mobile app center layout */
@@ -543,3 +544,170 @@ body {
         transform: none !important;
     }
 }
+/* ============================
+   MODAL FIX — CENTERED ALWAYS
+   ============================ */
+
+#challengeModal.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.55);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    padding: 20px;
+}
+
+.modal-content {
+    background: white;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 20px;
+    padding: 25px;
+    text-align: left;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+    animation: popIn 0.25s ease;
+}
+
+/* Desktop — make it wider and nicely centered */
+@media (min-width: 768px) {
+    .modal-content {
+        width: 70%;
+        max-width: 700px;
+        padding: 40px;
+    }
+}
+
+/* Proper file input styling */
+.modal-content input[type="file"] {
+    width: 100%;
+    padding: 14px;
+    border: 2px dashed #bbb;
+    border-radius: 12px;
+    background: #fafafa;
+}
+
+/* Close button position */
+.modal-content .close-btn {
+    position: absolute;
+    top: 12px;
+    right: 18px;
+    font-size: 26px;
+    cursor: pointer;
+}
+
+/* Pop-in animation */
+@keyframes popIn {
+    from {
+        opacity: 0;
+        transform: scale(0.92);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+/* === OVERRIDE: Move modal slightly left on all screens === */
+#challengeModal.modal {
+    justify-content: flex-start !important;   /* move to the left side */
+    padding-left: 40px !important;            /* small offset from the edge */
+}
+
+/* On desktop — a bit more centered but still left-biased */
+@media (min-width: 768px) {
+    #challengeModal.modal {
+        justify-content: center !important;   /* center on desktop */
+    }
+}
+/* ======================================
+   FINAL OVERRIDE — Shift modal left ONLY
+   ====================================== */
+
+/* Desktop: move the white box slightly left */
+@media (min-width: 1024px) {
+    .modal-content {
+        position: relative;
+        left: -130px;   /* ← adjust this to move left more/less */
+    }
+}
+
+/* Ultra-wide screens (optional) */
+@media (min-width: 1440px) {
+    .modal-content {
+        left: -130px;   /* shift a bit more if needed */
+    }
+}
+/* ===================================================
+   UNIVERSAL MODAL SHIFT — PHONE • TABLET • DESKTOP
+   =================================================== */
+
+/* DEFAULT — phones (small screens) */
+.modal-content {
+    position: relative !important;
+    left: -226px !important;   /* small shift */
+    width: 100;
+}
+
+/* MEDIUM SCREENS — tablets (600px to 1023px) */
+@media (min-width: 600px) and (max-width: 1023px) {
+    .modal-content {
+        left: -145px !important;   /* more shift */
+    }
+}
+
+/* LARGE SCREENS — desktops (1024px and up) */
+@media (min-width: 1024px) {
+    .modal-content {
+        left: -240px !important;   /* stronger shift */
+    }
+}
+
+/* ULTRA-WIDE screens */
+@media (min-width: 1440px) {
+    .modal-content {
+        left: -160px !important;   /* adjust as you like */
+    }
+}
+/* ============================================
+   MAKE MODAL CONTENT SQUARE / BOX SHAPED
+   ============================================ */
+
+/* Base modal shape */
+.modal-content {
+    border-radius: 20px !important;
+    min-width: 280px !important;   /* prevents super-skinny */
+    min-height: 280px !important;  /* gives square feel */
+}
+
+/* Mobile — force wider modal */
+@media (max-width: 480px) {
+    .modal-content {
+        width: 95% !important;         /* take full width */
+        max-width: 360px !important;   /* prevents extreme width */
+        min-height: 300px !important;  /* box shape */
+    }
+}
+
+/* Tablets */
+@media (min-width: 481px) and (max-width: 768px) {
+    .modal-content {
+        width: 80% !important;
+        max-width: 420px !important;
+        min-height: 300px !important;
+    }
+}
+
+/* Desktop */
+@media (min-width: 769px) {
+    .modal-content {
+        width: 60% !important;
+        max-width: 600px !important;
+        min-height: 300px !important;
+    }
+}
+
+
