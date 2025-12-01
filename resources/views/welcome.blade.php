@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
    <link rel="stylesheet" href="{{ asset('css/welcomeresponsive.css') }}">
 <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+
 
 
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -30,7 +33,7 @@
 
         <form action="{{ route('login') }}" method="POST">
             @csrf
-            <input type="text" name="username" placeholder="Username" required><br>
+            <input type="text" name="username" placeholder="Username" required>
             <div class="password-input-container">
     <input type="password" id="login_password" name="password" placeholder="Password" required>
 
@@ -49,7 +52,9 @@
 <button type="button"
         class="gmail-btn"
         onclick="window.location.href='{{ route('auth.google') }}'">
+          <img src="{{ asset('assets/google.png') }}" class="google-icon">
     Sign in with Gmail
+  
 </button>
 
         </form>

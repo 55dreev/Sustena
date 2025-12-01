@@ -270,7 +270,8 @@ a.forgot-password:hover {
 /* Password wrapper matches EXACT username width */
 .password-input-container {
     width: 100%;               /* SAME width as username */
-    margin: 0 auto 15px auto;
+    margin-top: 4px !important;
+    margin-bottom: 12px;
     position: relative;
     display: flex;            /* Make the input fill correctly */
     justify-content: center;  /* Center the input */
@@ -324,3 +325,72 @@ a.forgot-password:hover {
 .toggle-password.eye-open {
     background-image: url("/assets/eyeopen.png");
 }
+/* ===== MAKE LOGIN CONTAINER BIGGER ON PHONES ===== */
+@media (max-width: 480px) {
+
+    .login-container {
+        max-width: 90% !important;   /* Bigger width */
+        padding: 2.5rem 2rem 2rem !important; 
+        border-radius: 20px !important;
+    }
+
+    .login-container h1 {
+        font-size: 28px !important;  /* Reduce text squish */
+    }
+
+    .login-container h2 {
+        font-size: 12px !important;
+    }
+
+    input {
+        width: 95% !important;       /* Make inputs wider */
+        font-size: 11px !important;
+        padding: 12px !important;
+    }
+
+    .password-input-container {
+        width: 95% !important;       /* Fix password width */
+        margin-top: 6px !important;
+    }
+
+    .gmail-btn {
+        width: 95% !important;       /* Fix Google size */
+    }
+
+    .button-group .login-btn,
+    .button-group .signup-btn {
+        min-width: 140px !important; /* Better spacing for buttons */
+        font-size: 11px !important;
+    }
+}
+/* Fix spacing between username and password */
+#login input[name="username"] {
+    margin-bottom: 4px !important;
+}
+
+#login .password-input-container {
+    margin-top: 6px !important;   /* pull password closer */
+}
+/* FORCE username + password spacing FIX */
+input[name="username"] {
+    margin-bottom: 6px !important;
+}
+
+.password-input-container {
+    margin-top: 2px !important;
+    margin-bottom: 10px !important;
+}
+
+.password-input-container input {
+    margin-top: 0 !important;
+    padding-top: 10px !important;
+}
+.google-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    image-rendering: pixelated; /* make it crisp retro style */
+    vertical-align: middle;
+}
+
+
