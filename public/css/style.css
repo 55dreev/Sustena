@@ -376,21 +376,23 @@ input[name="username"] {
     margin-bottom: 6px !important;
 }
 
-.password-input-container {
-    margin-top: 2px !important;
-    margin-bottom: 10px !important;
-}
 
-.password-input-container input {
-    margin-top: 0 !important;
-    padding-top: 10px !important;
-}
 .google-icon {
     width: 18px;
     height: 18px;
     margin-right: 8px;
     image-rendering: pixelated; /* make it crisp retro style */
     vertical-align: middle;
+}
+/* === FORCE USERNAME + PASSWORD SAME EXACT WIDTH === */
+#login input[name="username"],
+#login .password-input-container {
+    width: 95% !important;
+}
+
+/* Force password input inside to match username perfectly */
+#login .password-input-container input {
+    width: 100% !important;
 }
 
 
