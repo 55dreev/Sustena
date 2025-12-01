@@ -117,4 +117,58 @@
     word-break: keep-all !important;  /* ONLY break between words */
     overflow-wrap: break-word !important; /* fallback */
 }
+/* ============================================
+   FLOATING ICONS — BASE STYLE
+============================================ */
+.floating-icons {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 3000;
+    transition: all 0.25s ease-in-out;
+}
 
+/* =========================================================
+   DESKTOP (≥1025px)
+   → Floating icons collapse WITH sidebar
+   → Hidden by default (because sidebar is hidden)
+========================================================= */
+@media (min-width: 1025px) {
+
+    /* sidebar collapsed → hide icons */
+    .floating-icons {
+        opacity: 0;
+        pointer-events: none;
+        transform: translateX(40px);
+    }
+
+    /* sidebar opened → show icons */
+    body.sidebar-open .floating-icons {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateX(0);
+    }
+}
+
+/* =========================================================
+   MOBILE + TABLET (≤1024px)
+   → Floating icons ALWAYS VISIBLE
+   → Never linked to sidebar state
+========================================================= */
+@media (max-width: 1024px) {
+
+    .floating-icons {
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        transform: translateX(0) !important;
+        right: 10px; /* optional: bring closer to left edge */
+    }
+
+    /* Prevent desktop behavior from affecting mobile */
+    body.sidebar-open .floating-icons {
+        opacity: 1 !important;
+        transform: translateX(0) !important;
+    }
+}

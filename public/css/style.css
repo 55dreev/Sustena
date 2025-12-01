@@ -233,4 +233,94 @@ a.forgot-password:hover {
 .circle-transition.fade-out {
     opacity: 0;
 }
+/* ===== PASSWORD FIELD WITH EYE ICON ===== */
+.password-wrapper input {
+    width: calc(80% + 12px) !important;
+}
 
+
+.password-wrapper input {
+    width: 100% !important;
+    padding-right: 40px !important;  /* space for eye icon */
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 16px;
+    user-select: none;
+    opacity: 0.7;
+    transition: 0.2s;
+}
+
+.toggle-password:hover {
+    opacity: 1;
+    transform: translateY(-50%) scale(1.1);
+}
+/* Base width for normal fields */
+.input-field {
+    width: 80%;
+    height: 40px !important;
+}
+
+
+/* Password wrapper matches EXACT username width */
+.password-input-container {
+    width: 100%;               /* SAME width as username */
+    margin: 0 auto 15px auto;
+    position: relative;
+    display: flex;            /* Make the input fill correctly */
+    justify-content: center;  /* Center the input */
+}
+
+/* Password input inside wrapper now matches username perfectly */
+.password-input-container input {
+    width: 100%;              /* Fill the wrapper */
+    padding-right: 42px; 
+    height: 35px;
+    box-sizing: border-box;
+}
+
+/* Eye icon */
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 14px;
+    opacity: 0.7;
+}
+/* Reduce spacing between Password and Confirm Password */
+#signup .password-input-container {
+    margin-bottom: 10px !important; /* tighter gap */
+}
+
+/* Specifically tighten the Confirm Password distance from the button */
+#signup .password-input-container:last-of-type {
+    margin-top: -5px !important;  /* pull it upward */
+}
+/* === Pixel Eye Icons === */
+.toggle-password {
+    width: 18px;
+    height: 18px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    display: inline-block;
+    opacity: 0.8;
+    cursor: pointer;
+}
+
+/* Closed (default) */
+.toggle-password.eye-closed {
+    background-image: url("/assets/eyeclose.png");
+}
+
+/* Open (when toggled) */
+.toggle-password.eye-open {
+    background-image: url("/assets/eyeopen.png");
+}

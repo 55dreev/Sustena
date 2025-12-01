@@ -112,8 +112,13 @@
     }
 });
 function toggleMobileSidebar() {
-    document.querySelector('.sidebar').classList.toggle('open');
+    const sidebar = document.querySelector('.sidebar');
+    const body = document.body;
+
+    sidebar.classList.toggle('open');
+    body.classList.toggle('sidebar-open');  // <- THIS IS NEW
 }
+
 </script>
 
 </body>

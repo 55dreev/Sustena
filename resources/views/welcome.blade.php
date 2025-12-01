@@ -31,7 +31,14 @@
         <form action="{{ route('login') }}" method="POST">
             @csrf
             <input type="text" name="username" placeholder="Username" required><br>
-            <input type="password" name="password" placeholder="Password" required><br>
+            <div class="password-input-container">
+    <input type="password" id="login_password" name="password" placeholder="Password" required>
+
+    <span class="toggle-password eye-closed"
+          data-target="login_password">
+    </span>
+</div>
+
 
            <div class="button-group">
     <button type="submit" class="login-btn">Login</button>
@@ -61,8 +68,25 @@
             @csrf
             <input type="text" name="username" placeholder="Username" required>
             <input type="email" name="email" placeholder="Email" required>
-            <input type="password" name="password" placeholder="Password" required>
-            <input type="password" name="password_confirmation" placeholder="Confirm Password" required>
+        <div class="password-input-container">
+    <input type="password" id="signup_password" name="password" placeholder="Password" required>
+
+    <span class="toggle-password eye-closed"
+          data-target="signup_password">
+    </span>
+</div>
+
+
+<div class="password-input-container">
+    <input type="password" id="signup_confirm" name="password_confirmation" placeholder="Confirm Password" required>
+
+    <span class="toggle-password eye-closed"
+          data-target="signup_confirm">
+    </span>
+</div>
+
+
+
 
             <button type="button" id="showLoginFromSignup">Back to Login</button>
             <button type="submit" name="register">Register</button>
@@ -156,6 +180,28 @@
                 document.getElementById('login').style.display = 'block';
             }, 2000);
         }
+        
+
+document.querySelectorAll(".toggle-password").forEach(icon => {
+    icon.addEventListener("click", () => {
+        const input = document.getElementById(icon.dataset.target);
+
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove("eye-closed");
+            icon.classList.add("eye-open");
+        } else {
+            input.type = "password";
+            icon.classList.remove("eye-open");
+            icon.classList.add("eye-closed");
+        }
+    });
+});
+
+
+
+
+
     </script>
 </body>
 </html>
