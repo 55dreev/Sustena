@@ -36,9 +36,9 @@
   <div class="logo"><div class="logo-icon">🌱</div><div class="logo-text">SUSTENA</div></div>
   <a href="{{ url('/landing-page') }}" class="nav-item"><div class="nav-icon">🏠</div><span>Home</span></a>
   <a href="{{ url('/footprint-calculator') }}" class="nav-item"><div class="nav-icon">👣</div><span>Footprint Tracker</span></a>
-  <a href="{{ url('/learning-modules') }}" class="nav-item"><div class="nav-icon">📚</div><span>Learn</span></a>
   <a href="{{ url('/challenge') }}" class="nav-item"><div class="nav-icon">🏆</div><span>Challenges</span></a>
   <a href="{{ url('/forum') }}" class="nav-item"><div class="nav-icon">💬</div><span>MicroForum</span></a>
+  <a href="{{ url('/visual-progress') }}" class="nav-item"><div class="nav-icon">🌍</div><span>Your Planet</span></a>
   <a href="{{ route('profile') }}" class="nav-item active"><div class="nav-icon">👤</div><span>Profile</span></a>
 </div>
 

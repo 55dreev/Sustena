@@ -303,4 +303,136 @@ class HomeController extends Controller
             'rank_percentile'  => $percentile,
         ]);
     }
+
+    public function visualProgress()
+    {
+        $user = Auth::user();
+        $uid  = $user?->user_id ?? $user?->id;
+
+        // Get user stats
+        $xp_total = (int) ($user->xp_total ?? 0);
+        $level = (int) ($user->level ?? 1);
+        $points_total = (int) ($user->points_total ?? 0);
+
+        // Calculate level progress (0-100% to next level)
+        $xpService = app(\App\Services\XpService::class);
+        $nextLevelInfo = $xpService->nextLevelInfo($xp_total);
+        // nextLevelInfo returns [current_level, next_level, xp_needed]
+        $current_level = $nextLevelInfo[0];
+        $next_level = $nextLevelInfo[1];
+        $xp_needed = $nextLevelInfo[2];
+
+        $currentLevelMin = $xpService->levelThresholdTotal($current_level);
+        $nextLevelMin = $xpService->levelThresholdTotal($next_level);
+        $xpIntoLevel = $xp_total - $currentLevelMin;
+        $xpForLevel = $nextLevelMin - $currentLevelMin;
+        $level_progress_percent = $xpForLevel > 0 ? min(100, ($xpIntoLevel / $xpForLevel) * 100) : 0;
+
+        // Calculate day streak
+        $streak_days = 0;
+        if ($uid) {
+            $appTz = config('app.timezone', 'Asia/Manila');
+            $raw = DB::table('footprint_scores')
+                ->where('user_id', $uid)
+                ->max('created_at');
+
+            if ($raw) {
+                $lastCarbon = Carbon::parse($raw);
+                $last_activity_at = $lastCarbon;
+                $anchorLocal = $last_activity_at->copy()->startOfDay();
+
+                for ($i = 0; $i < 365; $i++) {
+                    $startLocal = $anchorLocal->copy()->subDays($i)->startOfDay();
+                    $endLocal = $anchorLocal->copy()->subDays($i)->endOfDay();
+                    $had = DB::table('footprint_scores')
+                        ->where('user_id', $uid)
+                        ->whereBetween('created_at', [$startLocal, $endLocal])
+                        ->exists();
+                    if ($had) { $streak_days++; } else { break; }
+                }
+            }
+        }
+
+        // Calculate week streak
+        $streak_weeks = 0;
+        if ($uid) {
+            $lastWeekAny = DB::table('footprint_scores')
+                ->where('user_id', $uid)
+                ->max('created_at');
+
+            if ($lastWeekAny) {
+                $anchorW = Carbon::parse($lastWeekAny)->startOfWeek(Carbon::MONDAY);
+                for ($w = 0; $w < 52; $w++) {
+                    $ws = (clone $anchorW)->subWeeks($w);
+                    $we = (clone $ws)->endOfWeek(Carbon::SUNDAY);
+                    $had = DB::table('footprint_scores')
+                        ->where('user_id', $uid)
+                        ->whereBetween('created_at', [$ws, $we])
+                        ->exists();
+                    if ($had) { $streak_weeks++; } else { break; }
+                }
+            }
+        }
+
+        // Calculate composite progress score (0-100)
+        // Weights: Level Progress (30%), Total XP scaled (25%), Day Streak (25%), Week Streak (20%)
+        $level_score = $level_progress_percent * 0.30;
+
+        // XP score: scale by level milestones (level 10 = 50%, level 20 = 75%, level 30+ = 100%)
+        $xp_score = min(100, ($level / 30) * 100) * 0.25;
+
+        // Day streak score: 30 days = 100%
+        $day_streak_score = min(100, ($streak_days / 30) * 100) * 0.25;
+
+        // Week streak score: 12 weeks = 100%
+        $week_streak_score = min(100, ($streak_weeks / 12) * 100) * 0.20;
+
+        $composite_score = $level_score + $xp_score + $day_streak_score + $week_streak_score;
+
+        // Determine planet stage (0-6)
+        // 0: Dying (0-10%), 1: Polluted (10-25%), 2: Healing Start (25-40%),
+        // 3: Improving (40-60%), 4: Healthy (60-80%), 5: Thriving (80-95%), 6: Paradise (95-100%)
+        $planet_stage = 0;
+        if ($composite_score >= 95) $planet_stage = 6;
+        elseif ($composite_score >= 80) $planet_stage = 5;
+        elseif ($composite_score >= 60) $planet_stage = 4;
+        elseif ($composite_score >= 40) $planet_stage = 3;
+        elseif ($composite_score >= 25) $planet_stage = 2;
+        elseif ($composite_score >= 10) $planet_stage = 1;
+
+        $stage_names = [
+            0 => 'Critical State',
+            1 => 'Polluted World',
+            2 => 'Healing Begins',
+            3 => 'Improving',
+            4 => 'Healthy Planet',
+            5 => 'Thriving World',
+            6 => 'Paradise Earth'
+        ];
+
+        $stage_messages = [
+            0 => 'Your planet needs urgent care. Start your sustainability journey!',
+            1 => 'The atmosphere is clearing. Keep going!',
+            2 => 'Forests are returning. Your efforts are making a difference!',
+            3 => 'Oceans are healing. The planet is responding to your actions!',
+            4 => 'Wildlife is thriving. You\'re creating real change!',
+            5 => 'Clean energy powers the world. You\'re a sustainability champion!',
+            6 => 'Perfect harmony achieved! You\'ve created a sustainable paradise!'
+        ];
+
+        return view('visual-progress', [
+            'xp_total' => $xp_total,
+            'level' => $level,
+            'points_total' => $points_total,
+            'streak_days' => $streak_days,
+            'streak_weeks' => $streak_weeks,
+            'level_progress_percent' => round($level_progress_percent, 1),
+            'composite_score' => round($composite_score, 1),
+            'planet_stage' => $planet_stage,
+            'stage_name' => $stage_names[$planet_stage],
+            'stage_message' => $stage_messages[$planet_stage],
+            'next_level' => $next_level,
+            'xp_needed' => $xp_needed,
+        ]);
+    }
 }

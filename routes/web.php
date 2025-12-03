@@ -403,6 +403,7 @@ Route::middleware([\App\Http\Middleware\CheckAuth::class, \App\Http\Middleware\N
     Route::get('/analytics', fn() => view('analytic'))->name('analytics');
     Route::get('/settings', fn() => view('settings'))->name('settings');
     Route::get('/streaks', fn() => view('streakpage'))->name('streaks');
+    Route::get('/visual-progress', [HomeController::class, 'visualProgress'])->name('visual-progress');
     Route::get('/db-test', function () {
         try {
             DB::connection()->getPdo();
@@ -412,6 +413,88 @@ Route::middleware([\App\Http\Middleware\CheckAuth::class, \App\Http\Middleware\N
         }
     })->name('db-test');
 });
+
+// Debug route to test all planet stages - OUTSIDE middleware to avoid conflicts
+Route::middleware('auth')->get('/planet-test/{stage?}', function ($stage = null) {
+    $user = Auth::user();
+
+    // If stage parameter is provided, show that specific stage
+    if ($stage !== null && is_numeric($stage)) {
+        $stage = max(0, min(6, (int)$stage));
+        $composite_score = match($stage) {
+            0 => 5,
+            1 => 15,
+            2 => 30,
+            3 => 50,
+            4 => 70,
+            5 => 85,
+            6 => 98,
+        };
+
+        $stage_names = [
+            0 => 'Critical State',
+            1 => 'Polluted World',
+            2 => 'Healing Begins',
+            3 => 'Improving',
+            4 => 'Healthy Planet',
+            5 => 'Thriving World',
+            6 => 'Paradise Earth'
+        ];
+
+        $stage_messages = [
+            0 => 'Your planet needs urgent care. Start your sustainability journey!',
+            1 => 'The atmosphere is clearing. Keep going!',
+            2 => 'Forests are returning. Your efforts are making a difference!',
+            3 => 'Oceans are healing. The planet is responding to your actions!',
+            4 => 'Wildlife is thriving. You\'re creating real change!',
+            5 => 'Clean energy powers the world. You\'re a sustainability champion!',
+            6 => 'Perfect harmony achieved! You\'ve created a sustainable paradise!'
+        ];
+
+        return view('visual-progress', [
+            'xp_total' => 1000 * $stage,
+            'level' => $stage * 5 + 1,
+            'points_total' => 500 * $stage,
+            'streak_days' => $stage * 5,
+            'streak_weeks' => $stage * 2,
+            'level_progress_percent' => 50,
+            'composite_score' => $composite_score,
+            'planet_stage' => $stage,
+            'stage_name' => $stage_names[$stage],
+            'stage_message' => $stage_messages[$stage],
+            'next_level' => $stage * 5 + 2,
+            'xp_needed' => 500,
+        ]);
+    }
+
+    // If no stage parameter, show all stages in a gallery
+    $stages_data = [];
+    for ($i = 0; $i <= 6; $i++) {
+        $stages_data[] = [
+            'stage' => $i,
+            'name' => match($i) {
+                0 => 'Critical State',
+                1 => 'Polluted World',
+                2 => 'Healing Begins',
+                3 => 'Improving',
+                4 => 'Healthy Planet',
+                5 => 'Thriving World',
+                6 => 'Paradise Earth',
+            },
+            'score' => match($i) {
+                0 => '0-10%',
+                1 => '10-25%',
+                2 => '25-40%',
+                3 => '40-60%',
+                4 => '60-80%',
+                5 => '80-95%',
+                6 => '95-100%',
+            }
+        ];
+    }
+
+    return view('visual-progress-test', ['stages' => $stages_data]);
+})->name('planet.test');
 
 /*
 |--------------------------------------------------------------------------

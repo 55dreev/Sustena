@@ -33,10 +33,7 @@
         <div class="nav-icon">👣</div>
         <span>Footprint Tracker</span>
     </a>
-    <a href="{{ url('/learning-modules') }}" class="nav-item">
-        <div class="nav-icon">📚</div>
-        <span>Learn</span>
-    </a>
+
     <a href="{{ url('/challenge') }}" class="nav-item">
         <div class="nav-icon">🏆</div>
         <span>Challenges</span>
@@ -44,6 +41,10 @@
     <a href="{{ url('/forum') }}" class="nav-item">
         <div class="nav-icon">💬</div>
         <span>MicroForum</span>
+    </a>
+    <a href="{{ url('/visual-progress') }}" class="nav-item">
+        <div class="nav-icon">🌍</div>
+        <span>Your Planet</span>
     </a>
     <a href="{{ url('/profile') }}" class="nav-item">
         <div class="nav-icon">👤</div>
@@ -83,6 +84,9 @@
 </div>
 
             <div class="result-display" id="resultDisplay">
+                <div style="text-align: center; font-size: 48px; margin-bottom: 15px;">
+                    <span id="resultIcon">🌍</span>
+                </div>
                 <div class="result-text">Your estimated weekly carbon footprint:</div>
                 <div class="carbon-value" id="carbonValue">0.0</div>
                 <div class="carbon-unit">kg CO₂</div>
@@ -642,6 +646,20 @@ function showResult() {
   resultDisplay.classList.add('show');
   carbonValue.textContent = totalScore.toFixed(1);
   if (scoreInput) scoreInput.value = totalScore.toFixed(1);
+
+  // Add color-coded feedback based on score
+  const resultIcon = document.getElementById('resultIcon');
+  carbonValue.classList.remove('low', 'medium', 'high');
+  if (totalScore < 50) {
+    carbonValue.classList.add('low');
+    if (resultIcon) resultIcon.textContent = '🌱';
+  } else if (totalScore < 100) {
+    carbonValue.classList.add('medium');
+    if (resultIcon) resultIcon.textContent = '🌍';
+  } else {
+    carbonValue.classList.add('high');
+    if (resultIcon) resultIcon.textContent = '🔥';
+  }
 
   const attemptInput = document.getElementById('attemptInput');
   if (attemptInput) attemptInput.value = attemptId;

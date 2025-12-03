@@ -30,10 +30,6 @@
         <div class="nav-icon">👣</div>
         <span>Footprint Tracker</span>
     </a>
-    <a href="{{ url('/learning-modules') }}" class="nav-item">
-        <div class="nav-icon">📚</div>
-        <span>Learn</span>
-    </a>
     <a href="{{ url('/challenge') }}" class="nav-item">
         <div class="nav-icon">🏆</div>
         <span>Challenges</span>
@@ -41,6 +37,10 @@
     <a href="{{ url('/forum') }}" class="nav-item">
         <div class="nav-icon">💬</div>
         <span>MicroForum</span>
+    </a>
+    <a href="{{ url('/visual-progress') }}" class="nav-item">
+        <div class="nav-icon">🌍</div>
+        <span>Your Planet</span>
     </a>
     <a href="{{ url('/profile') }}" class="nav-item">
         <div class="nav-icon">👤</div>

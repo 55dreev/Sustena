@@ -18,19 +18,19 @@
   }
 
   .start-btn {
-    background-color: #388e3c;
+    background: linear-gradient(135deg, #66bb6a, #4caf50);
     color: white;
     border: none;
     padding: 15px 40px;
     margin-top: 15px;
-    border-radius: 8px;
+    border-radius: 12px;
     cursor: pointer;
     font-size: 18px;
-    transition: background 0.3s;
+    transition: all 0.3s ease;
   }
 
   .start-btn:hover {
-    background-color: #2e7d32;
+    background: linear-gradient(135deg, #4caf50, #388e3c);
   }
 
     .module-container {
@@ -92,17 +92,17 @@
     /* Back button */
     .back-button {
       display: inline-block;
-      background-color: #2e7d32;
+      background: linear-gradient(135deg, #66bb6a, #4caf50);
       color: white;
       padding: 10px 20px;
-      border-radius: 8px;
+      border-radius: 12px;
       text-decoration: none;
       font-weight: 600;
-      transition: background 0.3s;
+      transition: all 0.3s ease;
     }
 
     .back-button:hover {
-      background-color: #256528;
+      background: linear-gradient(135deg, #4caf50, #388e3c);
     }
 
     /* Quiz Button */
@@ -111,19 +111,19 @@
       width: 200px;
       margin: 30px auto 0;
       text-align: center;
-      background-color: #388e3c;
+      background: linear-gradient(135deg, #66bb6a, #4caf50);
       color: white;
       padding: 12px 20px;
-      border-radius: 8px;
+      border-radius: 12px;
       text-decoration: none;
       font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: all 0.3s ease;
     }
 
     .quiz-launch-btn:hover {
-      background-color: #2e7d32;
+      background: linear-gradient(135deg, #4caf50, #388e3c);
     }
 
     /* Modal Background */
@@ -181,19 +181,19 @@
     }
 
     .quiz-buttons button {
-      background-color: #2e7d32;
+      background: linear-gradient(135deg, #66bb6a, #4caf50);
       color: white;
       border: none;
       padding: 10px 20px;
       margin: 0 10px;
-      border-radius: 8px;
+      border-radius: 12px;
       cursor: pointer;
       font-size: 1rem;
-      transition: background 0.3s;
+      transition: all 0.3s ease;
     }
 
     .quiz-buttons button:hover {
-      background-color: #256528;
+      background: linear-gradient(135deg, #4caf50, #388e3c);
     }
 
     .quiz-timer {

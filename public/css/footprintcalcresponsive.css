@@ -23,14 +23,14 @@
     .calculator-title { font-size: 28px; }
     .calculator-subtitle { font-size: 14px; }
     .section-title { font-size: 24px; }
-    .question-text { font-size: 16px; margin-bottom: 80px; }
+    .question-text { font-size: 16px; margin-bottom: 20px; }
     .input-field { font-size: 14px; padding: 12px 18px; }
     .submit-btn { font-size: 16px; padding: 12px 30px; }
-    .category-label { font-size: 28px; }
+    .category-label { font-size: 18px; }
     .slider-label { font-size: 0.8rem; }
 
     /* Farm decorations scaling */
-    .farm-decor { font-size: 3rem; top: 450px; }
+    .farm-decor { font-size: 3rem; bottom: 45px; }
     .farm-decor.cow { left: 8%; }
     .farm-decor.chicken { left: 25%; }
     .farm-decor.tree { left: 55%; }
@@ -48,14 +48,14 @@
     .calculator-title { font-size: 24px; }
     .calculator-subtitle { font-size: 12px; }
     .section-title { font-size: 20px; }
-    .question-text { font-size: 14px; margin-bottom: 60px; }
+    .question-text { font-size: 14px; margin-bottom: 20px; }
     .input-field { font-size: 14px; padding: 12px 15px; }
     .submit-btn { font-size: 14px; padding: 10px 25px; }
-    .category-label { font-size: 24px; }
+    .category-label { font-size: 16px; }
     .slider-label { font-size: 0.75rem; }
 
     /* Farm decorations dynamic positioning */
-    .farm-decor { font-size: 2.5rem; top: 400px; }
+    .farm-decor { font-size: 2.5rem; bottom: 40px; }
     .farm-decor.cow { left: 5%; }
     .farm-decor.chicken { left: 20%; }
     .farm-decor.tree { left: 50%; }
@@ -93,14 +93,14 @@
     .calculator-title { font-size: 20px; }
     .calculator-subtitle { font-size: 12px; }
     .section-title { font-size: 18px; }
-    .question-text { font-size: 12px; margin-bottom: 50px; }
+    .question-text { font-size: 12px; margin-bottom: 20px; }
     .input-field { font-size: 12px; padding: 10px 12px; }
     .submit-btn { font-size: 12px; padding: 8px 20px; }
     .category-label { font-size: 20px; }
     .slider-label { font-size: 0.7rem; }
 
     /* Farm decorations dynamic positioning for small phones */
-    .farm-decor { font-size: 2rem; top: 350px; }
+    .farm-decor { font-size: 2rem; bottom: 35px; }
     .farm-decor.cow { left: 3%; }
     .farm-decor.chicken { left: 15%; }
     .farm-decor.tree { left: 45%; }

@@ -84,7 +84,7 @@
 
         /* Profile Header */
         .profile-header {
-            background: linear-gradient(135deg, #66bb6a 0%, #4caf50 100%);
+            background: linear-gradient(135deg, #87ceeb 0%, #b0e0e6 100%);
             border-radius: 20px;
             padding: 40px;
             margin-bottom: 30px;
@@ -190,11 +190,11 @@
 
         /* Lifestyle Info Card */
         .lifestyle-card {
-            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            background: #ffffff;
             border-radius: 20px;
             padding: 30px;
             margin-bottom: 30px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
             position: relative;
             overflow: hidden;
         }
@@ -334,11 +334,11 @@
 
         /* Impact Card */
         .impact-card {
-            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            background: #ffffff;
             border-radius: 20px;
             padding: 30px;
             margin-bottom: 30px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
             position: relative;
             overflow: hidden;
         }
@@ -350,7 +350,7 @@
             left: 0;
             width: 4px;
             height: 100%;
-            background: linear-gradient(135deg, #ba68c8, #9c27b0);
+            background: linear-gradient(135deg, #66bb6a, #4caf50);
         }
 
         .impact-main {
@@ -361,14 +361,14 @@
         .impact-title {
             font-size: 18px;
             font-weight: bold;
-            color: #7b1fa2;
+            color: #2d5016;
             margin-bottom: 10px;
         }
 
         .impact-value {
             font-size: 32px;
             font-weight: bold;
-            color: #7b1fa2;
+            color: #2d5016;
             margin-bottom: 10px;
         }
 
@@ -390,7 +390,7 @@
         }
 
         .progress-text {
-            color: #7b1fa2;
+            color: #666;
             font-weight: bold;
             font-size: 14px;
         }
@@ -526,12 +526,12 @@
             }
         }
         .get-score-btn {
-     position: relative; /* or absolute if needed */
-    top: 20px;  /* moves it 50px lower from original position */
-    background-color: #667fbb; /* green, matches your theme */
+     position: relative;
+    top: 20px;
+    background: linear-gradient(135deg, #66bb6a, #4caf50);
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 12px;
     padding: 10px 20px;
     font-size: 16px;
     font-weight: 500;
@@ -542,7 +542,7 @@
 
 
 .get-score-btn:hover {
-    background-color: #225373; /* slightly darker on hover */
+    background: linear-gradient(135deg, #4caf50, #388e3c);
     transform: translateY(-2px);
     box-shadow: 0 6px 12px rgba(0,0,0,0.25);
 }
@@ -568,7 +568,7 @@
     .modal button{border:0;border-radius:8px;padding:10px 12px;cursor:pointer}
     .save-btn{background:#2ecc71;color:#fff}
     .ghost-btn{background:#eef2f6}
-    .primary-btn{background:#3498db;color:#fff}
+    .primary-btn{background: linear-gradient(135deg, #66bb6a, #4caf50);color:#fff;border-radius:12px}
 
     .progress-bar{width:100%;height:8px;background:#f1f5d0;border-radius:999px;overflow:hidden;margin:10px 0}
     .progress-fill{height:100%;background:linear-gradient(90deg,#fffacd,#ffeb3b);width:0%}
