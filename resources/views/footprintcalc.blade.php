@@ -13,7 +13,11 @@
 
 <body class="footprint-calc-page">
 
-  <div class="mobile-hamburger" onclick="toggleMobileSidebar()">☰</div>
+  <!-- Sidebar Backdrop -->
+<div class="sidebar-backdrop" id="sidebar-backdrop" onclick="closeSidebar()"></div>
+
+<!-- Sidebar Toggle Button -->
+<button class="mobile-hamburger" id="hamburger-btn" onclick="toggleMobileSidebar()" aria-label="Toggle navigation menu" aria-expanded="false">☰</button>
 
 <div class="sidebar" id="sidebar">
    
@@ -733,10 +737,34 @@ updateProgress();
 function toggleMobileSidebar() {
     const sidebar = document.querySelector('.sidebar');
     const body = document.body;
+    const hamburger = document.getElementById('hamburger-btn');
+    const isOpen = sidebar.classList.contains('open');
 
     sidebar.classList.toggle('open');
-    body.classList.toggle('sidebar-open');  // <- THIS IS NEW
+    body.classList.toggle('sidebar-open');
+
+    // Update aria-expanded for accessibility
+    hamburger.setAttribute('aria-expanded', !isOpen);
 }
+
+function closeSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    const body = document.body;
+    const hamburger = document.getElementById('hamburger-btn');
+
+    if (sidebar.classList.contains('open')) {
+        sidebar.classList.remove('open');
+        body.classList.remove('sidebar-open');
+        hamburger.setAttribute('aria-expanded', 'false');
+    }
+}
+
+// Close sidebar when clicking on nav items
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', closeSidebar);
+    });
+});
 
 </script>
 </body>

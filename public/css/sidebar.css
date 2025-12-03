@@ -5,15 +5,15 @@
   width: 220px;
   background: linear-gradient(180deg, #4a7c59 0%, #2d5a3d 100%);
   padding: 20px;
-  box-shadow: 2px 0 10px rgba(0,0,0,0.25);
+  box-shadow: 2px 0 20px rgba(0,0,0,0.3);
   position: fixed;
   top: 0;
   left: 0;
   height: 100vh !important;
   overflow-y: auto;
   overflow-x: hidden;
-  transition: transform 0.3s ease, width 0.3s ease;
-  z-index: 4000 !important;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 4999 !important;
 }
 
 /* =======================================
@@ -43,20 +43,98 @@
 }
 
 /* =======================================
-   HAMBURGER BUTTON
+   BACKDROP OVERLAY (for mobile)
+======================================= */
+.sidebar-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: calc(100% - 180px); /* Leave space for floating icons on the right */
+  height: 100%;
+  background: rgba(0, 0, 0, 0);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 4998;
+}
+
+/* On mobile, backdrop can be full width since icons are always visible */
+@media (max-width: 1024px) {
+  .sidebar-backdrop {
+    width: 100%;
+  }
+}
+
+body.sidebar-open .sidebar-backdrop {
+  background: rgba(0, 0, 0, 0); /* No darkening effect */
+  opacity: 0; /* Keep backdrop invisible */
+  pointer-events: none; /* Never block clicks */
+}
+
+/* =======================================
+   HAMBURGER BUTTON (Floating)
 ======================================= */
 .mobile-hamburger {
   position: fixed;
-  top: 15px;
+  top: 10px; /* Align with top of page */
   left: 15px;
-  font-size: 26px;
-  background: rgba(0,0,0,0.8);
+  width: 45px; /* Slightly smaller */
+  height: 45px;
+  background: linear-gradient(135deg, #4a7c59 0%, #2d5a3d 100%);
   color: white;
-  padding: 10px 14px;
-  border-radius: 10px;
-  z-index: 5000 !important; /* always above sidebar */
+  border: none;
+  border-radius: 50%;
+  z-index: 5000 !important;
   cursor: pointer;
-  display: block !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  box-shadow: 0 4px 15px rgba(74, 124, 89, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.mobile-hamburger:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(74, 124, 89, 0.4);
+}
+
+.mobile-hamburger:active {
+  transform: scale(0.95);
+}
+
+body.sidebar-open .mobile-hamburger {
+  top: 15px; /* Slightly lower inside sidebar */
+  left: 155px; /* Position inside sidebar with more spacing from SUSTENA text */
+  background: linear-gradient(135deg, #66bb6a 0%, #4a7c59 100%);
+  box-shadow: 0 4px 15px rgba(102, 187, 106, 0.4);
+}
+
+/* Adjust for mobile screens with smaller sidebar */
+@media (max-width: 480px) {
+  body.sidebar-open .mobile-hamburger {
+    left: 105px; /* Adjust for 170px sidebar width on mobile with spacing from SUSTENA text */
+  }
+}
+
+/* =======================================
+   MAIN CONTENT PADDING
+======================================= */
+/* Add equal padding on both sides to center content */
+.main-content {
+  padding-top: 70px !important; /* Space for hamburger button */
+  padding-left: 75px !important; /* Space on the left for hamburger */
+  padding-right: 75px !important; /* Equal space on the right for centering */
+}
+
+/* Reduce padding on mobile for smaller screens */
+@media (max-width: 768px) {
+  .main-content {
+    padding-left: 70px !important;
+    padding-right: 70px !important;
+  }
 }
 
 /* =======================================
@@ -126,7 +204,7 @@
     right: 20px;
     display: flex;
     gap: 10px;
-    z-index: 3000;
+    z-index: 5001; /* Above backdrop (4998), sidebar (4999), and hamburger (5000) */
     transition: all 0.25s ease-in-out;
 }
 
@@ -150,6 +228,11 @@
         pointer-events: auto;
         transform: translateX(0);
     }
+
+    /* Add padding to main-content when sidebar is open to prevent floating icons from overlaying */
+    body.sidebar-open .main-content {
+        padding-top: 70px !important;
+    }
 }
 
 /* =========================================================
@@ -170,5 +253,41 @@
     body.sidebar-open .floating-icons {
         opacity: 1 !important;
         transform: translateX(0) !important;
+    }
+
+    /* Add padding to main-content to prevent floating icons from overlaying */
+    .main-content {
+        padding-top: 70px !important;
+    }
+}
+
+/* =======================================
+   GLOBAL OVERRIDE - Applied to ALL pages
+   This ensures hamburger button doesn't overlap content
+======================================= */
+body .main-content,
+div.main-content,
+.main-content {
+    padding-top: 70px !important;
+    padding-left: 75px !important;
+    padding-right: 75px !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    body .main-content,
+    div.main-content,
+    .main-content {
+        padding-left: 70px !important;
+        padding-right: 70px !important;
+    }
+}
+
+@media (max-width: 576px) {
+    body .main-content,
+    div.main-content,
+    .main-content {
+        padding-left: 65px !important;
+        padding-right: 65px !important;
     }
 }

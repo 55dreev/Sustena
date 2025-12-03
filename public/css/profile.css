@@ -19,7 +19,7 @@
 .main-content {
     margin-left: 200px;
     transition: margin-left 0.3s ease;
-    padding: 20px;
+    padding: 70px 75px 20px 75px; /* top right bottom left - space for hamburger button and centered content */
 }
 
 .main-content.expanded {
@@ -79,7 +79,7 @@
         .main-content {
             margin-left: 200px;
             flex: 1;
-            padding: 20px;
+            padding: 70px 75px 20px 75px; /* space for hamburger button and centered content */
         }
 
         /* Profile Header */
@@ -482,7 +482,7 @@
             
             .main-content {
                 margin-left: 60px;
-                padding: 15px;
+                padding: 70px 70px 15px 70px; /* space for hamburger on smaller screens */
             }
             
             .logo-text, .nav-item span {
@@ -728,7 +728,7 @@ body {
 .main-content {
     max-width: 480px;          /* match your mobile app center layout */
     width: 100%;
-    padding: 20px;
+    padding: 70px 70px 20px 70px; /* top right bottom left - space for hamburger */
     margin: 0 auto !important; /* center it ALWAYS */
     transform: none !important;
 }
@@ -750,7 +750,7 @@ body {
 @media (min-width: 1024px) {
     .main-content {
         max-width: 1200px !important; /* adjust this to your preferred width */
-        padding: 20px 60px !important; /* optional nice spacing */
+        padding: 70px 75px 20px 75px !important; /* space for hamburger button and centered content */
     }
 }
 @media (min-width: 1025px) {

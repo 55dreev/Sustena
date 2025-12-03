@@ -2,7 +2,7 @@
 @media (max-width: 992px) {
     .main-content {
         margin-left: 60px; /* smaller sidebar */
-        padding: 15px;
+        padding: 70px 70px 15px 70px; /* space for hamburger button */
     }
 
     .profile-header {
@@ -63,7 +63,7 @@
 
     .main-content {
         margin-left: 50px;
-        padding: 10px;
+        padding: 70px 65px 10px 65px; /* space for hamburger button on mobile */
     }
 
     .profile-header {
