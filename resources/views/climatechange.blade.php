@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="{{ asset('css/learningmod.css') }}">
   <link rel="stylesheet" href="{{ asset('css/climatechange.css') }}">
   <link rel="stylesheet" href="{{ asset('css/climatechangeresponsive.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Arial', sans-serif;

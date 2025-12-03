@@ -33,6 +33,21 @@
     background: linear-gradient(135deg, #4caf50, #388e3c);
   }
 
+  .header-title {
+  font-size: 52px;
+  font-family: 'Press Start 2P', cursive;
+  text-transform: uppercase; 
+  color: white;
+  text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+  z-index: 1;
+  position: relative;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
     .module-container {
       max-width: 1000px;
       margin: 20px auto;

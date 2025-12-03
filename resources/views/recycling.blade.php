@@ -7,364 +7,8 @@
   <link rel="stylesheet" href="{{ asset('css/learningmod.css') }}">
   <link rel="stylesheet" href="{{ asset('css/recycling.css') }}">
   <link rel="stylesheet" href="{{ asset('css/recyclingresponsive.css') }}">
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      background: linear-gradient(135deg, #a8e6cf 0%, #88d8c0 100%);
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
-    }
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
-    .recycle-container {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-
-    /* Animated Header */
-    .recycle-header {
-      background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
-      border-radius: 25px;
-      padding: 50px 40px;
-      text-align: center;
-      margin-bottom: 40px;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-    }
-
-    .recycle-header::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="3" fill="white" opacity="0.3"/><circle cx="80" cy="40" r="2" fill="white" opacity="0.2"/><circle cx="40" cy="70" r="2.5" fill="white" opacity="0.25"/></svg>');
-      animation: float 20s infinite linear;
-    }
-
-    @keyframes float {
-      0% { transform: translateX(-100%) translateY(-100%) rotate(0deg); }
-      100% { transform: translateX(0%) translateY(0%) rotate(360deg); }
-    }
-
-    .recycle-icons {
-      position: absolute;
-      font-size: 35px;
-      opacity: 0.7;
-      animation: spin 8s infinite linear;
-    }
-
-    .icon-1 { top: 20px; left: 10%; animation-delay: 0s; }
-    .icon-2 { top: 30px; right: 10%; animation-delay: 2s; }
-    .icon-3 { bottom: 30px; left: 15%; animation-delay: 4s; }
-    .icon-4 { bottom: 40px; right: 15%; animation-delay: 6s; }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    .header-title {
-      font-size: 52px;
-      font-weight: bold;
-      color: white;
-      text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
-      z-index: 1;
-      position: relative;
-      margin-bottom: 15px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 15px;
-    }
-
-    .header-subtitle {
-      background: rgba(255,255,255,0.95);
-      color: #1565C0;
-      padding: 18px 35px;
-      border-radius: 30px;
-      font-size: 18px;
-      font-weight: 600;
-      display: inline-block;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-      z-index: 1;
-      position: relative;
-    }
-
-    .xp-badge {
-      position: absolute;
-      top: 25px;
-      right: 25px;
-      background: linear-gradient(135deg, #ffd54f, #ffb300);
-      color: #333;
-      padding: 12px 20px;
-      border-radius: 25px;
-      font-size: 16px;
-      font-weight: bold;
-      box-shadow: 0 4px 15px rgba(255,213,79,0.4);
-      z-index: 2;
-    }
-
-    /* Info Cards Grid */
-    .info-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 25px;
-      margin-bottom: 40px;
-    }
-
-    .info-card {
-      background: rgba(255,255,255,0.95);
-      border-radius: 20px;
-      padding: 30px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.12);
-      transition: all 0.3s ease;
-      border: 3px solid transparent;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .info-card::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: linear-gradient(45deg, transparent, rgba(33,150,243,0.1), transparent);
-      transform: rotate(45deg);
-      transition: all 0.5s ease;
-      opacity: 0;
-    }
-
-    .info-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-      border-color: #2196F3;
-    }
-
-    .info-card:hover::before {
-      opacity: 1;
-      transform: rotate(45deg) translate(50%, 50%);
-    }
-
-    .card-icon {
-      width: 70px;
-      height: 70px;
-      background: linear-gradient(135deg, #2196F3, #1976D2);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 35px;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 15px rgba(33,150,243,0.3);
-    }
-
-    .info-card h2 {
-      font-size: 24px;
-      color: #1565C0;
-      margin-bottom: 15px;
-      font-weight: bold;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .info-card p {
-      color: #555;
-      line-height: 1.7;
-      font-size: 15px;
-    }
-
-    .info-card ul {
-      list-style: none;
-      padding: 0;
-      margin: 15px 0;
-    }
-
-    .info-card ul li {
-      color: #555;
-      padding: 10px 0;
-      padding-left: 30px;
-      position: relative;
-      line-height: 1.6;
-    }
-
-    .info-card ul li::before {
-      content: '♻️';
-      position: absolute;
-      left: 0;
-      font-size: 18px;
-    }
-
-    /* Video Section */
-    .video-section {
-      background: rgba(255,255,255,0.95);
-      border-radius: 20px;
-      padding: 35px;
-      margin-bottom: 30px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.12);
-      text-align: center;
-    }
-
-    .video-section h2 {
-      font-size: 28px;
-      color: #1565C0;
-      margin-bottom: 25px;
-      font-weight: bold;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .video-container {
-      position: relative;
-      border-radius: 15px;
-      overflow: hidden;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-    }
-
-    .video-container iframe {
-      width: 100%;
-      max-width: 800px;
-      height: 450px;
-      border: none;
-      border-radius: 15px;
-    }
-
-    /* Game Challenge Card */
-    .game-challenge {
-      background: linear-gradient(135deg, #42A5F5 0%, #1E88E5 100%);
-      border-radius: 25px;
-      padding: 40px;
-      text-align: center;
-      margin-bottom: 30px;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 10px 35px rgba(0,0,0,0.2);
-      border: 4px solid rgba(255,255,255,0.3);
-    }
-
-    .game-challenge h2 {
-      font-size: 32px;
-      color: white;
-      margin-bottom: 20px;
-      font-weight: bold;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    }
-
-    .play-button {
-      background: linear-gradient(135deg, #66bb6a, #4caf50);
-      color: white;
-      border: none;
-      padding: 18px 45px;
-      border-radius: 30px;
-      font-size: 20px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      box-shadow: 0 6px 20px rgba(102,187,106,0.4);
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .play-button:hover {
-      transform: translateY(-4px) scale(1.05);
-      box-shadow: 0 10px 30px rgba(102,187,106,0.5);
-    }
-
-    .play-button:active {
-      transform: translateY(-2px) scale(1.02);
-    }
-
-    .back-section {
-      text-align: center;
-      margin-top: 30px;
-    }
-
-    .back-button {
-      background: linear-gradient(135deg, #1976D2, #1565C0);
-      color: white;
-      padding: 15px 35px;
-      border-radius: 25px;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 16px;
-      transition: all 0.3s ease;
-      display: inline-block;
-      box-shadow: 0 4px 15px rgba(25,118,210,0.3);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      border: none;
-      cursor: pointer;
-    }
-
-    .back-button:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 20px rgba(25,118,210,0.4);
-    }
-
-    .progress-dots {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      margin-top: 20px;
-    }
-
-    .dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.4);
-      transition: all 0.3s ease;
-    }
-
-    .dot.active {
-      background: #66bb6a;
-      box-shadow: 0 0 10px rgba(102,187,106,0.6);
-    }
-
-    @media (max-width: 768px) {
-      .header-title {
-        font-size: 36px;
-      }
-
-      .header-subtitle {
-        font-size: 16px;
-        padding: 14px 25px;
-      }
-
-      .xp-badge {
-        font-size: 14px;
-        padding: 10px 16px;
-        top: 15px;
-        right: 15px;
-      }
-
-      .info-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-      }
-
-      .video-container iframe {
-        height: 250px;
-      }
-
-      .game-challenge h2 {
-        font-size: 24px;
-      }
-
-      .play-button {
-        font-size: 16px;
-        padding: 14px 30px;
-      }
-    }
-  </style>
 </head>
 <body>
   <div class="recycle-container">
@@ -447,6 +91,12 @@
       </div>
     </div>
 
+    <audio id="gameMusic" loop>
+    <source src="{{ asset('sounds/TrashSortGame.mp3') }}" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+
+
     <div class="back-section">
       <a href="{{ url('/learning-modules') }}" class="back-button">← Back to Learning Modules</a>
     </div>
@@ -472,6 +122,7 @@
       </div>
     </div>
   </div>
+
 
   <!-- Game Modal -->
   <div id="gameModal" class="modal">
@@ -513,447 +164,351 @@
     </div>
   </div>
 
-  <style>
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.8);
-      justify-content: center;
-      align-items: center;
-      backdrop-filter: blur(5px);
-    }
-
-    .modal-content {
-      background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%);
-      padding: 30px;
-      border-radius: 25px;
-      text-align: center;
-      position: relative;
-      box-shadow: 0 15px 50px rgba(0,0,0,0.3);
-      border: 4px solid #2196F3;
-      max-width: 90vw;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-
-    .modal-content h2 {
-      color: #1565C0;
-      margin-bottom: 20px;
-      font-size: 28px;
-    }
-
-    .close-game-btn {
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      background: rgba(255,255,255,0.9);
-      border: none;
-      width: 35px;
-      height: 35px;
-      border-radius: 50%;
-      font-size: 28px;
-      font-weight: bold;
-      color: #1565C0;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      z-index: 10;
-    }
-
-    .close-game-btn:hover {
-      background: #ff5252;
-      color: white;
-      transform: rotate(90deg) scale(1.1);
-    }
-
-    .game-area {
-      min-width: 320px;
-      min-height: 500px;
-    }
-
-    .game-header {
-      display: flex;
-      justify-content: space-around;
-      margin-bottom: 20px;
-      font-size: 18px;
-      font-weight: bold;
-      color: #1565C0;
-    }
-
-    .bins {
-      display: flex;
-      justify-content: space-around;
-      margin: 20px 0;
-      gap: 15px;
-    }
-
-    .bin-area {
-      text-align: center;
-    }
-
-    .bin-area p {
-      font-size: 14px;
-      font-weight: bold;
-      color: #1565C0;
-      margin-top: 10px;
-    }
-
-    .bin {
-      width: 120px;
-      height: 120px;
-      cursor: pointer;
-      transition: transform 0.3s ease;
-    }
-
-    .bin:hover {
-      transform: scale(1.1);
-    }
-
-    .items-area {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      flex-wrap: wrap;
-      min-height: 150px;
-      padding: 20px;
-      background: rgba(33,150,243,0.1);
-      border-radius: 15px;
-      margin-bottom: 15px;
-    }
-
-    .draggable-item {
-      width: 80px;
-      height: 80px;
-      cursor: grab;
-      cursor: -webkit-grab;
-      transition: transform 0.2s ease;
-      touch-action: none;
-    }
-
-    .draggable-item:active {
-      cursor: grabbing;
-      cursor: -webkit-grabbing;
-    }
-
-    .draggable-item:hover {
-      transform: scale(1.1);
-    }
-
-    .game-controls {
-      margin-top: 15px;
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-    }
-
-    .game-control-btn {
-      background: linear-gradient(135deg, #2196F3, #1976D2);
-      color: white;
-      border: none;
-      padding: 12px 25px;
-      border-radius: 20px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(33,150,243,0.3);
-    }
-
-    .game-control-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(33,150,243,0.4);
-    }
-
-    .exit-btn {
-      background: linear-gradient(135deg, #ff5252, #d32f2f) !important;
-      box-shadow: 0 4px 15px rgba(255,82,82,0.3) !important;
-    }
-
-    .exit-btn:hover {
-      box-shadow: 0 6px 20px rgba(255,82,82,0.4) !important;
-    }
-
-    .restart-btn {
-      background: linear-gradient(135deg, #66bb6a, #4caf50) !important;
-      box-shadow: 0 4px 15px rgba(102,187,106,0.3) !important;
-    }
-
-    .restart-btn:hover {
-      box-shadow: 0 6px 20px rgba(102,187,106,0.4) !important;
-    }
-
-    .game-over-content {
-      padding: 40px;
-    }
-
-    .game-over-content h2 {
-      font-size: 36px;
-      margin-bottom: 25px;
-    }
-
-    .final-score-text {
-      font-size: 24px;
-      color: #555;
-      margin-bottom: 30px;
-    }
-
-    .score-number {
-      font-size: 36px;
-      font-weight: bold;
-      color: #2196F3;
-    }
-
-    .game-over-buttons {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      flex-wrap: wrap;
-    }
-
-    /* Mobile Responsive */
-    @media (max-width: 768px) {
-      .modal-content {
-        padding: 20px;
-      }
-
-      .game-area {
-        min-width: 280px;
-      }
-
-      .game-header {
-        font-size: 16px;
-      }
-
-      .bins {
-        flex-direction: column;
-        align-items: center;
-        gap: 20px;
-      }
-
-      .bin {
-        width: 100px;
-        height: 100px;
-      }
-
-      .items-area {
-        min-height: 120px;
-        padding: 15px;
-        gap: 10px;
-      }
-
-      .draggable-item {
-        width: 60px;
-        height: 60px;
-      }
-
-      .game-control-btn {
-        padding: 10px 20px;
-        font-size: 14px;
-      }
-
-      .game-over-content {
-        padding: 25px;
-      }
-
-      .game-over-content h2 {
-        font-size: 28px;
-      }
-
-      .final-score-text {
-        font-size: 20px;
-      }
-
-      .score-number {
-        font-size: 28px;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .bin {
-        width: 80px;
-        height: 80px;
-      }
-
-      .draggable-item {
-        width: 50px;
-        height: 50px;
-      }
-    }
-  </style>
-
   <script>
-    const items = [
-      // Recyclables
-      { name: 'Plastic Bottle', img: '{{ asset('assets/pbottle.png') }}', type: 'recycle' },
-      { name: 'Can', img: '{{ asset('assets/can.png') }}', type: 'recycle' },
-      { name: 'Box', img: '{{ asset('assets/box.png') }}', type: 'recycle' },
-      { name: 'Glass', img: '{{ asset('assets/glass.png') }}', type: 'recycle' },
-      { name: 'Newspaper', img: '{{ asset('assets/newspaper.png') }}', type: 'recycle' },
+const items = [
+  { name: 'Plastic Bottle', img: '{{ asset("assets/pbottle.png") }}', type: 'recycle' },
+  { name: 'Can', img: '{{ asset("assets/can.png") }}', type: 'recycle' },
+  { name: 'Box', img: '{{ asset("assets/box.png") }}', type: 'recycle' },
+  { name: 'Glass', img: '{{ asset("assets/glass.png") }}', type: 'recycle' },
+  { name: 'Newspaper', img: '{{ asset("assets/newspaper.png") }}', type: 'recycle' },
+  { name: 'Old Food', img: '{{ asset("assets/oldfood.png") }}', type: 'trash' },
+  { name: 'Tissue', img: '{{ asset("assets/tissue.png") }}', type: 'trash' },
+  { name: 'Plastic Cup', img: '{{ asset("assets/plasticup.png") }}', type: 'trash' },
+  { name: 'Plastic Utensils', img: '{{ asset("assets/plasticutens.png") }}', type: 'trash' }
+];
 
-      // Trash
-      { name: 'Old Food', img: '{{ asset('assets/oldfood.png') }}', type: 'trash' },
-      { name: 'Tissue', img: '{{ asset('assets/tissue.png') }}', type: 'trash' },
-      { name: 'Plastic Cup', img: '{{ asset('assets/plasticup.png') }}', type: 'trash' },
-      { name: 'Plastic Utensils', img: '{{ asset('assets/plasticutens.png') }}', type: 'trash' }
-    ];
+let score = 0;
+let timeLeft = 60;
+let timer;
+let usedItems = [];
+let currentItem = null; // <-- track currently dragged/touched item
 
-    let score = 0;
-    let timeLeft = 60;
-    let timer;
+const instructionModal = document.getElementById('instructionModal');
+const gameModal = document.getElementById('gameModal');
+const gameOverModal = document.getElementById('gameOverModal');
+const itemsArea = document.getElementById('itemsArea');
+const audio = new Audio('{{ asset("sounds/TrashSortGame.mp3") }}');
 
-    const instructionModal = document.getElementById('instructionModal');
-    const gameModal = document.getElementById('gameModal');
-    const gameOverModal = document.getElementById('gameOverModal');
-    const itemsArea = document.getElementById('itemsArea');
+audio.volume = 0.4; // 40% volume
+audio.loop = true;
 
-    // Open Instructions
-    document.getElementById('startGameBtn').addEventListener('click', () => {
-      instructionModal.style.display = 'flex';
-    });
+document.getElementById('startGameBtn').addEventListener('click', () => {
+  instructionModal.style.display = 'flex';
+  audio.play();
+});
 
-    function startGame() {
-      instructionModal.style.display = 'none';
-      gameModal.style.display = 'flex';
-      score = 0;
-      timeLeft = 60;
-      document.getElementById('score').textContent = score;
-      document.getElementById('time').textContent = timeLeft;
-      spawnItems();
-      timer = setInterval(updateTimer, 1000);
-    }
-
-    function updateTimer() {
-      if (timeLeft > 0) {
-        timeLeft--;
-        document.getElementById('time').textContent = timeLeft;
-      } else {
-        endGame();
-      }
-    }
-
-    function enableTouchDrag(img) {
-  img.addEventListener("touchstart", (e) => {
-    touchItem = img;
-    img.classList.add("dragging");
-  });
-
-  img.addEventListener("touchmove", (e) => {
-    if (!touchItem) return;
-
-    const touch = e.touches[0];
-    img.style.position = "fixed";
-    img.style.left = (touch.clientX - img.width / 2) + "px";
-    img.style.top = (touch.clientY - img.height / 2) + "px";
-
-    e.preventDefault();
-  });
-
-  img.addEventListener("touchend", (e) => {
-    if (!touchItem) return;
-
-    const touch = e.changedTouches[0];
-    const dropX = touch.clientX;
-    const dropY = touch.clientY;
-
-    img.classList.remove("dragging");
-
-    // Check bin collision
-    document.querySelectorAll(".bin").forEach(bin => {
-      const rect = bin.getBoundingClientRect();
-
-      if (
-        dropX > rect.left &&
-        dropX < rect.right &&
-        dropY > rect.top &&
-        dropY < rect.bottom
-      ) {
-        // Drop successful
-        if (img.dataset.type === bin.dataset.type) {
-          score++;
-        } else {
-          score--;
-        }
-        document.getElementById("score").textContent = score;
-        spawnItems();
-      }
-    });
-
-    touchItem = null;
-    img.style.position = "";
-    img.style.left = "";
-    img.style.top = "";
-  });
+function startGame() {
+  instructionModal.style.display = 'none';
+  gameModal.style.display = 'flex';
+  score = 0;
+  timeLeft = 60;
+  usedItems = [];
+  document.getElementById('score').textContent = score;
+  document.getElementById('time').textContent = timeLeft;
+  spawnItems();
+  timer = setInterval(updateTimer, 1000);
 }
 
-    function spawnItems() {
-  itemsArea.innerHTML = '';
+function updateTimer() {
+  if (timeLeft > 0) {
+    timeLeft--;
+    document.getElementById('time').textContent = timeLeft;
+  } else {
+    endGame();
+  }
+}
 
-  // Pick 1 random item
-  const randomItem = items[Math.floor(Math.random() * items.length)];
+function spawnItems() {
+  itemsArea.innerHTML = '';
+  currentItem = null; // clear current tracking
+  if (usedItems.length === items.length) usedItems = [];
+  
+  let randomItem;
+  do {
+    randomItem = items[Math.floor(Math.random() * items.length)];
+  } while (usedItems.includes(randomItem));
+
+  usedItems.push(randomItem);
 
   const img = document.createElement('img');
   img.src = randomItem.img;
   img.classList.add('draggable-item');
+  img.style.width = '100px';
+  img.style.height = '100px';
   img.draggable = true;
   img.dataset.type = randomItem.type;
 
-  // Desktop drag
-  img.addEventListener('dragstart', function(ev) {
+  // track which item is being dragged (mouse)
+  img.addEventListener('dragstart', (ev) => {
+    currentItem = ev.target;
     ev.dataTransfer.setData("type", ev.target.dataset.type);
   });
 
-  // Mobile touch drag
+  // Also track dragend to be safe
+  img.addEventListener('dragend', () => {
+    // do not immediately clear currentItem here; handlers will remove it when appropriate
+  });
+
   enableTouchDrag(img);
 
   itemsArea.appendChild(img);
 }
 
+function enableTouchDrag(img) {
+  let touchItem = null;
 
+  img.addEventListener("touchstart", (e) => {
+    touchItem = img;
+    currentItem = img; // track for touch as well
+  });
 
-    document.querySelectorAll('.bin').forEach(bin => {
-      bin.addEventListener('dragover', (ev) => ev.preventDefault());
+  img.addEventListener("touchmove", (e) => {
+    if (!touchItem) return;
+    const touch = e.touches[0];
+    img.style.position = "fixed";
+    img.style.left = (touch.clientX - img.width / 2) + "px";
+    img.style.top = (touch.clientY - img.height / 2) + "px";
+    e.preventDefault();
+  });
 
-      bin.addEventListener('drop', (ev) => {
-        ev.preventDefault();
-        const droppedType = ev.dataTransfer.getData("type");
+  img.addEventListener("touchend", (e) => {
+    if (!touchItem) return;
+    const touch = e.changedTouches[0];
+    // pass the image explicitly (some older code calls checkDrop with 3 args)
+    checkDrop(touch.clientX, touch.clientY, touchItem);
+    touchItem = null;
+    // don't immediately reset styles — checkDrop/drop handlers will handle removal/animation
+  });
+}
 
-        if (droppedType === bin.dataset.type) {
-          score++;
-        } else {
-          score--;
-        }
+// checkDrop accepts optional passedItem (for touch); if not given uses currentItem
+function checkDrop(x, y, passedItem = null) {
+  const bins = document.querySelectorAll('.bin');
+  const scoreDisplay = document.getElementById('score');
+  const item = passedItem || currentItem;
 
-        document.getElementById('score').textContent = score;
+  if (!item) {
+    // nothing to process
+    return;
+  }
+
+  for (let bin of bins) {
+    const rect = bin.getBoundingClientRect();
+
+    if (
+      x > rect.left &&
+      x < rect.right &&
+      y > rect.top &&
+      y < rect.bottom
+    ) {
+      const itemType = item.dataset.type;
+
+      if (itemType === bin.dataset.type) {
+        // CORRECT
+        score++;
+        dropItemToBin(item, bin);
+        createStars(bin);
+        shakeBin(bin);
+        highlightBinGreen(bin);
+      } else {
+        // WRONG
+        score--;
+        // fling away instead of dropping inside
+        flingWrongItem(item);
+        moveBin(bin, 'right');
+        highlightBinRed(bin);
+      }
+
+      scoreDisplay.textContent = score;
+      // spawn next after animation finished
+      setTimeout(() => {
         spawnItems();
-      });
+      }, 650);
+      currentItem = null;
+      return;
+    }
+  }
+
+  // If drop outside any bin -> just remove the item and spawn next
+  if (item && item.parentNode) item.remove();
+  currentItem = null;
+  spawnItems();
+}
+
+// fling the wrong item away
+function flingWrongItem(item) {
+  const randomX = (Math.random() * 300 - 150); // -150 to +150 sideways
+  const randomY = (Math.random() * -200 - 100); // upward arc
+
+  // ensure we have a starting rect
+  const startRect = item.getBoundingClientRect();
+  item.style.position = 'fixed';
+  item.style.left = `${startRect.left}px`;
+  item.style.top = `${startRect.top}px`;
+  item.style.transition = 'all 0.6s cubic-bezier(.17,.67,.83,.67)';
+  item.style.pointerEvents = 'none';
+
+  // tiny delay to allow the browser to apply fixed position before animating
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      item.style.left = (startRect.left + randomX) + 'px';
+      item.style.top = (startRect.top + randomY) + 'px';
+      item.style.transform = 'rotate(' + (Math.random() * 180 - 90) + 'deg) scale(0.8)';
+      item.style.opacity = '0';
     });
+  });
 
-    function endGame() {
-      clearInterval(timer);
-      gameModal.style.display = 'none';
-      document.getElementById('finalScore').textContent = score;
-      gameOverModal.style.display = 'flex';
+  setTimeout(() => {
+    if (item && item.parentNode) item.remove();
+  }, 650);
+}
+
+function createStars(bin) {
+  for (let i = 0; i < 6; i++) {
+    const star = document.createElement('div');
+    star.textContent = '⭐';
+    star.style.position = 'fixed';
+    const rect = bin.getBoundingClientRect();
+    star.style.left = (rect.left + rect.width/2) + 'px';
+    star.style.top = (rect.top + rect.height/2) + 'px';
+    star.style.fontSize = `${14 + Math.random()*30}px`;
+    star.style.opacity = '1';
+    star.style.transition = 'all 0.9s ease-out';
+    star.style.pointerEvents = 'none';
+    document.body.appendChild(star);
+
+    setTimeout(() => {
+      star.style.left = (rect.left + rect.width/2 + (Math.random()*220-110)) + 'px';
+      star.style.top = (rect.top + rect.height/2 - 160 - Math.random()*60) + 'px';
+      star.style.opacity = '0';
+      star.style.transform = `rotate(${Math.random()*720}deg) scale(${1 + Math.random()})`;
+    }, 30);
+
+    setTimeout(() => star.remove(), 950);
+  }
+}
+
+function highlightBinRed(bin) {
+  bin.style.transition = '0.35s';
+  bin.style.filter = 'drop-shadow(0 0 18px red)';
+  setTimeout(() => { if (bin) bin.style.filter = ''; }, 500);
+}
+
+function highlightBinGreen(bin) {
+  bin.style.transition = '0.35s';
+  bin.style.filter = 'drop-shadow(0 0 20px lime)';
+  setTimeout(() => { if (bin) bin.style.filter = ''; }, 500);
+}
+
+function dropItemToBin(item, bin) {
+  const rect = bin.getBoundingClientRect();
+  const binCenterX = rect.left + rect.width / 2 - item.width / 2;
+  const binCenterYTop = rect.top - 80; // Hover above bin
+  const binCenterYInside = rect.top + rect.height / 2 - item.height / 2; // Inside bin
+
+  // move the actual element smoothly
+  const startRect = item.getBoundingClientRect();
+  item.style.position = 'fixed';
+  item.style.left = `${startRect.left}px`;
+  item.style.top = `${startRect.top}px`;
+  item.style.pointerEvents = 'none';
+  item.style.transition = 'all 0.25s ease-out';
+  item.style.transform = 'scale(1)';
+  item.style.opacity = '1';
+
+  // Stage 1: move above bin
+  requestAnimationFrame(() => {
+    item.style.left = `${binCenterX}px`;
+    item.style.top = `${binCenterYTop}px`;
+  });
+
+  // Stage 2: drop into bin
+  setTimeout(() => {
+    item.style.transition = 'all 0.42s cubic-bezier(.25,.46,.45,.94)';
+    item.style.top = `${binCenterYInside}px`;
+    item.style.transform = 'scale(0.5)';
+    item.style.opacity = '0';
+  }, 260);
+
+  // Remove after finish
+  setTimeout(() => {
+    if (item && item.parentNode) item.remove();
+  }, 700);
+}
+
+function shakeBin(bin) {
+  bin.style.transition = 'transform 0.1s';
+  bin.style.transform = 'rotate(-12deg)';
+  setTimeout(() => { if (bin) bin.style.transform = 'rotate(12deg)'; }, 100);
+  setTimeout(() => { if (bin) bin.style.transform = 'rotate(0deg)'; }, 200);
+}
+
+function moveBin(bin, direction) {
+  bin.style.transition = 'transform 0.32s';
+  const dist = direction === 'right' ? 26 : -26;
+  bin.style.transform = `translateX(${dist}px)`;
+  setTimeout(() => { if (bin) bin.style.transform = 'translateX(0px)'; }, 330);
+}
+
+// Desktop drag/drop handler (mouse)
+document.querySelectorAll('.bin').forEach(bin => {
+  bin.addEventListener('dragover', (ev) => ev.preventDefault());
+  bin.addEventListener('drop', (ev) => {
+    ev.preventDefault();
+    
+    const droppedType = ev.dataTransfer.getData("type");
+    const img = currentItem || document.querySelector('.draggable-item');
+    if (!img) return;
+
+    if (droppedType === bin.dataset.type) {
+      score++;
+      // Correct
+      dropItemToBin(img, bin);
+      createStars(bin);
+      shakeBin(bin);
+      highlightBinGreen(bin);
+    } else {
+      score--;
+      // Wrong: fling away (do NOT drop in)
+      flingWrongItem(img);
+      moveBin(bin, 'right');
+      highlightBinRed(bin);
     }
 
-    function restartGame() {
-      gameOverModal.style.display = 'none';
-      startGame();
-    }
+    document.getElementById('score').textContent = score;
+    // spawn after animation completes
+    setTimeout(() => spawnItems(), 700);
+    currentItem = null;
+  });
+});
 
-    function closeGame() {
-      clearInterval(timer);
-      instructionModal.style.display = 'none';
-      gameModal.style.display = 'none';
-      gameOverModal.style.display = 'none';
-      itemsArea.innerHTML = '';
-      score = 0;
-      timeLeft = 60;
-    }
-  </script>
+function endGame() {
+  clearInterval(timer);
+  gameModal.style.display = 'none';
+  document.getElementById('finalScore').textContent = score;
+  gameOverModal.style.display = 'flex';
+  audio.pause();
+}
+
+function restartGame() {
+  gameOverModal.style.display = 'none';
+  startGame();
+}
+
+function closeGame() {
+  clearInterval(timer);
+  instructionModal.style.display = 'none';
+  gameModal.style.display = 'none';
+  gameOverModal.style.display = 'none';
+  itemsArea.innerHTML = '';
+  score = 0;
+  timeLeft = 60;
+  usedItems = [];
+  currentItem = null;
+  audio.pause();
+  audio.currentTime = 0;
+}
+</script>
+
 </body>
 </html>

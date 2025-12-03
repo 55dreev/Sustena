@@ -1,121 +1,577 @@
+/* =========================================
+   1. Base Layout & Backgrounds
+   ========================================= */
 body {
-      font-family: 'Poppins', sans-serif;
-      background-color: #f6f8fa;
-      margin: 0;
-      padding: 0;
-      color: #333;
-    }
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(135deg, #a8e6cf 0%, #7fcdcd 100%);
+  min-height: 100vh;
+  margin: 0;
+  padding: 20px;
+}
 
-    .module-container {
-      max-width: 1000px;
-      margin: 20px auto;
-      background: #fff;
-      border-radius: 15px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      padding: 30px;
-    }
+.water-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+}
 
-    .module-header {
-      text-align: center;
-      margin-bottom: 30px;
-    }
+/* =========================================
+   2. Animated Header Section
+   ========================================= */
+.water-header {
+  background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%);
+  border-radius: 25px;
+  padding: 50px 40px;
+  text-align: center;
+  margin-bottom: 40px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+}
 
-    .module-header h1 {
-      font-size: 2.5rem;
-      color: #2e7d32;
-      margin-bottom: 10px;
-    }
+.water-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="3" fill="white" opacity="0.3"/><circle cx="80" cy="40" r="2" fill="white" opacity="0.2"/><circle cx="40" cy="70" r="2.5" fill="white" opacity="0.25"/></svg>');
+  animation: float 20s infinite linear;
+}
 
-    .module-header p {
-      font-size: 1rem;
-      color: #555;
-    }
+@keyframes float {
+  0% { transform: translateX(-100%) translateY(-100%) rotate(0deg); }
+  100% { transform: translateX(0%) translateY(0%) rotate(360deg); }
+}
 
-    .module-section {
-      margin-bottom: 40px;
-    }
+.header-title {
+  font-size: 52px;
+  font-family: 'Press Start 2P', cursive;
+  text-transform: uppercase; 
+  color: white;
+  text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+  z-index: 1;
+  position: relative;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-    .module-section h2 {
-      font-size: 1.5rem;
-      color: #2e7d32;
-      margin-bottom: 10px;
-    }
+.header-subtitle {
+  background: rgba(255,255,255,0.95);
+  color: #00695C;
+  padding: 18px 35px;
+  border-radius: 30px;
+  font-size: 18px;
+  font-weight: 600;
+  display: inline-block;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  z-index: 1;
+  position: relative;
+}
 
-    .module-section p {
-      line-height: 1.8;
-      color: #444;
-      font-size: 1rem;
-    }
+/* --- Water Drop Animations --- */
+.water-drops {
+  position: absolute;
+  font-size: 30px;
+  opacity: 0.6;
+  animation: dropFall 3s infinite ease-in;
+}
 
-    .video-container {
-      text-align: center;
-      margin: 20px 0;
-    }
+.drop-1 { top: -30px; left: 10%; animation-delay: 0s; }
+.drop-2 { top: -30px; left: 30%; animation-delay: 0.5s; }
+.drop-3 { top: -30px; right: 30%; animation-delay: 1s; }
+.drop-4 { top: -30px; right: 10%; animation-delay: 1.5s; }
 
-    .video-container iframe {
-      width: 100%;
-      max-width: 800px;
-      height: 450px;
-      border: none;
-      border-radius: 10px;
-    }
+@keyframes dropFall {
+  0% { transform: translateY(0px); opacity: 0.6; }
+  50% { opacity: 0.8; }
+  100% { transform: translateY(400px); opacity: 0; }
+}
 
-    .back-button {
-      display: inline-block;
-      background: linear-gradient(135deg, #66bb6a, #4caf50);
-      color: white;
-      padding: 10px 20px;
-      border-radius: 12px;
-      text-decoration: none;
-      font-weight: 600;
-      transition: all 0.3s ease;
-    }
+/* =========================================
+   3. Badges & UI Elements
+   ========================================= */
+.xp-badge {
+  position: absolute;
+  top: 25px;
+  right: 25px;
+  background: linear-gradient(135deg, #ffd54f, #ffb300);
+  color: #333;
+  padding: 12px 20px;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: bold;
+  box-shadow: 0 4px 15px rgba(255,213,79,0.4);
+  z-index: 2;
+}
 
-    .back-button:hover {
-      background: linear-gradient(135deg, #4caf50, #388e3c);
-    }
+.progress-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+}
 
-    /* Modal for the game */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0; top: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.7);
-      justify-content: center;
-      align-items: center;
-    }
-    .modal-content {
-      background: #fff;
-      padding: 20px;
-      border-radius: 12px;
-      text-align: center;
-      position: relative;
-    }
-    .modal-content canvas {
-      display: block;
-      margin: 0 auto;
-      background: #e0f7fa;
-      border-radius: 10px;
-    }
-    .close {
-      position: absolute;
-      top: 10px; right: 20px;
-      font-size: 24px;
-      font-weight: bold;
-      color: #333;
-      cursor: pointer;
-    }
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.4);
+  transition: all 0.3s ease;
+}
 
-    @media (max-width: 768px) {
-      .module-container {
-        padding: 20px;
-      }
-      .module-header h1 {
-        font-size: 2rem;
-      }
-      .video-container iframe {
-        height: 250px;
-      }
-    }
+.dot.active {
+  background: #66bb6a;
+  box-shadow: 0 0 10px rgba(102,187,106,0.6);
+}
+
+/* =========================================
+   4. Information Grid & Cards
+   ========================================= */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+  margin-bottom: 40px;
+}
+
+.info-card {
+  background: rgba(255,255,255,0.95);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+  transition: all 0.3s ease;
+  border: 3px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.info-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(0,188,212,0.1), transparent);
+  transform: rotate(45deg);
+  transition: all 0.5s ease;
+  opacity: 0;
+}
+
+.info-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+  border-color: #00BCD4;
+}
+
+.info-card:hover::before {
+  opacity: 1;
+  transform: rotate(45deg) translate(50%, 50%);
+}
+
+.card-icon {
+  width: 70px;
+  height: 70px;
+  background: linear-gradient(135deg, #00BCD4, #0097A7);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 35px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 15px rgba(0,188,212,0.3);
+}
+
+.info-card h2 {
+  font-size: 24px;
+  color: #00695C;
+  margin-bottom: 15px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.info-card p {
+  color: #555;
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+.info-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 15px 0;
+}
+
+.info-card ul li {
+  color: #555;
+  padding: 10px 0;
+  padding-left: 30px;
+  position: relative;
+  line-height: 1.6;
+}
+
+.info-card ul li::before {
+  content: '💧';
+  position: absolute;
+  left: 0;
+  font-size: 18px;
+}
+
+/* =========================================
+   5. Video Section
+   ========================================= */
+.video-section {
+  background: rgba(255,255,255,0.95);
+  border-radius: 20px;
+  padding: 35px;
+  margin-bottom: 30px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+  text-align: center;
+}
+
+.video-section h2 {
+  font-size: 28px;
+  color: #00695C;
+  margin-bottom: 25px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.video-container {
+  position: relative;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+.video-container iframe {
+  width: 100%;
+  max-width: 800px;
+  height: 450px;
+  border: none;
+  border-radius: 15px;
+}
+
+/* =========================================
+   6. Game Challenge & Buttons
+   ========================================= */
+.game-challenge {
+  background: linear-gradient(135deg, #26C6DA 0%, #00ACC1 100%);
+  border-radius: 25px;
+  padding: 40px;
+  text-align: center;
+  margin-bottom: 30px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 35px rgba(0,0,0,0.2);
+  border: 4px solid rgba(255,255,255,0.3);
+}
+
+.game-challenge h2 {
+  font-size: 32px;
+  color: white;
+  margin-bottom: 20px;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.play-button {
+  background: linear-gradient(135deg, #66bb6a, #4caf50);
+  color: white;
+  border: none;
+  padding: 18px 45px;
+  border-radius: 30px;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  box-shadow: 0 6px 20px rgba(102,187,106,0.4);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.play-button:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 10px 30px rgba(102,187,106,0.5);
+}
+
+.play-button:active {
+  transform: translateY(-2px) scale(1.02);
+}
+
+.back-section {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.back-button {
+  background: linear-gradient(135deg, #00897B, #00695C);
+  color: white;
+  padding: 15px 35px;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  display: inline-block;
+  box-shadow: 0 4px 15px rgba(0,137,123,0.3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.back-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0,137,123,0.4);
+}
+
+/* =========================================
+   7. Modal & Game Overlays
+   ========================================= */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(5px);
+}
+
+.game-modal-content {
+  background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%);
+  padding: 20px;
+  border-radius: 25px;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+  border: 4px solid #00BCD4;
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.game-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.game-container canvas {
+  display: block;
+  margin: 0 auto;
+  background: linear-gradient(180deg, #e0f7fa 0%, #b2ebf2 100%);
+  border-radius: 15px;
+  box-shadow: inset 0 4px 10px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  touch-action: none;
+}
+
+.game-controls {
+  margin-top: 15px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.game-btn {
+  background: linear-gradient(135deg, #00BCD4, #0097A7);
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 20px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0,188,212,0.3);
+}
+
+.game-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,188,212,0.4);
+}
+
+.exit-btn {
+  background: linear-gradient(135deg, #ff5252, #d32f2f);
+  box-shadow: 0 4px 15px rgba(255,82,82,0.3);
+}
+
+.exit-btn:hover {
+  box-shadow: 0 6px 20px rgba(255,82,82,0.4);
+}
+
+.restart-btn {
+  background: linear-gradient(135deg, #66bb6a, #4caf50);
+  box-shadow: 0 4px 15px rgba(102,187,106,0.3);
+}
+
+.restart-btn:hover {
+  box-shadow: 0 6px 20px rgba(102,187,106,0.4);
+}
+
+.game-over-screen {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255,255,255,0.98);
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+  border: 3px solid #00BCD4;
+  z-index: 100;
+  min-width: 280px;
+}
+
+.game-over-screen h2 {
+  color: #00695C;
+  margin-bottom: 20px;
+  font-size: 32px;
+}
+
+.game-over-stats {
+  color: #555;
+  font-size: 18px;
+  line-height: 2;
+  margin-bottom: 25px;
+}
+
+.game-over-stats strong {
+  color: #00BCD4;
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 28px;
+  font-weight: bold;
+  color: #00695C;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.9);
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.close:hover {
+  transform: rotate(90deg) scale(1.1);
+  background: #ff5252;
+  color: white;
+}
+
+/* =========================================
+   8. Responsive Design
+   ========================================= */
+@media (max-width: 768px) {
+  .header-title {
+    font-size: 36px;
+  }
+
+  .header-subtitle {
+    font-size: 16px;
+    padding: 14px 25px;
+  }
+
+  .xp-badge {
+    font-size: 14px;
+    padding: 10px 16px;
+    top: 15px;
+    right: 15px;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .video-container iframe {
+    height: 250px;
+  }
+
+  .game-challenge h2 {
+    font-size: 24px;
+  }
+
+  .play-button {
+    font-size: 16px;
+    padding: 14px 30px;
+  }
+
+  .game-modal-content {
+    padding: 15px;
+    max-width: 95%;
+  }
+
+  .game-container canvas {
+    max-width: 350px;
+  }
+
+  .game-btn {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  .game-over-screen {
+    padding: 20px;
+    min-width: 250px;
+    max-width: 90%;
+  }
+
+  .game-over-screen h2 {
+    font-size: 24px;
+  }
+
+  .game-over-stats {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .game-modal-content {
+    max-width: 98%;
+    padding: 10px;
+  }
+
+  .game-container canvas {
+    max-width: 300px;
+  }
+
+  .game-over-screen {
+    padding: 15px;
+    min-width: 200px;
+  }
+
+  .game-over-screen h2 {
+    font-size: 20px;
+  }
+
+  .game-over-stats {
+    font-size: 14px;
+  }
+}
