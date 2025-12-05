@@ -15,11 +15,9 @@
     .nav-item.active{background:#66bb6a;color:#fff;box-shadow:0 4px 8px rgba(0,0,0,.2)}
     .nav-icon{width:24px;height:24px;margin-right:12px;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:18px}
 
-    /* NEW — make main-content the positioning context for the floating icons */
-    .main-content{margin-left:200px;margin-top:24px;flex:1;padding:10px 30px 30px;position:relative;}
 
-    .header{background:linear-gradient(135deg,#87ceeb 0%,#b0e0e6 100%);padding:20px;border-radius:16px;margin-bottom:30px;position:relative;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.1)}
-    .welcome-text{color:#2d5a3d;font-size:18px;font-weight:600;position:relative;z-index:1}
+    .header{background:linear-gradient(135deg,#87ceeb 0%,#b0e0e6 100%);padding:20px;border-radius:16px;margin-bottom:30px;position:relative;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.1);text-align:center}
+    .welcome-text{color:#2d5a3d;font-size:18px;font-weight:600;position:relative;z-index:1;text-align:center}
 
     .current-badge-section{display:flex;gap:30px;margin-bottom:40px;align-items:stretch}
     .badge-display{background:linear-gradient(135deg,#ffd54f 0%,#ffb300 100%);border-radius:20px;padding:25px;text-align:center;box-shadow:0 10px 30px rgba(255,179,0,.3);position:relative;overflow:hidden;flex:0 0 280px}
@@ -64,44 +62,24 @@
     .achievement-badge.locked .achievement-status{color:#999}
        
 
-    /* UPDATED — position icons over the header inside main-content */
-    .floating-icons { position: absolute; top: 14px; right: 30px; display: flex; gap: 10px; z-index: 1000; }
-    .floating-icon {
-      width: 40px; height: 40px; background: rgba(255,255,255,0.9); border-radius: 8px;
-      display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      cursor: pointer; transition: all 0.3s ease; font-size: 20px;
-    }
-    .floating-icon:hover { transform: scale(1.1); box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
-    .floating-icons a { text-decoration: none; color: inherit; }
-
-    /* === FIX BODY / CENTER MAIN CONTENT LIKE LANDING === */
-body {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: flex-start !important;
-    overflow-x: hidden !important;
-    position: relative !important;
-}
-
-/* Keep sidebar fixed — do NOT push main content */
-.main-content {
-    flex: 1 !important;
-    max-width: 480px;          /* matches landing and your mockup width */
+    
+    /* ============================================
+   GLOBAL RESET — CENTERED LAYOUT LIKE LEADERBOARD
+   ============================================ */
+body.badges-page {
+    margin: 0;
+    padding: 0;
     width: 100%;
-    padding: 20px;
-    margin: 0 auto !important;
-    transition: transform 0.3s ease !important;
+    overflow-x: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
 }
 
-/* When sidebar opens on desktop */
-.sidebar.open ~ .main-content {
-    transform: translateX(220px) !important;
-}
-
-/* On mobile: DO NOT shift the content */
+/* Mobile: change to block layout */
 @media (max-width: 1024px) {
-    .sidebar.open ~ .main-content {
-        transform: none !important;
+    body.badges-page {
+        display: block !important;
     }
 }
 .farm-decor {
@@ -154,55 +132,49 @@ body.footprint-calc-page .main-content {
     width: 100% !important;
 }
 /* ============================================
-   FIX MAIN CONTENT PUSHING WHEN NAV OPENS
+   MAIN CONTENT — CENTERED ALL DEVICES
    ============================================ */
-
-/* ❌ STOP PUSHING ON DESKTOP */
-@media (min-width: 1025px) {
-    .sidebar.open ~ .main-content {
-        transform: none !important;
-    }
-}
-/* ============================================
-   FIX #1 — CENTER MAIN CONTENT ON ALL DEVICES
-   ============================================ */
-
-body.badges-page {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: flex-start !important;
-    overflow-x: hidden !important;
-    position: relative !important;
-}
-
-/* Main content centered properly */
-.main-content {
-    flex: 1;
+body.badges-page .main-content {
     width: 100%;
-    max-width: 1200px;      /* desktop width */
+    max-width: 1200px;
     margin: 0 auto !important;
-    padding: 20px 20px 60px;
+    padding: 70px 20px 40px !important;
     position: relative;
-    transition: 0.3s ease;
+    z-index: 5;
 }
 
-/* Prevent sidebar from pushing content */
-.sidebar.open ~ .main-content {
-    transform: none !important;
-}
-
-/* MOBILE — Full width, no pushing */
+/* MOBILE — remove sidebar offset, center everything */
 @media (max-width: 768px) {
-    .main-content {
-        max-width: 100% !important;
-        padding: 10px 15px 40px;
+    body.badges-page .main-content {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding: 70px 10px 40px !important; /* top padding for hamburger, minimal sides */
+        max-width: 100%;
     }
 }
 
 /* TABLET */
 @media (min-width: 769px) and (max-width: 1024px) {
-    .main-content {
-        max-width: 850px;
+    body.badges-page {
+        display: flex !important;
+        justify-content: center;
+    }
+
+    body.badges-page .main-content {
+        flex: 1;
+        margin: 0 auto !important;
+        padding: 70px 20px 40px !important;
+        max-width: 900px;
+    }
+}
+
+/* DESKTOP */
+@media (min-width: 1025px) {
+    body.badges-page .main-content {
+        flex: 1;
+        margin: 0 auto !important;
+        padding: 70px 40px 40px !important;
+        max-width: 1400px;
     }
 }
 
@@ -224,23 +196,51 @@ body.badges-page {
 
 /* Mobile: stack and center */
 @media (max-width: 768px) {
+    .header {
+        padding: 15px !important;
+        margin-bottom: 20px !important;
+        text-align: center !important;
+    }
+
+    .welcome-text {
+        font-size: 15px !important;
+        text-align: center !important;
+    }
+
     .current-badge-section {
         flex-direction: column;
         align-items: center;
         text-align: center;
+        gap: 15px !important;
+        margin-bottom: 25px !important;
     }
 
     .badge-display {
-        width: 90%;
-        max-width: 320px;
+        width: 95% !important;
+        max-width: 350px !important;
+        margin: 0 auto;
     }
 
     .user-profile-section {
-        width: 100%;
+        width: 95% !important;
+        max-width: 350px !important;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .profile-header {
+        justify-content: center;
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .profile-avatar {
+        margin: 0 auto 10px;
     }
 
     .stats-row {
-        flex-direction: column;
+        flex-direction: row;
+        justify-content: space-around;
         gap: 12px;
     }
 }
@@ -263,26 +263,143 @@ body.badges-page {
     }
 }
 
-/* Mobile: tighter grid */
-@media (max-width: 480px) {
+/* Mobile: center achievements section */
+@media (max-width: 768px) {
+    body.badges-page .floating-icons {
+        top: 10px !important;
+        right: 10px !important;
+    }
+
+    .achievements-section {
+        width: 96% !important;
+        margin: 0 auto !important;
+        padding: 20px 15px !important;
+        border-radius: 16px;
+    }
+
+    .section-header {
+        text-align: center !important;
+        font-size: 20px !important;
+    }
+
     .achievements-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 15px;
+        justify-items: center;
     }
-    /* ============================================
-   FIX — FLOATING ICONS FOLLOW SCROLL (GLOBAL)
-   ============================================ */
 
-.floating-icons {
-    position: fixed !important;   /* follow scroll */
-    top: 20px !important;
-    right: 20px !important;
-    display: flex;
-    gap: 10px;
-    z-index: 2000 !important;     /* stay above content */
+    .achievement-badge {
+        width: 100%;
+        max-width: 160px;
+    }
 }
 
-.floating-icon {
+/* ============================================
+   EXTRA SMALL MOBILE (< 480px)
+   ============================================ */
+@media (max-width: 480px) {
+    body.badges-page .main-content {
+        padding: 70px 5px 30px !important;
+    }
+
+    .header {
+        padding: 12px !important;
+        margin-bottom: 15px !important;
+    }
+
+    .welcome-text {
+        font-size: 13px !important;
+    }
+
+    .badge-display {
+        width: 98% !important;
+        padding: 20px !important;
+    }
+
+    .badge-circle {
+        width: 100px !important;
+        height: 100px !important;
+    }
+
+    .badge-icon {
+        font-size: 42px !important;
+    }
+
+    .user-profile-section {
+        width: 98% !important;
+        padding: 20px !important;
+    }
+
+    .profile-avatar {
+        width: 45px !important;
+        height: 45px !important;
+        font-size: 20px !important;
+    }
+
+    .profile-info h3 {
+        font-size: 16px !important;
+    }
+
+    .profile-title {
+        font-size: 13px !important;
+    }
+
+    .stat-icon {
+        font-size: 20px !important;
+    }
+
+    .achievements-section {
+        width: 98% !important;
+        padding: 15px 10px !important;
+    }
+
+    .section-header {
+        font-size: 18px !important;
+    }
+
+    .achievements-grid {
+        gap: 12px !important;
+    }
+
+    .achievement-icon-wrapper {
+        width: 50px !important;
+        height: 50px !important;
+    }
+
+    .achievement-icon {
+        font-size: 24px !important;
+    }
+
+    .achievement-name {
+        font-size: 11px !important;
+    }
+
+    body.badges-page .floating-icons {
+        top: 8px !important;
+        right: 8px !important;
+        gap: 6px !important;
+    }
+
+    body.badges-page .floating-icon {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 16px !important;
+    }
+}
+
+/* ============================================
+   FLOATING ICONS — FIXED POSITION
+   ============================================ */
+body.badges-page .floating-icons {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 5001;
+}
+
+body.badges-page .floating-icon {
     width: 40px;
     height: 40px;
     background: rgba(255,255,255,0.9);
@@ -292,19 +409,66 @@ body.badges-page {
     justify-content: center;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     cursor: pointer;
-    transition: 0.25s ease;
+    transition: all 0.3s ease;
     font-size: 20px;
+    text-decoration: none;
+    color: inherit;
 }
 
-/* MOBILE: move them away from hamburger */
-@media (max-width: 768px) {
-    .floating-icons {
+body.badges-page .floating-icon:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+}
+
+body.badges-page .floating-icons a {
+    text-decoration: none;
+    color: inherit;
+}
+/* ============================================
+   MOBILE LANDSCAPE
+   ============================================ */
+@media (max-width: 768px) and (orientation: landscape) {
+    body.badges-page .main-content {
+        padding: 70px 15px 30px !important;
+    }
+
+    .header {
+        padding: 12px;
+        margin-bottom: 15px;
+    }
+
+    .current-badge-section {
+        flex-direction: row !important;
+        gap: 15px;
+        justify-content: center;
+        margin-bottom: 20px !important;
+    }
+
+    .badge-display {
+        flex: 0 0 auto !important;
+        width: 45% !important;
+        max-width: 300px !important;
+    }
+
+    .user-profile-section {
+        flex: 0 0 auto !important;
+        width: 45% !important;
+        max-width: 300px !important;
+    }
+
+    .achievements-section {
+        padding: 15px !important;
+    }
+
+    body.badges-page .floating-icons {
+        flex-direction: column;
+        max-width: 40px !important;
+        gap: 8px;
         top: 10px !important;
-        right: 15px !important;
+        right: 10px !important;
     }
 }
 
-}
 /* ================================
    CENTER ACHIEVEMENTS ON DESKTOP
    ================================ */
@@ -312,52 +476,17 @@ body.badges-page {
     .achievements-section {
         display: flex;
         flex-direction: column;
-        align-items: center;   /* center everything */
+        align-items: center;
     }
 
     .achievements-grid {
         display: flex;
-        justify-content: center !important; /* center the badges */
+        justify-content: center !important;
         gap: 40px;
         flex-wrap: wrap;
-        max-width: 1200px; /* keeps it tight and centered */
+        max-width: 1200px;
     }
 }
-.floating-icons {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            gap: 10px;
-            z-index: 1000;
-        }
-
-        .floating-icon {
-            width: 40px;
-            height: 40px;
-            background: rgba(255,255,255,0.9);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 
-                inset 2px 2px 0px rgba(255,255,255,0.8),
-                inset -2px -2px 0px rgba(0,0,0,0.3),
-                0px 4px 12px rgba(0,0,0,0.15);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            image-rendering: pixelated;
-            image-rendering: -moz-crisp-edges;
-            image-rendering: crisp-edges;
-            filter: contrast(1.2) brightness(1.1);
-             text-decoration: none;  /* removes underline */
-    color: inherit;         /* optional: inherit text color */
-        }
-
-        .floating-icon:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-        }
 
 
 

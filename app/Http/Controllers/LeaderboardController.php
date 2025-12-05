@@ -21,6 +21,7 @@ class LeaderboardController extends Controller
                         COALESCE(users.username, users.email)
                     ) as display_name
                 "),
+                'profile_picture',
                 DB::raw('COALESCE(points_total, 0) as points_total'),
                 DB::raw('COALESCE(xp_total, 0) as xp_total'),
                 DB::raw('COALESCE(level, 1) as level')

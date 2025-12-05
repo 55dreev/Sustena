@@ -230,45 +230,44 @@ if (empty($badges)) {
 
         <!-- Badges (compact) -->
         <div class="card badges-card">
-          <div class="card-icon">📊</div>
-          <div class="card-title">Badges Earned</div>
+          <div class="card-icon">🏅</div>
+          <div class="card-title">Badges</div>
 
           @if($badges_count > 0)
-            <div class="badges-summary">
-              <span class="count-pill">
-                {{ $badges_count }}{{ $total_badges_available ? ' / '.$total_badges_available : '' }}
-              </span>
-              <span class="summary-note">Keep collecting to level up!</span>
-            </div>
+            <div class="card-subtitle">{{ $badges_count }}{{ $total_badges_available ? '/'.$total_badges_available : '' }}</div>
 
-            <ul class="recent-badges">
+            <div class="badges-list-compact">
               @foreach($topList as $b)
-                <li class="recent-item">
-                  <span class="recent-icon" aria-hidden="true">{{ $b['icon'] }}</span>
-                  <span class="recent-text">
-                    <strong>{{ $b['name'] }}</strong>
-                    <span class="muted">+{{ (int)($b['points'] ?? 0) }} pts</span>
-                    @if(!empty($b['awarded_at']))
-                      <span class="muted">• {{ \Carbon\Carbon::parse($b['awarded_at'])->diffForHumans() }}</span>
-                    @endif
-                  </span>
-                </li>
+                @php
+                  $category = strtolower($b['category'] ?? 'meta');
+                  $categoryColors = [
+                    'energy' => '#f59e0b',
+                    'water' => '#3b82f6',
+                    'waste' => '#8b5cf6',
+                    'carbon' => '#10b981',
+                    'trees' => '#059669',
+                    'transport' => '#06b6d4',
+                    'home' => '#f97316',
+                    'meta' => '#6366f1'
+                  ];
+                  $dotColor = $categoryColors[$category] ?? '#6366f1';
+                @endphp
+                <div class="badge-item-compact">
+                  <div class="badge-indicator-dot" style="background-color: {{ $dotColor }};"></div>
+                  <div class="badge-info-compact">
+                    <span class="badge-name-compact">{{ $b['name'] }}</span>
+                    <span class="badge-points-compact">+{{ (int)($b['points'] ?? 0) }}</span>
+                  </div>
+                </div>
               @endforeach
-            </ul>
+            </div>
 
             @if($moreNum > 0)
-              <div class="tiny-note" style="opacity:.8;margin-top:8px;">
-                +{{ $moreNum }} more — see full list
-              </div>
+              <div class="card-text" style="margin-top:8px;">+{{ $moreNum }} more</div>
             @endif
           @else
-            <div class="card-text" style="opacity:.9;">
-              No badges yet — complete a challenge to earn your first ✨
-            </div>
-            <div class="badge-ctas">
-              <a class="primary-btn" href="{{ route('challenge') }}">Start a Challenge</a>
-              <a class="view-all-btn" href="{{ route('badges') }}">See Available Badges</a>
-            </div>
+            <div class="card-subtitle">0</div>
+            <div class="card-text">Complete challenges to earn badges</div>
           @endif
         </div>
 
@@ -340,7 +339,7 @@ if (empty($badges)) {
             </div>
             <div class="card-text">Keep completing trackers & challenges</div>
             <div class="progress-bar">
-                <div class="progress-fill" data-progress="{{ (int) $xp_percent }}"></div>
+                <div class="progress-fill" data-progress="{{ (int) $xp_percent }}" style="width: {{ (int) $xp_percent }}%"></div>
             </div>
         </div>
 
@@ -350,10 +349,14 @@ if (empty($badges)) {
   $energySigned = isset($energy_change_kwh_signed) ? (float) $energy_change_kwh_signed : 0.0;
   $isUp         = $energySigned < 0; // negative = emissions went up
 
-  // Optional “vs last” info
+  // Optional "vs last" info
   $dir   = $energy_delta_direction ?? null; // 'up' | 'down' | 'flat' (or null)
   $vsAbs = isset($energy_delta_kwh_abs) ? (float) $energy_delta_kwh_abs : null;
   $hasVs = !is_null($dir) && !is_null($vsAbs);
+
+  // Calculate progress percentage (cap at 100 kWh as max goal)
+  $energyMaxGoal = 100.0;
+  $energyPercent = min(100, round(($energySaved / $energyMaxGoal) * 100));
 @endphp
 
 <div class="card energy-card" title="Estimated household energy change this month">
@@ -381,6 +384,10 @@ if (empty($badges)) {
   @endif
 
   <div class="card-text">this month</div>
+
+  <div class="progress-bar" style="margin-top:6px;">
+    <div class="progress-fill" data-progress="{{ (int) $energyPercent }}" style="width: {{ (int) $energyPercent }}%"></div>
+  </div>
 </div>
 
 
@@ -460,12 +467,13 @@ if (empty($badges)) {
 
 <!-- Floating quick links -->
 <div class="floating-icons">
-    <a href="{{ route('analytics') }}" class="floating-icon" title="Analytics">🔥</a>
-    <a href="{{ route('learning-modules') }}" class="floating-icon" title="Learning Modules">🌱</a>
-    <a href="{{ route('leaderboard') }}" class="floating-icon" title="Leaderboard">🏆</a>
-    <a href="{{ route('badges') }}" class="floating-icon" title="Badges">🥇</a>
-    <a href="{{ route('settings') }}" class="floating-icon" title="Settings">⚙️</a>
-</div>
+      <a href="{{ url('/analytics') }}" class="floating-icon" title="Analytics">📅</a>
+      <a href="{{ url('/streaks') }}" class="floating-icon" title="Streaks">🔥</a>
+      <a href="{{ url('/learning-modules') }}" class="floating-icon" title="Learning Modules">🌱</a>
+      <a href="{{ url('/leaderboard') }}" class="floating-icon" title="Leaderboard">🏆</a>
+      <a href="{{ url('/badges') }}" class="floating-icon" title="Badges">🥇</a>
+      <a href="{{ url('/settings') }}" class="floating-icon" title="Settings">⚙️</a>
+    </div>
 
 <script>
     document.querySelectorAll('.nav-item').forEach(item => {

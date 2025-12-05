@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sustena - Feedback & Moderation</title>
+  <title>Feedback & Moderation - SUSTENA Admin</title>
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
   <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
@@ -114,54 +114,44 @@
   </style>
 </head>
 <body>
-  <div class="header">
-    <div class="logo">
-      <svg class="leaf-icon" viewBox="0 0 24 24" fill="white">
-        <path d="M17,8C8,10 5.9,16.17 3.82,21.34L5.71,22L6.66,19.7C7.14,19.87 7.64,20 8,20C19,20 22,3 22,3C21,5 14,5.25 9,6.25C4,7.25 2,11.5 2,13.5C2,15.5 3.75,17.25 3.75,17.25C7,8 17,8 17,8Z"/>
-      </svg>
-      <span>SUSTENA</span>
-    </div>
-    <div class="admin-profile">
-      <span>ADMIN</span>
-      <div class="profile-icon"></div>
-    </div>
-  </div>
-
-  <div class="container">
-    <div class="sidebar">
-      <div class="menu-item" onclick="window.location='{{ route('admin.dashboard') }}'">
-        <span class="menu-icon">📊</span>
-        <span>Dashboard</span>
+  <div class="admin-container">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="admin-logo">
+        <div class="logo-icon">🌱</div>
+        <h1>SUSTENA</h1>
+        <span class="admin-badge">ADMIN</span>
       </div>
-      <a href="{{ route('moderation.index') }}" class="menu-item {{ request()->routeIs('moderation.index') ? 'active' : '' }}">
-        <span class="menu-icon">💬</span><span>Feedback & Moderation</span>
-      </a>
-      <a href="{{ url('/adminsettings') }}" class="menu-item {{ request()->is('adminsettings') ? 'active' : '' }}">
-        <span class="menu-icon">⚙️</span><span>Settings</span>
-      </a>
-   <a href="#" class="menu-item" onclick="openLogoutModal()">
-    <span class="menu-icon">🚪</span>
-    <span>Logout</span>
-</a>
 
-<form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-    @csrf
-</form>
+      <nav class="admin-nav">
+        <a href="{{ route('admin.dashboard') }}" class="nav-link">
+          <span class="nav-icon">📊</span> Dashboard
+        </a>
+        <a href="{{ route('admin.analytics') }}" class="nav-link">
+          <span class="nav-icon">📈</span> Analytics
+        </a>
+        <a href="{{ route('admin.moderation') }}" class="nav-link active">
+          <span class="nav-icon">💬</span> Feedback & Moderation
+        </a>
+        <a href="{{ route('admin.settings') }}" class="nav-link">
+          <span class="nav-icon">⚙️</span> Settings
+        </a>
+        <a href="{{ route('landing-page') }}" class="nav-link">
+          <span class="nav-icon">🏠</span> Back to App
+        </a>
+        <a href="#" class="nav-link logout" onclick="openLogoutModal()">
+          <span class="nav-icon">🚪</span> Logout
+        </a>
+      </nav>
+    </aside>
 
-<div id="logoutModal" class="modal">
-    <div class="modal-content">
-        <h3>Logout</h3>
-        <p>Are you sure you want to logout?</p>
-        <div class="modal-buttons">
-            <button class="btn btn-cancel" onclick="closeLogoutModal()">Cancel</button>
-            <button class="btn btn-logout" onclick="confirmLogout()">Logout</button>
-        </div>
-    </div>
-  </div>
-  </div>
+    <!-- Main Content -->
+    <main class="admin-main">
+      <header class="page-header">
+        <h1>💬 Feedback & Moderation</h1>
+        <p>Manage forum posts, comments, and community feedback</p>
+      </header>
 
-
-    <div class="main-content">
       <h2 class="section-title">Community Feedback Overview</h2>
 
       <!-- STATS CARDS -->
@@ -269,8 +259,24 @@
         </div>
       </div>
       <!-- =================== END ADDED: POSTS UI ================= -->
+    </main>
+  </div>
+
+  <!-- LOGOUT MODAL -->
+  <div id="logoutModal" class="modal">
+    <div class="modal-content">
+      <h3>Logout</h3>
+      <p>Are you sure you want to logout?</p>
+      <div class="modal-buttons">
+        <button class="btn btn-cancel" onclick="closeLogoutModal()">Cancel</button>
+        <button class="btn btn-logout" onclick="confirmLogout()">Logout</button>
+      </div>
     </div>
   </div>
+
+  <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+    @csrf
+  </form>
 
   <script>
   // Helpers
@@ -574,17 +580,18 @@
   // Initial load (posts)
   loadPosts();
   // =================== END ADDED: POSTS LOGIC ==================
+
   function openLogoutModal() {
     document.getElementById('logoutModal').style.display = 'flex';
-}
+  }
 
-function closeLogoutModal() {
+  function closeLogoutModal() {
     document.getElementById('logoutModal').style.display = 'none';
-}
+  }
 
-function confirmLogout() {
+  function confirmLogout() {
     document.getElementById('logout-form').submit();
-}
+  }
   </script>
 </body>
 </html>

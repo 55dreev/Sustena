@@ -266,4 +266,70 @@ public static function awardFixedXp(
     ];
 }
 
+    /**
+     * Award XP for generic actions (tasks, etc.)
+     */
+    public static function award(int $userId, int $xpAmount, string $reason = 'task_completed'): array
+    {
+        return DB::transaction(function () use ($userId, $xpAmount, $reason) {
+            $user = DB::table('users')->where('user_id', $userId)->lockForUpdate()->first();
+            $xpTotal = (int)($user->xp_total ?? 0);
+
+            $xpTotal += $xpAmount;
+            $level = self::levelForXp($xpTotal);
+
+            $update = ['xp_total' => $xpTotal];
+            if (self::col('users', 'level')) { $update['level'] = $level; }
+            if (self::col('users', 'last_xp_awarded_at')) { $update['last_xp_awarded_at'] = now(); }
+            if (self::col('users', 'updated_at')) { $update['updated_at'] = now(); }
+
+            DB::table('users')->where('user_id', $userId)->update($update);
+
+            // Log the event
+            $event = [
+                'user_id' => $userId,
+                'attempt_id' => $reason . '_' . now()->timestamp,
+                'type' => $reason,
+                'xp' => $xpAmount,
+            ];
+            if (self::col('xp_events', 'meta')) { $event['meta'] = json_encode(['reason' => $reason]); }
+            if (self::col('xp_events', 'created_at')) { $event['created_at'] = now(); }
+            if (self::col('xp_events', 'updated_at')) { $event['updated_at'] = now(); }
+
+            DB::table('xp_events')->insert($event);
+
+            return [
+                'awarded_xp' => $xpAmount,
+                'xp_total' => $xpTotal,
+                'level' => $level,
+            ];
+        });
+    }
+
+    /**
+     * Subtract XP (for uncompleting tasks, etc.)
+     */
+    public static function subtract(int $userId, int $xpAmount, string $reason = 'task_uncompleted'): array
+    {
+        return DB::transaction(function () use ($userId, $xpAmount, $reason) {
+            $user = DB::table('users')->where('user_id', $userId)->lockForUpdate()->first();
+            $xpTotal = (int)($user->xp_total ?? 0);
+
+            $xpTotal = max(0, $xpTotal - $xpAmount);
+            $level = self::levelForXp($xpTotal);
+
+            $update = ['xp_total' => $xpTotal];
+            if (self::col('users', 'level')) { $update['level'] = $level; }
+            if (self::col('users', 'updated_at')) { $update['updated_at'] = now(); }
+
+            DB::table('users')->where('user_id', $userId)->update($update);
+
+            return [
+                'subtracted_xp' => $xpAmount,
+                'xp_total' => $xpTotal,
+                'level' => $level,
+            ];
+        });
+    }
+
 }

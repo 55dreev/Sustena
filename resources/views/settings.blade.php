@@ -152,32 +152,14 @@
         </div>
     </div>
 
-     <div class="floating-icons">
-    <!-- Analytics -->
-    <a href="{{ url('/analytics') }}" class="floating-icon" title="Analytics">
-        🔥
-    </a>
-
-    <!-- Learning Modules -->
-    <a href="{{ url('/learning-modules') }}" class="floating-icon" title="Learning Modules">
-        🌱
-    </a>
-
-    <!-- Leaderboard -->
-    <a href="{{ url('/leaderboard') }}" class="floating-icon" title="Leaderboard">
-        🏆
-    </a>
-
-    <!-- Badges -->
-    <a href="{{ url('/badges') }}" class="floating-icon" title="Badges">
-        🥇
-    </a>
-
-    <!-- Settings -->
-    <a href="{{ url('/settings') }}" class="floating-icon" title="Settings">
-        ⚙️
-    </a>
-</div>
+<div class="floating-icons">
+      <a href="{{ url('/analytics') }}" class="floating-icon" title="Analytics">📅</a>
+      <a href="{{ url('/streaks') }}" class="floating-icon" title="Streaks">🔥</a>
+      <a href="{{ url('/learning-modules') }}" class="floating-icon" title="Learning Modules">🌱</a>
+      <a href="{{ url('/leaderboard') }}" class="floating-icon" title="Leaderboard">🏆</a>
+      <a href="{{ url('/badges') }}" class="floating-icon" title="Badges">🥇</a>
+      <a href="{{ url('/settings') }}" class="floating-icon" title="Settings">⚙️</a>
+    </div>
 
 
     <script>

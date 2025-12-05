@@ -60,12 +60,13 @@
 </div>
 
 <div class="floating-icons">
-    <a href="{{ route('analytics') }}" class="floating-icon" title="Analytics">🔥</a>
-    <a href="{{ route('learning-modules') }}" class="floating-icon" title="Learning Modules">🌱</a>
-    <a href="{{ route('leaderboard') }}" class="floating-icon" title="Leaderboard">🏆</a>
-    <a href="{{ route('badges') }}" class="floating-icon" title="Badges">🥇</a>
-    <a href="{{ route('settings') }}" class="floating-icon" title="Settings">⚙️</a>
-</div>
+      <a href="{{ url('/analytics') }}" class="floating-icon" title="Analytics">📅</a>
+      <a href="{{ url('/streaks') }}" class="floating-icon" title="Streaks">🔥</a>
+      <a href="{{ url('/learning-modules') }}" class="floating-icon" title="Learning Modules">🌱</a>
+      <a href="{{ url('/leaderboard') }}" class="floating-icon" title="Leaderboard">🏆</a>
+      <a href="{{ url('/badges') }}" class="floating-icon" title="Badges">🥇</a>
+      <a href="{{ url('/settings') }}" class="floating-icon" title="Settings">⚙️</a>
+    </div>
 
 <!-- Main Content -->
 <div class="main-content">
@@ -170,10 +171,28 @@
             @endphp
             <div class="post-card" id="post-{{ $post->id }}">
               <div class="post-header">
-                <div class="author-avatar">{{ $initial }}</div>
+                <div class="author-avatar-wrapper">
+                  <div class="author-avatar" data-username="{{ $author }}">{{ $initial }}</div>
+                  @if($post->user)
+                    <div class="level-badge" style="background: {{ $post->user->level_badge['color'] }};" title="{{ $post->user->level_badge['name'] }} (Level {{ $post->user->forum_level }})">
+                      <span class="level-emoji">{{ $post->user->level_badge['emoji'] }}</span>
+                      <span class="level-number">{{ $post->user->forum_level }}</span>
+                    </div>
+                  @endif
+                </div>
                 <div class="post-meta">
                   <div class="author-name">{{ $author }}</div>
-                  <div class="post-topic">{{ $post->title }}</div>
+                  <div class="post-topic-row">
+                    <div class="post-topic">{{ $post->title }}</div>
+                    <div class="post-badges">
+                      @if($post->created_at->diffInHours(now()) < 24)
+                        <span class="badge badge-new">NEW</span>
+                      @endif
+                      @if($post->likes_count >= 10)
+                        <span class="badge badge-hot">🔥 HOT</span>
+                      @endif
+                    </div>
+                  </div>
                   <div class="post-time">{{ $post->created_at->diffForHumans() }}</div>
                 </div>
               </div>
@@ -181,13 +200,44 @@
               <div class="post-content">{{ $post->content }}</div>
 
               <div class="post-stats">
-                <div class="stat-item">
+                <div class="stat-item reactions-container">
                   @auth
-                    <button class="like-btn stat-icon" data-post="{{ $post->id }}" aria-label="like" style="background:none;border:none;cursor:pointer;">👍</button>
+                    <div class="reaction-picker" data-post="{{ $post->id }}">
+                      <button class="reaction-trigger" data-post="{{ $post->id }}" aria-label="React">
+                        <span class="trigger-icon">👍</span>
+                      </button>
+                      <div class="reaction-options" data-post="{{ $post->id }}">
+                        <button class="reaction-option" data-reaction="helpful" title="Helpful">👍</button>
+                        <button class="reaction-option" data-reaction="love" title="Love it">❤️</button>
+                        <button class="reaction-option" data-reaction="eco_warrior" title="Eco-warrior">🌱</button>
+                        <button class="reaction-option" data-reaction="celebrate" title="Celebrate">🎉</button>
+                        <button class="reaction-option" data-reaction="insightful" title="Insightful">💡</button>
+                      </div>
+                    </div>
                   @else
                     <span class="stat-icon">👍</span>
                   @endauth
-                  <span><span class="like-count" data-post="{{ $post->id }}">{{ $post->likes_count }}</span> reacts</span>
+                  @php
+                    $reactionCounts = $post->likes->groupBy('reaction_type')->map->count();
+                    $emojiMap = [
+                      'helpful' => '👍',
+                      'love' => '❤️',
+                      'eco_warrior' => '🌱',
+                      'celebrate' => '🎉',
+                      'insightful' => '💡'
+                    ];
+                  @endphp
+                  <span class="reactions-summary" data-post="{{ $post->id }}">
+                    @if($post->likes_count > 0)
+                      <span class="reaction-breakdown">
+                        @foreach($reactionCounts as $type => $count)
+                          <span class="reaction-count-item">{{ $emojiMap[$type] ?? '👍' }} {{ $count }}</span>
+                        @endforeach
+                      </span>
+                    @else
+                      <span class="no-reactions">No reactions yet</span>
+                    @endif
+                  </span>
                 </div>
                 <div class="stat-item">
                   <span class="stat-icon">💬</span>
@@ -195,28 +245,35 @@
                 </div>
               </div>
 
-              <div class="comments" style="margin-top:12px;">
+              <div class="comments" style="margin-top:16px;">
                 @foreach($post->comments->take(3) as $c)
-                  @php $cAuthor = optional($c->user)->display_name ?? 'User'; @endphp
-                  <div class="message-bubble" id="comment-{{ $c->id }}">
-                    <div class="message-text">
-                      <strong>{{ $cAuthor }}</strong> • <small>{{ $c->created_at->diffForHumans() }}</small><br>
-                      {{ $c->content }}
+                  @php
+                    $cAuthor = optional($c->user)->display_name ?? 'User';
+                    $cInitial = strtoupper(Str::substr($cAuthor, 0, 1));
+                  @endphp
+                  <div class="comment-item" id="comment-{{ $c->id }}">
+                    <div class="comment-avatar" data-username="{{ $cAuthor }}">{{ $cInitial }}</div>
+                    <div class="comment-bubble">
+                      <div class="comment-header">
+                        <strong class="comment-author">{{ $cAuthor }}</strong>
+                        <small class="comment-time">{{ $c->created_at->diffForHumans() }}</small>
+                      </div>
+                      <div class="comment-content">{{ $c->content }}</div>
                     </div>
                   </div>
                 @endforeach
                 @if($post->comments->count() > 3)
-                  <div class="message-bubble">
-                    <div class="message-text"><a href="{{ route('forum.show',$post) }}">View all comments →</a></div>
+                  <div class="view-more-comments">
+                    <a href="{{ route('forum.show',$post) }}">View all {{ $post->comments->count() }} comments →</a>
                   </div>
                 @endif
               </div>
 
               @auth
-              <form class="comment-form" data-post="{{ $post->id }}" action="{{ route('forum.comment.store',$post) }}" method="POST" style="margin-top:10px; display:flex; gap:8px;">
+              <form class="comment-form" data-post="{{ $post->id }}" action="{{ route('forum.comment.store',$post) }}" method="POST">
                 @csrf
-                <input name="content" required placeholder="Write a comment…" style="flex:1;padding:10px;border-radius:10px;border:1px solid #cde;">
-                <button class="new-post-btn" style="padding:10px 16px;">Reply</button>
+                <input name="content" class="comment-input" required placeholder="Write a comment…">
+                <button class="comment-submit-btn" type="submit">💬 Reply</button>
               </form>
               @endauth
             </div>
@@ -230,6 +287,48 @@
 
           {{-- Sentinel for IntersectionObserver --}}
           <div id="infinite-sentinel" class="infinite-sentinel"></div>
+
+          {{-- Loading skeleton --}}
+          <div id="loading-skeleton" class="loading-skeleton" style="display: none;">
+            <div class="skeleton-post-card">
+              <div class="skeleton-header">
+                <div class="skeleton-avatar"></div>
+                <div class="skeleton-meta">
+                  <div class="skeleton-name"></div>
+                  <div class="skeleton-topic"></div>
+                  <div class="skeleton-time"></div>
+                </div>
+              </div>
+              <div class="skeleton-content">
+                <div class="skeleton-line"></div>
+                <div class="skeleton-line"></div>
+                <div class="skeleton-line" style="width: 70%;"></div>
+              </div>
+              <div class="skeleton-stats">
+                <div class="skeleton-stat"></div>
+                <div class="skeleton-stat"></div>
+              </div>
+            </div>
+            <div class="skeleton-post-card">
+              <div class="skeleton-header">
+                <div class="skeleton-avatar"></div>
+                <div class="skeleton-meta">
+                  <div class="skeleton-name"></div>
+                  <div class="skeleton-topic"></div>
+                  <div class="skeleton-time"></div>
+                </div>
+              </div>
+              <div class="skeleton-content">
+                <div class="skeleton-line"></div>
+                <div class="skeleton-line"></div>
+                <div class="skeleton-line" style="width: 60%;"></div>
+              </div>
+              <div class="skeleton-stats">
+                <div class="skeleton-stat"></div>
+                <div class="skeleton-stat"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -246,6 +345,79 @@
   });
 
   const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+  // Gradient Avatar Generator - Unique colors per user
+  function stringToColor(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return hash;
+  }
+
+  function getGradientForUser(username) {
+    const hash = stringToColor(username);
+    const colorPalettes = [
+      ['#667eea', '#764ba2'], // Purple-Blue
+      ['#f093fb', '#f5576c'], // Pink-Red
+      ['#4facfe', '#00f2fe'], // Blue-Cyan
+      ['#43e97b', '#38f9d7'], // Green-Teal
+      ['#fa709a', '#fee140'], // Pink-Yellow
+      ['#30cfd0', '#330867'], // Teal-Purple
+      ['#a8edea', '#fed6e3'], // Mint-Pink
+      ['#ff9a56', '#ff6a88'], // Orange-Pink
+      ['#ffecd2', '#fcb69f'], // Peach
+      ['#ff6e7f', '#bfe9ff'], // Red-Blue
+      ['#08aeea', '#2af598'], // Blue-Green
+      ['#ffa8a8', '#fcff00'], // Pink-Yellow
+    ];
+    const paletteIndex = Math.abs(hash) % colorPalettes.length;
+    const [color1, color2] = colorPalettes[paletteIndex];
+    return `linear-gradient(135deg, ${color1}, ${color2})`;
+  }
+
+  function applyAvatarGradients() {
+    document.querySelectorAll('.author-avatar, .comment-avatar').forEach(avatar => {
+      const username = avatar.dataset.username;
+      if (username) {
+        const gradient = getGradientForUser(username);
+        avatar.style.background = gradient;
+      }
+    });
+  }
+
+  // Apply gradients on load
+  applyAvatarGradients();
+
+  // Toggle reaction picker on click (in addition to hover)
+  document.addEventListener('click', (e) => {
+    const trigger = e.target.closest('.reaction-trigger');
+    if (trigger) {
+      e.stopPropagation();
+      const picker = trigger.closest('.reaction-picker');
+      const options = picker.querySelector('.reaction-options');
+
+      // Toggle the reaction options
+      if (options.classList.contains('show')) {
+        options.classList.remove('show');
+      } else {
+        // Close all other open reaction pickers
+        document.querySelectorAll('.reaction-options.show').forEach(opt => {
+          opt.classList.remove('show');
+        });
+        options.classList.add('show');
+      }
+      return;
+    }
+
+    // Close reaction picker when clicking outside
+    const reactionOption = e.target.closest('.reaction-option');
+    if (!reactionOption) {
+      document.querySelectorAll('.reaction-options.show').forEach(opt => {
+        opt.classList.remove('show');
+      });
+    }
+  });
 
   // Create Post (no reload)
   const postForm = document.getElementById('new-post-form');
@@ -271,7 +443,7 @@
       node.className = 'post-card';
       node.innerHTML = `
         <div class="post-header">
-          <div class="author-avatar">${(data.post.author || 'U')[0].toUpperCase()}</div>
+          <div class="author-avatar" data-username="${data.post.author || 'User'}">${(data.post.author || 'U')[0].toUpperCase()}</div>
           <div class="post-meta">
             <div class="author-name">${data.post.author || 'User'}</div>
             <div class="post-topic">${data.post.title}</div>
@@ -280,28 +452,94 @@
         </div>
         <div class="post-content">${data.post.content}</div>
         <div class="post-stats">
-          <div class="stat-item"><span class="stat-icon">👍</span><span><span class="like-count" data-post="${data.post.id}">0</span> reacts</span></div>
+          <div class="stat-item reactions-container">
+            <div class="reaction-picker" data-post="${data.post.id}">
+              <button class="reaction-trigger" data-post="${data.post.id}" aria-label="React">
+                <span class="trigger-icon">👍</span>
+              </button>
+              <div class="reaction-options" data-post="${data.post.id}">
+                <button class="reaction-option" data-reaction="helpful" title="Helpful">👍</button>
+                <button class="reaction-option" data-reaction="love" title="Love it">❤️</button>
+                <button class="reaction-option" data-reaction="eco_warrior" title="Eco-warrior">🌱</button>
+                <button class="reaction-option" data-reaction="celebrate" title="Celebrate">🎉</button>
+                <button class="reaction-option" data-reaction="insightful" title="Insightful">💡</button>
+              </div>
+            </div>
+            <span class="reactions-summary" data-post="${data.post.id}">
+              <span class="no-reactions">No reactions yet</span>
+            </span>
+          </div>
           <div class="stat-item"><span class="stat-icon">💬</span><span><span class="comment-count" data-post="${data.post.id}">0</span> comments</span></div>
         </div>`;
       list.insertBefore(node, document.getElementById('next-page'));
+      applyAvatarGradients(); // Apply gradient to new avatar
       postForm.reset();
       document.getElementById('composer')?.removeAttribute('open');
     });
   }
 
-  // Like/Unlike (delegated)
+  // Reaction handling (delegated)
   document.addEventListener('click', async (e) => {
-    const btn = e.target.closest('.like-btn');
-    if (!btn) return;
-    const postId = btn.dataset.post;
+    const reactionBtn = e.target.closest('.reaction-option');
+    if (!reactionBtn) return;
+
+    const postId = reactionBtn.closest('.reaction-picker').dataset.post;
+    const reactionType = reactionBtn.dataset.reaction;
+
+    // Add animation to the clicked reaction
+    reactionBtn.classList.add('reaction-pop');
+    setTimeout(() => reactionBtn.classList.remove('reaction-pop'), 500);
+
+    // Send reaction to backend
+    const formData = new FormData();
+    formData.append('reaction_type', reactionType);
+
     const res = await fetch(`{{ url('/forum') }}/${postId}/like`, {
       method: 'POST',
-      headers: {'X-CSRF-TOKEN': token, 'Accept':'application/json'}
+      headers: {'X-CSRF-TOKEN': token, 'Accept':'application/json'},
+      body: formData
     });
+
     if (!res.ok) return;
     const data = await res.json();
-    const countSpan = document.querySelector(`.like-count[data-post="${postId}"]`);
-    if (countSpan) countSpan.textContent = data.count;
+
+    // Update reaction breakdown
+    const emojiMap = {
+      'helpful': '👍',
+      'love': '❤️',
+      'eco_warrior': '🌱',
+      'celebrate': '🎉',
+      'insightful': '💡'
+    };
+
+    const summary = document.querySelector(`.reactions-summary[data-post="${postId}"]`);
+    if (summary) {
+      if (data.count === 0) {
+        summary.innerHTML = '<span class="no-reactions">No reactions yet</span>';
+      } else {
+        let breakdownHtml = '<span class="reaction-breakdown">';
+        for (const [type, count] of Object.entries(data.reactions)) {
+          const emoji = emojiMap[type] || '👍';
+          breakdownHtml += `<span class="reaction-count-item">${emoji} ${count}</span>`;
+        }
+        breakdownHtml += '</span>';
+        summary.innerHTML = breakdownHtml;
+      }
+    }
+
+    // Update trigger icon to show the selected reaction
+    const trigger = document.querySelector(`.reaction-trigger[data-post="${postId}"] .trigger-icon`);
+    if (trigger && data.liked) {
+      trigger.textContent = emojiMap[reactionType] || '👍';
+    } else if (trigger && !data.liked) {
+      trigger.textContent = '👍'; // Reset to default
+    }
+
+    // Hide the reaction picker after selection
+    const picker = document.querySelector(`.reaction-options[data-post="${postId}"]`);
+    if (picker) {
+      picker.classList.remove('show');
+    }
   });
 
   // Utility: bind comment listeners (called for initial page & appended ones)
@@ -321,9 +559,21 @@
         const data = await res.json();
         const wrap = form.closest('.post-card').querySelector('.comments');
         const div = document.createElement('div');
-        div.className = 'message-bubble';
-        div.innerHTML = `<div class="message-text"><strong>${data.comment.author || 'User'}</strong> • <small>${data.comment.created_at}</small><br>${data.comment.content}</div>`;
+        const author = data.comment.author || 'User';
+        const initial = author[0].toUpperCase();
+        div.className = 'comment-item';
+        div.innerHTML = `
+          <div class="comment-avatar" data-username="${author}">${initial}</div>
+          <div class="comment-bubble">
+            <div class="comment-header">
+              <strong class="comment-author">${author}</strong>
+              <small class="comment-time">${data.comment.created_at}</small>
+            </div>
+            <div class="comment-content">${data.comment.content}</div>
+          </div>
+        `;
         wrap.appendChild(div);
+        applyAvatarGradients(); // Apply gradient to new comment avatar
         const cCount = form.closest('.post-card').querySelector('.comment-count');
         if (cCount) cCount.textContent = data.comment.count;
         form.reset();
@@ -338,6 +588,10 @@
   const postsList    = document.getElementById('posts-list');
 
   async function loadNextPage(url) {
+    // Show skeleton loader
+    const skeleton = document.getElementById('loading-skeleton');
+    if (skeleton) skeleton.style.display = 'block';
+
     try {
       const res  = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' }});
       const html = await res.text();
@@ -354,10 +608,16 @@
         cards = tmp.querySelectorAll('.post-card');
       }
 
+      // Hide skeleton loader
+      if (skeleton) skeleton.style.display = 'none';
+
       cards.forEach(card => {
         postsList.insertBefore(card, nextHolder);
         attachCommentListeners(card);
       });
+
+      // Apply gradients to newly loaded avatars
+      applyAvatarGradients();
 
       // Update next url
       const newNext = (doc.querySelector('#next-page') || {}).dataset?.url || '';
@@ -367,6 +627,8 @@
       if (!newNext) observer.disconnect();
     } catch (err) {
       console.error('Infinite scroll error:', err);
+      // Hide skeleton loader on error
+      if (skeleton) skeleton.style.display = 'none';
       observer.disconnect();
     }
   }

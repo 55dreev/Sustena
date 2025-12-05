@@ -77,6 +77,13 @@
           @if($user)
             <div class="podium-entry {{ $rank === 1 ? 'first' : ($rank === 2 ? 'second' : 'third') }}">
               <div class="podium-rank {{ $rank === 1 ? 'first' : ($rank === 2 ? 'second' : 'third') }}">{{ $rank }}</div>
+              <div class="podium-avatar">
+                @if($user->profile_picture)
+                  <img src="{{ asset('storage/' . $user->profile_picture) }}" alt="{{ $user->display_name }}" class="avatar-img">
+                @else
+                  <div class="avatar-placeholder">👤</div>
+                @endif
+              </div>
               <div class="podium-name">{{ $user->display_name }}</div>
               <div class="podium-score">{{ number_format((int)($user->points_total ?? 0)) }} 🌱</div>
             </div>
@@ -99,7 +106,13 @@
         @endphp
         <div class="leaderboard-entry">
           <div class="rank-number {{ $badge }}">{{ $rank }}</div>
-          <div class="user-avatar">👤</div>
+          <div class="user-avatar">
+            @if($user->profile_picture)
+              <img src="{{ asset('storage/' . $user->profile_picture) }}" alt="{{ $user->display_name }}" class="avatar-img">
+            @else
+              <div class="avatar-placeholder">👤</div>
+            @endif
+          </div>
           <div class="user-info">
             <div class="user-name">{{ $user->display_name }}</div>
           </div>
@@ -122,15 +135,32 @@
     </div>
   </div>
 
-  <div class="floating-icons">
-    <a href="{{ url('/analytics') }}" class="floating-icon" title="Analytics">🔥</a>
-    <a href="{{ url('/learning-modules') }}" class="floating-icon" title="Learning Modules">🌱</a>
-    <a href="{{ url('/leaderboard') }}" class="floating-icon" title="Leaderboard">🏆</a>
-    <a href="{{ url('/badges') }}" class="floating-icon" title="Badges">🥇</a>
-    <a href="{{ url('/settings') }}" class="floating-icon" title="Settings">⚙️</a>
-  </div>
+<div class="floating-icons">
+      <a href="{{ url('/analytics') }}" class="floating-icon" title="Analytics">📅</a>
+      <a href="{{ url('/streaks') }}" class="floating-icon" title="Streaks">🔥</a>
+      <a href="{{ url('/learning-modules') }}" class="floating-icon" title="Learning Modules">🌱</a>
+      <a href="{{ url('/leaderboard') }}" class="floating-icon" title="Leaderboard">🏆</a>
+      <a href="{{ url('/badges') }}" class="floating-icon" title="Badges">🥇</a>
+      <a href="{{ url('/settings') }}" class="floating-icon" title="Settings">⚙️</a>
+    </div>
 
   <script>
+    // Handle image loading errors gracefully
+    document.addEventListener('DOMContentLoaded', function() {
+      const images = document.querySelectorAll('.avatar-img');
+      images.forEach(img => {
+        img.addEventListener('error', function() {
+          // If image fails to load, hide it gracefully
+          this.style.display = 'none';
+          // Show the placeholder instead
+          const placeholder = this.parentElement.querySelector('.avatar-placeholder');
+          if (placeholder) {
+            placeholder.style.display = 'flex';
+          }
+        });
+      });
+    });
+
     // Toggle sidebar
   function toggleSidebar() {
     const sidebar = document.querySelector('.sidebar');

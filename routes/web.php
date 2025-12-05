@@ -20,6 +20,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ChallengeApiController;
 use App\Http\Controllers\Admin\ChallengeAdminController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StreakController;
 use Carbon\Carbon;
 use App\Http\Controllers\Admin\ResearchExportController;
 
@@ -35,6 +36,12 @@ Route::middleware(\App\Http\Middleware\RedirectIfAuthenticatedCustom::class)->gr
         ->name('auth.google');
 
     Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
+
+    Route::get('/auth/google/accept-eula', [GoogleController::class, 'showEulaForm'])
+        ->name('auth.google.eula');
+
+    Route::post('/auth/google/accept-eula', [GoogleController::class, 'acceptEula'])
+        ->name('auth.google.accept-eula');
 });
 
 Route::get('/test-mail', function () {
@@ -95,8 +102,6 @@ Route::get('/debug/streak', function () {
     ]);
 })->middleware('auth');
 
-
-
 /*
 |--------------------------------------------------------------------------
 | Proof streaming
@@ -149,6 +154,9 @@ Route::middleware(['auth','can:manage-challenges'])->group(function () {
 Route::prefix('admin')->middleware(['auth','can:manage-challenges'])->group(function () {
     // admin dashboard (already present)
     Route::get('/', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+
+    // Analytics dashboard
+    Route::get('/analytics', [\App\Http\Controllers\Admin\AnalyticsController::class, 'dashboard'])->name('admin.analytics');
 
     // NEW: admin-only pages
     Route::get('/moderation', fn() => view('moderation'))->name('admin.moderation');
@@ -259,6 +267,21 @@ Route::middleware('auth')->get('/analytics/summary', [AnalyticsController::class
 
 /*
 |--------------------------------------------------------------------------
+| Streak API endpoints
+|--------------------------------------------------------------------------
+*/
+Route::middleware('auth')->group(function () {
+    Route::post('/api/streaks/toggle-task', [StreakController::class, 'toggleTask']);
+    Route::get('/api/streaks/data', [StreakController::class, 'getStreakData']);
+
+    // Robot skin shop routes
+    Route::get('/api/streaks/shop/skins', [StreakController::class, 'getShopSkins']);
+    Route::post('/api/streaks/shop/purchase', [StreakController::class, 'purchaseSkin']);
+    Route::post('/api/streaks/shop/equip', [StreakController::class, 'equipSkin']);
+});
+
+/*
+|--------------------------------------------------------------------------
 | Footprint persistence
 |--------------------------------------------------------------------------
 */
@@ -293,18 +316,8 @@ Route::get('/me/summary', function () {
     $rankNum = $community ? (DB::table('users')->where('points_total', '>', $points)->count() + 1) : null;
     $rankText = $rankNum ? "#{$rankNum}" : '—';
 
-    // day streak
-    $streak = 0;
-    $last = DB::table('footprint_scores')->where('user_id', $uid)->max('created_at');
-    if ($last) {
-        $anchor = \Carbon\Carbon::parse($last)->startOfDay();
-        for ($i=0; $i<365; $i++) {
-            $s = (clone $anchor)->subDays($i)->startOfDay();
-            $e = (clone $anchor)->subDays($i)->endOfDay();
-            $had = DB::table('footprint_scores')->where('user_id',$uid)->whereBetween('created_at',[$s,$e])->exists();
-            if ($had) { $streak++; } else { break; }
-        }
-    }
+    // day streak (using StreakService)
+    [$streak, $lastActivity] = \App\Services\StreakService::current($uid);
 
     // energy saved this month (kWh)
     $start = now()->startOfMonth(); $end = now()->endOfMonth();
@@ -402,7 +415,7 @@ Route::middleware([\App\Http\Middleware\CheckAuth::class, \App\Http\Middleware\N
     Route::get('/learning-modules', fn() => view('learningmod'))->name('learning-modules');
     Route::get('/analytics', fn() => view('analytic'))->name('analytics');
     Route::get('/settings', fn() => view('settings'))->name('settings');
-    Route::get('/streaks', fn() => view('streakpage'))->name('streaks');
+    Route::get('/streaks', [StreakController::class, 'index'])->name('streaks');
     Route::get('/visual-progress', [HomeController::class, 'visualProgress'])->name('visual-progress');
     Route::get('/db-test', function () {
         try {

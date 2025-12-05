@@ -10,17 +10,34 @@ class StreakService
     /**
      * Returns [days, lastActivityAtCarbon]
      * Streak = number of consecutive days (today, yesterday, …)
-     * where the user has at least one footprint_scores row.
+     * where the user has at least one footprint_scores row OR completed all daily tasks.
      */
     public static function current(int $userId, string $tz = 'Asia/Manila'): array
     {
         $now   = Carbon::now($tz)->startOfDay();
-        $dates = DB::table('footprint_scores')
+
+        // Get dates from footprint_scores
+        $footprintDates = DB::table('footprint_scores')
             ->where('user_id', $userId)
             ->selectRaw('DATE(CONVERT_TZ(created_at, @@session.time_zone, ?)) as d', [$tz])
             ->groupBy('d')
-            ->orderByDesc('d')
-            ->pluck('d'); // array of 'YYYY-MM-DD'
+            ->pluck('d')
+            ->toArray();
+
+        // Get dates where user completed ALL daily tasks
+        $taskCompletionDates = DB::table('user_task_completions')
+            ->where('user_id', $userId)
+            ->select('completed_date')
+            ->groupBy('completed_date')
+            ->havingRaw('COUNT(DISTINCT task_id) >= (SELECT COUNT(*) FROM daily_tasks WHERE is_active = 1)')
+            ->pluck('completed_date')
+            ->toArray();
+
+        // Merge and deduplicate dates
+        $dates = collect(array_merge($footprintDates, $taskCompletionDates))
+            ->unique()
+            ->sortDesc()
+            ->values();
 
         $days = 0;
         $expect = $now->copy();           // today

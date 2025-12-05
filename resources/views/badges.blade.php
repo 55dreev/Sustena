@@ -53,8 +53,9 @@
   <!-- Main Content -->
   <div class="main-content">
     <!-- Top Navigation Bar -->
-  <div class="floating-icons">
-      <a href="{{ url('/analytics') }}" class="floating-icon" title="Analytics">🔥</a>
+ <div class="floating-icons">
+      <a href="{{ url('/analytics') }}" class="floating-icon" title="Analytics">📅</a>
+      <a href="{{ url('/streaks') }}" class="floating-icon" title="Streaks">🔥</a>
       <a href="{{ url('/learning-modules') }}" class="floating-icon" title="Learning Modules">🌱</a>
       <a href="{{ url('/leaderboard') }}" class="floating-icon" title="Leaderboard">🏆</a>
       <a href="{{ url('/badges') }}" class="floating-icon" title="Badges">🥇</a>

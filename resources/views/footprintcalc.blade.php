@@ -54,11 +54,12 @@
 
 <div class="main-content" id="mainContent">
     <div class="floating-icons">
-        <a href="{{ route('analytics') }}" class="floating-icon" title="Analytics">🔥</a>
-        <a href="{{ route('learning-modules') }}" class="floating-icon" title="Learning Modules">🌱</a>
-        <a href="{{ route('leaderboard') }}" class="floating-icon" title="Leaderboard">🏆</a>
-        <a href="{{ route('badges') }}" class="floating-icon" title="Badges">🥇</a>
-        <a href="{{ route('settings') }}" class="floating-icon" title="Settings">⚙️</a>
+      <a href="{{ url('/analytics') }}" class="floating-icon" title="Analytics">📅</a>
+      <a href="{{ url('/streaks') }}" class="floating-icon" title="Streaks">🔥</a>
+      <a href="{{ url('/learning-modules') }}" class="floating-icon" title="Learning Modules">🌱</a>
+      <a href="{{ url('/leaderboard') }}" class="floating-icon" title="Leaderboard">🏆</a>
+      <a href="{{ url('/badges') }}" class="floating-icon" title="Badges">🥇</a>
+      <a href="{{ url('/settings') }}" class="floating-icon" title="Settings">⚙️</a>
     </div>
 
     <!-- Toast -->
@@ -73,7 +74,7 @@
             <div class="progress-bar" style="position: relative;">
                 <div class="progress-fill" id="progressFill"></div>
             </div>
-
+          
             <div id="quizContainer" class="form-section"></div>
 
          <div class="farm-row">

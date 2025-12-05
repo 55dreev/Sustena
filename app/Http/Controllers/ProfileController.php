@@ -147,12 +147,28 @@ class ProfileController extends Controller
             'home_type'      => 'nullable|string|max:80',
             'energy_source'  => 'nullable|string|max:80',
             'weekly_target'  => 'nullable|integer|min:10|max:10000',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $u = Auth::user();
+
+        // Save username to database
         if (!empty($data['username'])) {
-            session(['username' => $data['username']]);
+            $u->username = $data['username'];
         }
+
+        // Handle profile picture upload
+        if ($r->hasFile('profile_picture')) {
+            // Delete old profile picture if it exists
+            if ($u->profile_picture && \Storage::disk('public')->exists($u->profile_picture)) {
+                \Storage::disk('public')->delete($u->profile_picture);
+            }
+
+            // Store new profile picture
+            $path = $r->file('profile_picture')->store('profile_pictures', 'public');
+            $u->profile_picture = $path;
+        }
+
         $u->email            = $data['email'];
         $u->diet             = $data['diet']          ?? $u->diet;
         $u->transport        = $data['transport']     ?? $u->transport;

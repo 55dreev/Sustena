@@ -225,16 +225,26 @@ $toDate   = $request->filled('date_to')   ? Carbon::parse($request->query('date_
             $wk     = $weeklyByAttempt[$aid]
                 ?? (float) collect($cats->get($aid, collect()))->sum('total_score');
 
-            // Per-attempt categories (raw DB categories) → keep as-is so frontend can use them
-            $catMap = [];
+            // Per-attempt categories → map to UI category names
+            $dbCatMap = [];
             foreach (($cats->get($aid, collect())) as $c) {
-                $catMap[$c->category] = (float) $c->total_score;
+                $dbCatMap[$c->category] = (float) $c->total_score;
+            }
+
+            // Map DB categories to UI categories for frontend sparklines
+            $uiCatMap = [];
+            foreach ($uiMap as $uiName => $dbSources) {
+                $sum = 0.0;
+                foreach ($dbSources as $dbCat) {
+                    $sum += $dbCatMap[$dbCat] ?? 0.0;
+                }
+                $uiCatMap[$uiName] = round($sum, 2);
             }
 
             $timeseries[] = [
                 'date'          => $date,
                 'total_weekly'  => (float) round($wk, 1),
-                'categories'    => $catMap,
+                'categories'    => $uiCatMap,
             ];
         }
 
@@ -253,6 +263,9 @@ $toDate   = $request->filled('date_to')   ? Carbon::parse($request->query('date_
             ];
         }
 
+        // Get streak data using StreakService
+        [$streakDays, $lastActivity] = \App\Services\StreakService::current($userId);
+
         return response()->json([
             'has_data' => true,
             'headline' => [
@@ -260,6 +273,7 @@ $toDate   = $request->filled('date_to')   ? Carbon::parse($request->query('date_
                 'kg_per_week'        => (float) round($latestWeekly, 1),
                 'delta_pct'          => $deltaPct,             // % vs previous attempt
                 'target_abs_weekly'  => $targetAbsWeekly,      // optional absolute weekly target
+                'target_source'      => $targetSource,         // 'user' or 'rolling_avg'
                 'mode'               => $modeIncl ? 'official+practice' : 'official',
             ],
             'cards'      => $cards,        // [{title, kg_per_week, percent, delta?}]
@@ -269,6 +283,7 @@ $toDate   = $request->filled('date_to')   ? Carbon::parse($request->query('date_
                 'id'           => $latestAttemptId,
                 'completed_at' => (string) $attempts[0]->completed_at,
             ],
+            'streak_days' => $streakDays,  // current streak days (includes task completions)
         ]);
     }
 }

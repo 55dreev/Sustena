@@ -577,9 +577,9 @@
     .muted{opacity:.7;font-size:.9rem}
 
     .quick-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:14px 0}
-    .qstat{background:#f6fff6;border:1px solid #e3f3e3;border-radius:12px;padding:10px 12px}
-    .qtitle{font-size:.85rem;opacity:.8}
-    .qvalue{font-weight:700;font-size:1.1rem}
+    .qstat{background:#f6fff6;border:1px solid #e3f3e3;border-radius:12px;padding:10px 12px;overflow:hidden;word-wrap:break-word;overflow-wrap:break-word}
+    .qtitle{font-size:.85rem;opacity:.8;word-wrap:break-word;overflow-wrap:break-word}
+    .qvalue{font-weight:700;font-size:1.1rem;word-wrap:break-word;overflow-wrap:break-word}
 
     .status-icon{margin-left:6px}
     .chip{display:inline-block;background:#f0f3ff;border:1px solid #e3e7ff;border-radius:999px;padding:4px 8px;font-size:.82rem;margin:4px 6px 0 0}

@@ -12,28 +12,33 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
-        try {
-            $request->validate([
-                'username' => 'required|string|max:100',
-                'email' => 'required|email|unique:users,email',
-                'password' => 'required|string|min:6|confirmed',
-            ]);
+        $request->validate([
+            'username' => 'required|string|max:100|unique:users,username',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:6|confirmed',
+        ], [
+            'username.required' => 'Username is required.',
+            'username.unique' => 'This username is already taken.',
+            'email.required' => 'Email is required.',
+            'email.email' => 'Please enter a valid email address.',
+            'email.unique' => 'This email is already registered.',
+            'password.required' => 'Password is required.',
+            'password.min' => 'Password must be at least 6 characters.',
+            'password.confirmed' => 'Password confirmation does not match.',
+        ]);
 
-            DB::table('users')->insert([
-                'username' => $request->username,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-                'date_of_registration' => now(),
-            ]);
+        DB::table('users')->insert([
+            'username' => $request->username,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'date_of_registration' => now(),
+        ]);
 
-            // Set session
-            session(['username' => $request->username]);
-            session()->forget('previous_route');
+        // Set session
+        session(['username' => $request->username]);
+        session()->forget('previous_route');
 
-            return redirect('/')->with('success', 'User registered successfully!');
-        } catch (\Exception $e) {
-            return redirect('/')->with('error', '❌ Registration failed: ' . $e->getMessage());
-        }
+        return redirect('/')->with('success', 'User registered successfully!');
     }
 
     public function login(Request $request)
@@ -41,6 +46,10 @@ class AuthController extends Controller
     $request->validate([
         'username' => 'required|string', // can be username or email
         'password' => 'required|string',
+        'accept_eula' => 'required|accepted',
+    ], [
+        'accept_eula.required' => 'You must accept the EULA to log in.',
+        'accept_eula.accepted' => 'You must accept the EULA to log in.',
     ]);
 
     // Try username first
@@ -54,6 +63,13 @@ class AuthController extends Controller
     if ($user && Hash::check($request->password, $user->password)) {
         Auth::login($user);
         $request->session()->regenerate(); // protect session fixation
+
+        // Mark EULA as accepted
+        if (!$user->eula_accepted) {
+            $user->eula_accepted = true;
+            $user->eula_accepted_at = now();
+            $user->save();
+        }
 
         // Keep your existing session values
         session(['username' => $user->username]);

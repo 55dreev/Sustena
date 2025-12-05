@@ -19,39 +19,13 @@ class HomeController extends Controller
         $uid  = $user?->user_id ?? $user?->id;
 
         // -----------------------
-        // Daily streak
+        // Daily streak (using StreakService)
         // -----------------------
         $streak_days      = 0;
         $last_activity_at = null;
 
         if ($uid) {
-            $appTz   = config('app.timezone', 'Asia/Manila');
-            $dbIsUtc = false; // set true if DB is stored in UTC
-
-            $raw = DB::table('footprint_scores')
-                ->where('user_id', $uid)
-                ->max('created_at');
-
-            if ($raw) {
-                $lastCarbon       = Carbon::parse($raw);
-                $last_activity_at = $dbIsUtc ? $lastCarbon->tz($appTz) : $lastCarbon;
-
-                $anchorLocal = $last_activity_at->copy()->startOfDay();
-                for ($i = 0; $i < 365; $i++) {
-                    $startLocal = $anchorLocal->copy()->subDays($i)->startOfDay();
-                    $endLocal   = $anchorLocal->copy()->subDays($i)->endOfDay();
-
-                    $startForDb = $dbIsUtc ? $startLocal->copy()->tz('UTC') : $startLocal;
-                    $endForDb   = $dbIsUtc ? $endLocal->copy()->tz('UTC')   : $endLocal;
-
-                    $had = DB::table('footprint_scores')
-                        ->where('user_id', $uid)
-                        ->whereBetween('created_at', [$startForDb, $endForDb])
-                        ->exists();
-
-                    if ($had) { $streak_days++; } else { break; }
-                }
-            }
+            [$streak_days, $last_activity_at] = \App\Services\StreakService::current($uid);
         }
 
         // -----------------------
@@ -241,6 +215,23 @@ class HomeController extends Controller
         }
 
         // -----------------------
+        // XP / Level Progress
+        // -----------------------
+        $xp_total = (int) ($user->xp_total ?? 0);
+        $level    = (int) ($user->level ?? 1);
+
+        $xpService = app(\App\Services\XpService::class);
+        $nextLevelInfo = $xpService->nextLevelInfo($xp_total);
+        [$current_level, $next_level, $xp_needed] = $nextLevelInfo;
+
+        $currentLevelMin = $xpService->levelThresholdTotal($current_level);
+        $nextLevelMin    = $xpService->levelThresholdTotal($next_level);
+        $xpIntoLevel     = $xp_total - $currentLevelMin;
+        $xpForLevel      = $nextLevelMin - $currentLevelMin;
+        $xp_percent      = $xpForLevel > 0 ? min(100, round(($xpIntoLevel / $xpForLevel) * 100)) : 0;
+        $xp_to_next      = max(0, $xp_needed);
+
+        // -----------------------
         // Rank (by points_total)
         // -----------------------
         $myPoints        = (int) ($user->points_total ?? 0);
@@ -274,6 +265,13 @@ class HomeController extends Controller
             // Badges
             'badges'           => $badges,
             'badges_count'     => count($badges),
+
+            // XP / Level
+            'level'            => $level,
+            'xp_total'         => $xp_total,
+            'xp_percent'       => $xp_percent,
+            'xp_to_next'       => $xp_to_next,
+            'next_level'       => $next_level,
 
             // Energy (month view)
             'energy_saved_kwh'         => $energy_saved_kwh,

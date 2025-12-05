@@ -9,7 +9,8 @@
     $user = Auth::user();
     $xpTotal  = $user->xp_total ?? null;
     $level    = $user->level ?? null;
-    $username = session('username') ?? ($user->name ?? 'Guest');
+    $username = $user->username ?? ($user->name ?? 'Guest');
+    $profilePicture = $user->profile_picture ?? null;
 
     $diet          = $user->diet ?? null;
     $transport     = $user->transport ?? null;
@@ -43,12 +44,13 @@
 </div>
 
 <div class="floating-icons">
-  <a href="{{ route('analytics') }}" class="floating-icon" title="Analytics">🔥</a>
-  <a href="{{ route('learning-modules') }}" class="floating-icon" title="Learning Modules">🌱</a>
-  <a href="{{ route('leaderboard') }}" class="floating-icon" title="Leaderboard">🏆</a>
-  <a href="{{ route('badges') }}" class="floating-icon" title="Badges">🥇</a>
-  <a href="{{ route('settings') }}" class="floating-icon" title="Settings">⚙️</a>
-</div>
+      <a href="{{ url('/analytics') }}" class="floating-icon" title="Analytics">📅</a>
+      <a href="{{ url('/streaks') }}" class="floating-icon" title="Streaks">🔥</a>
+      <a href="{{ url('/learning-modules') }}" class="floating-icon" title="Learning Modules">🌱</a>
+      <a href="{{ url('/leaderboard') }}" class="floating-icon" title="Leaderboard">🏆</a>
+      <a href="{{ url('/badges') }}" class="floating-icon" title="Badges">🥇</a>
+      <a href="{{ url('/settings') }}" class="floating-icon" title="Settings">⚙️</a>
+    </div>
 
 <div class="main-content"
      data-xp="{{ $xpTotal !== null ? (int)$xpTotal : '' }}"
@@ -61,7 +63,13 @@
 
 <div class="profile-header">
   <div class="profile-content">
-    <div class="profile-avatar">👤</div>
+    <div class="profile-avatar">
+      @if($profilePicture)
+        <img src="{{ asset('storage/' . $profilePicture) }}" alt="Profile Picture" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+      @else
+        👤
+      @endif
+    </div>
     <div class="profile-info">
       <h1 class="profile-name">{{ $username }} [Ecosaver]</h1>
 
@@ -135,10 +143,19 @@
         <button class="close-btn" id="closeModalBtn">&times;</button>
       </div>
 
-      <form method="POST" action="{{ route('profile.update') }}">
+      <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data">
         @csrf
         <label for="username">Username</label>
-        <input type="text" id="username" name="username" value="{{ session('username') ?? ($user->name ?? '') }}">
+        <input type="text" id="username" name="username" value="{{ $user->username ?? ($user->name ?? '') }}">
+
+        <label for="profile_picture">Profile Picture</label>
+        <input type="file" id="profile_picture" name="profile_picture" accept="image/*">
+        @if($profilePicture)
+          <div style="margin-top: 10px;">
+            <img src="{{ asset('storage/' . $profilePicture) }}" alt="Current Profile Picture" style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;">
+            <p style="font-size: 0.9rem; color: #666;">Current profile picture</p>
+          </div>
+        @endif
 
         <label for="email">Email</label>
         <input type="email" id="email" name="email" value="{{ $user->email ?? '' }}" required>

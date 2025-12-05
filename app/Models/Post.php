@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany};
 
 class Post extends Model
 {
-    protected $fillable = ['title', 'content', 'user_id'];
+    protected $fillable = ['title', 'content', 'user_id', 'status'];
 
     public function user(): BelongsTo
     {
@@ -17,7 +17,15 @@ class Post extends Model
 
     public function comments(): HasMany
     {
-        // FK comments.post_id -> posts.id
+        // FK comments.post_id -> posts.id (only approved)
+        return $this->hasMany(Comment::class, 'post_id', 'id')
+            ->where('status', 'Approved')
+            ->latest();
+    }
+
+    public function allComments(): HasMany
+    {
+        // FK comments.post_id -> posts.id (all statuses for moderation)
         return $this->hasMany(Comment::class, 'post_id', 'id')->latest();
     }
 

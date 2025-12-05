@@ -32,8 +32,9 @@ public function activeUsers(Request $request)
 
     public function index()
 {
-    $query = Post::with(['user','comments.user'])
+    $query = Post::with(['user','comments.user','likes'])
         ->withCount(['comments','likes'])
+        ->where('status', 'Approved') // Only show approved posts
         ->latest();
 
     if ($q = request('q')) {
@@ -81,7 +82,7 @@ public function activeUsers(Request $request)
             'content' => ['required','string','max:5000'],
         ]);
 
-        $post = Post::create($validated + ['user_id' => Auth::id()]);
+        $post = Post::create($validated + ['user_id' => Auth::id(), 'status' => 'Approved']);
         $post->load('user');
 
         if ($request->wantsJson()) {
@@ -103,7 +104,8 @@ public function activeUsers(Request $request)
     {
         $validated = $request->validate(['content' => ['required','string','max:2000']]);
 
-        $comment = $post->comments()->create($validated + ['user_id'=>Auth::id()]);
+        $comment = $post->allComments()->create($validated + ['user_id'=>Auth::id(), 'status'=>'Approved']);
+        $comment->load('user');
 
         if ($request->wantsJson()) {
             return response()->json([
@@ -111,9 +113,9 @@ public function activeUsers(Request $request)
                 'comment'=>[
                     'id'=>$comment->id,
                     'content'=>$comment->content,
-                    'author'=>$comment->user->name,
+                    'author'=>$comment->user->username ?? $comment->user->email ?? 'User',
                     'created_at'=>$comment->created_at->diffForHumans(),
-                    'count'=>$post->comments()->count(),
+                    'count'=>$post->allComments()->count(),
                 ]
             ]);
         }
@@ -122,12 +124,46 @@ public function activeUsers(Request $request)
 
     public function toggleLike(Post $post)
     {
+        $reactionType = request('reaction_type', 'helpful');
+
+        // Validate reaction type
+        $validReactions = ['helpful', 'love', 'eco_warrior', 'celebrate', 'insightful'];
+        if (!in_array($reactionType, $validReactions)) {
+            $reactionType = 'helpful';
+        }
+
         $existing = Like::where('post_id',$post->id)->where('user_id',Auth::id())->first();
-        if ($existing) { $existing->delete(); $liked=false; }
-        else { Like::create(['post_id'=>$post->id,'user_id'=>Auth::id()]); $liked=true; }
+
+        if ($existing) {
+            // If same reaction type, remove it (toggle off)
+            if ($existing->reaction_type === $reactionType) {
+                $existing->delete();
+                $liked = false;
+            } else {
+                // Different reaction type, update it
+                $existing->update(['reaction_type' => $reactionType]);
+                $liked = true;
+            }
+        } else {
+            // Create new reaction
+            Like::create(['post_id'=>$post->id,'user_id'=>Auth::id(), 'reaction_type'=>$reactionType]);
+            $liked = true;
+        }
 
         if (request()->wantsJson()) {
-            return response()->json(['ok'=>true,'liked'=>$liked,'count'=>$post->likes()->count()]);
+            // Get counts for each reaction type
+            $reactions = Like::where('post_id', $post->id)
+                ->selectRaw('reaction_type, COUNT(*) as count')
+                ->groupBy('reaction_type')
+                ->pluck('count', 'reaction_type')
+                ->toArray();
+
+            return response()->json([
+                'ok'=>true,
+                'liked'=>$liked,
+                'count'=>$post->likes()->count(),
+                'reactions'=>$reactions
+            ]);
         }
         return back();
     }

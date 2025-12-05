@@ -450,6 +450,15 @@
     </div>
   </div>
 
+  <div class="floating-icons">
+    <a href="{{ url('/analytics') }}" class="floating-icon" title="Analytics">🔥</a>
+    <a href="{{ url('/streaks') }}" class="floating-icon" title="Streaks">📅</a>
+    <a href="{{ url('/learning-modules') }}" class="floating-icon" title="Learning Modules">🌱</a>
+    <a href="{{ url('/leaderboard') }}" class="floating-icon" title="Leaderboard">🏆</a>
+    <a href="{{ url('/badges') }}" class="floating-icon" title="Badges">🥇</a>
+    <a href="{{ url('/settings') }}" class="floating-icon" title="Settings">⚙️</a>
+  </div>
+
   <!-- Quiz Modal -->
 <div class="quiz-modal" id="quizModal" onclick="outsideClick(event)">
   <div class="quiz-box">
@@ -759,6 +768,52 @@
       font-size: 14px;
     }
   }
+
+  /* Floating Icons */
+  .floating-icons {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 1000;
+  }
+
+  .floating-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 2px 2px 0px rgba(255,255,255,0.8),
+                inset -2px -2px 0px rgba(0,0,0,0.3),
+                0px 4px 12px rgba(0,0,0,0.15);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    filter: contrast(1.2) brightness(1.1);
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .floating-icon:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  }
+
+  @media (max-width: 768px) {
+    .floating-icons {
+      top: 10px;
+      right: 10px;
+      gap: 8px;
+    }
+
+    .floating-icon {
+      width: 35px;
+      height: 35px;
+    }
+  }
 </style>
 
 <script>
@@ -889,6 +944,17 @@
     currentQuestion = 0;
     timeLeft = 60;
   }
+
+  // Floating icons animation
+  document.querySelectorAll('.floating-icon').forEach((icon, index) => {
+    icon.style.animationDelay = `${index * 0.2}s`;
+    icon.addEventListener('click', function() {
+      this.style.transform = 'scale(1.2) rotate(360deg)';
+      setTimeout(() => {
+        this.style.transform = 'scale(1.1)';
+      }, 300);
+    });
+  });
 </script>
 
 
